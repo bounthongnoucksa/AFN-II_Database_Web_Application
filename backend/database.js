@@ -134,6 +134,61 @@ db.serialize(() => {
         );
         `);
 
+
+
+        //Form 1A2 submission table
+        db.run(`
+        CREATE TABLE IF NOT EXISTS tb_Form_1A2_Submission (
+            Id INTEGER PRIMARY KEY, --_Id
+            Uuid TEXT, --_uuid
+            Start TEXT,
+            End TEXT,
+            Reporting_period TEXT,
+            Province TEXT,
+            District TEXT,
+            Village TEXT,
+            Subactivity TEXT,
+            Act_conduct_date1 TEXT,
+            Act_conduct_date2 TEXT,
+            Conducted_by TEXT,
+            Version TEXT, 
+            Submission_time TEXT
+        );
+        `);
+
+        //Form 1A2 particiapnt table
+        db.run(`
+        CREATE TABLE IF NOT EXISTS tb_Form_1A2_Participant (
+            Id INTEGER PRIMARY KEY AUTOINCREMENT,
+            SubmissionId INTEGER,
+            HaveHH_id TEXT,
+            HHId TEXT, 				--mainhhid
+            NameAndSurname TEXT,	--select_one_mainNameAndSurname
+            Age INTEGER,
+            Gender TEXT,
+            PWBWStatus TEXT,
+            Ethnicity TEXT,
+            Poverty_level TEXT,
+            Pwd_status TEXT,
+            Module_1 TEXT,
+            Module_2 TEXT,
+            Module_3 TEXT,
+            Module_4 TEXT,
+            Receive_Grant TEXT,  	--g_receive_Yes_No
+            GrantUseFor TEXT,		--select_one_qg7ja17
+            IFAD INTEGER,
+            MAF INTEGER,
+            WFP INTEGER,
+            GoL INTEGER,
+            Ben INTEGER,
+            OtherFund INTEGER,		--integer_oz4sh88
+            FOREIGN KEY (SubmissionId) REFERENCES tb_Form_1A2_Submission(Id)
+        );
+        `);
+
+
+
+
 });
 
 export default db;

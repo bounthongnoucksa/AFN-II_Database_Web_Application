@@ -7,6 +7,7 @@ import MainDashboard from './main_dashboard';
 import CBForStaff from './cb_for_staff'; // Import the CBForStaff component
 import CBForVillagers from './cb_for_villagers'; //Import the CBForVillagers component
 import Form1A1 from './1A1'; //Import the form 1A1 component
+import Form1A2 from './1A2' //Import the form 1A2 component
 
 export default function MainPortalForm() {
     const [activeTab, setActiveTab] = useState('tab1');
@@ -47,6 +48,7 @@ export default function MainPortalForm() {
     });
 
     const tabs = [
+        
         { id: 'tab1', label: 'Outreach Cal' },
         { id: 'tab2', label: 'Logframe Update' },
         { id: 'tab3', label: 'Main Dashboard' },
@@ -126,7 +128,11 @@ export default function MainPortalForm() {
 
                 <div style={{ display: activeTab === 'tab6' ? 'block' : 'none' }}>
                     <Form1A1 />
-                </div> 
+                </div>
+
+                <div style={{ display: activeTab === 'tab7' ? 'block' : 'none' }}>
+                    <Form1A2 />
+                </div>  
 
                 
 
@@ -135,7 +141,7 @@ export default function MainPortalForm() {
 
                 {/* Other tabs - also mounted but hidden */}
                 {tabs
-                    .filter(tab => tab.id !== 'tab3' && tab.id !== 'tab4' && tab.id !== 'tab5' && tab.id !== 'tab6')
+                    .filter(tab => tab.id !== 'tab3' && tab.id !== 'tab4' && tab.id !== 'tab5' && tab.id !== 'tab6' && tab.id !== 'tab7')
                     .map(tab => (
                         <div key={tab.id} style={{ display: activeTab === tab.id ? 'block' : 'none' }}>
                             {tab.label} Content

@@ -7,10 +7,11 @@ import 'bootstrap/dist/css/bootstrap.min.css';
 
 export default function MainDashboard({ refreshTrigger }) {
 
-    const [chartData1, setChartData1] = useState([]);
-    const [chartData2, setChartData2] = useState([]);
-    const [chartData3, setChartData3] = useState([]);
-    const [chartData4, setChartData4] = useState([]);
+    const [chartDataCBForStaff, setChartDataCBForStaff] = useState([]);
+    const [chartDataVillagers, setChartDataVillagers] = useState([]);
+    const [chartDataForm1A1, setChartDataForm1A1] = useState([]);
+    const [chartDataForm1A1_2, setChartDataForm1A1_2] = useState([]);
+    const [chartDataForm1A2, setchartDataForm1A2] = useState([]);
     const [loading, setLoading] = useState(false);
 
     /**
@@ -43,15 +44,15 @@ export default function MainDashboard({ refreshTrigger }) {
     // Formatter function for CB Villagers data
     const formatVillagersChartData = (d) => [
         { name: 'Total Farmers', value: d.Total_Farmers_Participants, fill: '#1f257d' },
+        { name: 'Ethnic Farmers', value: d.Ethnic_Farmer_Participants, fill: '#1f257d' },
         { name: 'Women Farmers', value: d.Women_Farmers_Participants, fill: '#1f257d' },
         { name: 'Men Farmers', value: d.Men_Farmer_Participants, fill: '#1f257d' },
         { name: 'Youth Farmers', value: d.Youth_Farmer_Participants, fill: '#1f257d' },
-        { name: 'Ethnic Farmers', value: d.Ethnic_Farmer_Participants, fill: '#1f257d' },
         { name: 'PWD', value: d.PWD_Participants, fill: '#1f257d' },
-        {name: 'APG Member', value: d.APG_Member_Trained, fill: '#1f257d'}
+        { name: 'APG Member', value: d.APG_Member_Trained, fill: '#1f257d' }
     ];
 
-        // Formatter function for CB Villagers data
+    // Formatter function for Form 1A1 data
     const formatForm1A1ChartData1 = (d) => [
         { name: '# of VNC', value: d.Total_VNC, fill: '#ff6b00' },
         { name: '# New construction', value: d.New_Construction, fill: '#ff6b00' },
@@ -59,24 +60,34 @@ export default function MainDashboard({ refreshTrigger }) {
         { name: '# of VF', value: d.VF_Total, fill: '#ff6b00' },
         { name: '# of female VF', value: d.VF_Female, fill: '#ff6b00' }
     ];
+    // Formatter function for Form 1A1 data
     const formatForm1A1ChartData2 = (d) => [
         { name: 'Total participants', value: d.Total_Participants, fill: '#5e4046' },
+        { name: 'Ethnic participants', value: d.Ethnic_Participants, fill: '#5e4046' },
         { name: 'Women participants', value: d.Women_Participants, fill: '#5e4046' },
         { name: 'Youth participants', value: d.Youth_Participants, fill: '#5e4046' },
-        { name: 'Ethnic participants', value: d.Ethnic_Participants, fill: '#5e4046' },
         { name: '# of PW participants', value: d.Pregnant_Women, fill: '#5e4046' },
         { name: '# of BW participants', value: d.Breastfeeding_Women, fill: '#5e4046' },
-        {name: '# of PBW participants', value: d.PBW_Women, fill: '#5e4046'}
+        { name: '# of PBW participants', value: d.PBW_Women, fill: '#5e4046' },
+    ];
+    // Formatter function for Form 1A2 data
+    const formatForm1A2ChartData1 = (d) => [
+        { name: '# of Grant recipient', value: d.Grant_Recipients, fill: '#082d0f' },
+        { name: '# of youth recipients', value: d.Youth_Grant_Recipients, fill: '#082d0f' },
+        { name: '#PW', value: d.Pregnant_Women, fill: '#082d0f' },
+        { name: '#BW', value: d.Breastfeeding_Women, fill: '#082d0f' },
+        { name: '#PBW', value: d.Pregnant_Breastfeeding_Women, fill: '#082d0f' } 
     ];
 
     // Fetch all charts
     const fetchAllCharts = useCallback(async () => {
         setLoading(true);
         await Promise.all([
-            loadChartData('http://localhost:3001/api/cbForStaff/getDashboardData', setChartData1, formatStaffChartData),
-            loadChartData('http://localhost:3001/api/cbForVillagers/getDashboardData', setChartData2, formatVillagersChartData),
-            loadChartData('http://localhost:3001/api/form1A1/getDashboardData', setChartData3, formatForm1A1ChartData1),
-            loadChartData('http://localhost:3001/api/form1A1/getDashboardData', setChartData4, formatForm1A1ChartData2)
+            loadChartData('http://localhost:3001/api/cbForStaff/getDashboardData', setChartDataCBForStaff, formatStaffChartData),
+            loadChartData('http://localhost:3001/api/cbForVillagers/getDashboardData', setChartDataVillagers, formatVillagersChartData),
+            loadChartData('http://localhost:3001/api/form1A1/getDashboardData', setChartDataForm1A1, formatForm1A1ChartData1),
+            loadChartData('http://localhost:3001/api/form1A1/getDashboardData', setChartDataForm1A1_2, formatForm1A1ChartData2),
+            loadChartData('http://localhost:3001/api/form1A2/getDashboardData', setchartDataForm1A2, formatForm1A2ChartData1)
         ]);
         setLoading(false);
     }, []);
@@ -86,15 +97,16 @@ export default function MainDashboard({ refreshTrigger }) {
     }, [refreshTrigger, fetchAllCharts]);
 
     const charts = [
-        { title: '(CB1) Staff Capacity Building Dashboard', data: chartData1 },
-        { title: '(CB2) Farmers / Villagers Capacity Building', data: chartData2 },
-        { title: '(FNSs) Farmer Nutrition School / VNC Overview', data: chartData3 },
-        { title: '(FNSs) Farmer Nutrition School / Participants', data: chartData4 },
+        { title: '(CB1) Staff Capacity Building Dashboard', data: chartDataCBForStaff },
+        { title: '(CB2) Farmers / Villagers Capacity Building', data: chartDataVillagers },
+        { title: '(FNSs) Farmer Nutrition School / VNC Overview', data: chartDataForm1A1 },
+        { title: '(FNSs) Farmer Nutrition School / Participants', data: chartDataForm1A1_2 },
+        { title: '(1A.2) IHHG', data: chartDataForm1A2 },
         // Add more charts if needed
     ];
 
 
-// Customs tick for chart to make the label more space as Rechert by default not given
+    // Customs tick for chart to make the label more space as Rechert by default not given
     const CustomYAxisTick = ({ x, y, payload }) => {
         return (
             <text

@@ -176,4 +176,54 @@ function getForm1A1Statics() {
     })
 }
 
-export {getCBForStaffStatics, getCBForVillagersStatics, getForm1A1Statics};
+//Get Form 1A2 Statistics
+function getForm1A2Statics() {
+    return new Promise((resolve, reject) => {
+        const db = getDBConnection(); // Get the database connection
+        const query = `
+                        SELECT
+                            COUNT(DISTINCT CASE 
+                                WHEN Receive_Grant = 'g_yes' 
+                                THEN HHId || '|' || NameAndSurname 
+                            END) AS Grant_Recipients,
+
+                            COUNT(DISTINCT CASE 
+                                WHEN Gender = 'Female' AND PWBWStatus = 'pw' 
+                                THEN HHId || '|' || NameAndSurname 
+                            END) AS Pregnant_Women,
+
+                            COUNT(DISTINCT CASE 
+                                WHEN Gender = 'Female' AND PWBWStatus = 'bw' 
+                                THEN HHId || '|' || NameAndSurname 
+                            END) AS Breastfeeding_Women,
+
+                            COUNT(DISTINCT CASE 
+                                WHEN Gender = 'Female' AND PWBWStatus = 'pw_1' 
+                                THEN HHId || '|' || NameAndSurname 
+                            END) AS Pregnant_Breastfeeding_Women,
+
+                            COUNT(DISTINCT CASE 
+                                WHEN Receive_Grant = 'g_yes' AND Age BETWEEN 15 AND 35 
+                                THEN HHId || '|' || NameAndSurname 
+                            END) AS Youth_Grant_Recipients
+
+                        FROM tb_Form_1A2_Participant;
+        `;
+
+
+        db.get(query, [], (err, row) => {
+            db.close();
+            if (err) {
+                reject(err);
+            } else {
+                resolve(row);
+            }
+        });
+
+    })
+}
+
+
+
+
+export { getCBForStaffStatics, getCBForVillagersStatics, getForm1A1Statics, getForm1A2Statics };
