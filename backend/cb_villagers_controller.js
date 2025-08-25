@@ -125,7 +125,8 @@ async function downloadCBVillagersSubmissionDataFromKoboToolbox() {
         console.log("✅ CB Villagers submission data downloaded and saved to the database successfully.");
 
     } catch (err) {
-        console.error("❌ Error downloading data:", err.message);
+        console.error("❌ Error downloading CB for Villagers data:", err.message);
+        throw err; // ✅ rethrow so Express knows it failed
     } finally {
         if (db) await db.close();
     }

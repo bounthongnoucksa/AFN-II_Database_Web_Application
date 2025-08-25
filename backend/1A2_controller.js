@@ -114,6 +114,7 @@ async function downloadForm1A2SubmissionDataFromKoboToolbox() {
 
     } catch (err) {
         console.error("❌ Error downloading Form 1A2 data:", err.message);
+        throw err; // ✅ rethrow so Express knows it failed
     } finally {
         if (db) await db.close();
     }

@@ -8,9 +8,12 @@ import CBForStaff from './cb_for_staff'; // Import the CBForStaff component
 import CBForVillagers from './cb_for_villagers'; //Import the CBForVillagers component
 import Form1A1 from './1A1'; //Import the form 1A1 component
 import Form1A2 from './1A2' //Import the form 1A2 component
+import Form1A3a from './1A3a' //Import the form 1A3a component
+import Form1A3b from './1A3b'; //Import the form 1A3a component
+import Form1A4 from './1A4'; //Import the form 1A4 component
 
 export default function MainPortalForm() {
-    const [activeTab, setActiveTab] = useState('tab1');
+    const [activeTab, setActiveTab] = useState('tab3');
     //const [refreshTrigger, setRefreshTrigger] = useState(0);
 
     const switchTab = (tabId) => {
@@ -132,7 +135,19 @@ export default function MainPortalForm() {
 
                 <div style={{ display: activeTab === 'tab7' ? 'block' : 'none' }}>
                     <Form1A2 />
-                </div>  
+                </div> 
+                
+                <div style={{ display: activeTab === 'tab8' ? 'block' : 'none' }}>
+                    <Form1A3a />
+                </div> 
+
+                <div style={{ display: activeTab === 'tab9' ? 'block' : 'none' }}>
+                    <Form1A3b />
+                </div> 
+
+                <div style={{ display: activeTab === 'tab10' ? 'block' : 'none' }}>
+                    <Form1A4 />
+                </div>
 
                 
 
@@ -141,7 +156,7 @@ export default function MainPortalForm() {
 
                 {/* Other tabs - also mounted but hidden */}
                 {tabs
-                    .filter(tab => tab.id !== 'tab3' && tab.id !== 'tab4' && tab.id !== 'tab5' && tab.id !== 'tab6' && tab.id !== 'tab7')
+                    .filter(tab => tab.id !== 'tab3' && tab.id !== 'tab4' && tab.id !== 'tab5' && tab.id !== 'tab6' && tab.id !== 'tab7' && tab.id !== 'tab8' && tab.id !== 'tab9' && tab.id !== 'tab10')
                     .map(tab => (
                         <div key={tab.id} style={{ display: activeTab === tab.id ? 'block' : 'none' }}>
                             {tab.label} Content
