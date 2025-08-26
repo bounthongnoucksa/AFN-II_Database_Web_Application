@@ -233,8 +233,8 @@ db.serialize(() => {
 
         `);
 
-//Form 1A3b submission table
-        db.run(`
+    //Form 1A3b submission table
+    db.run(`
             CREATE TABLE IF NOT EXISTS tb_Form_1A3b_Submission (
                 Id INTEGER PRIMARY KEY,
                 Uuid TEXT,
@@ -263,8 +263,8 @@ db.serialize(() => {
             );
             `);
 
-            //Form 1A3b particiapnt table
-        db.run(`
+    //Form 1A3b particiapnt table
+    db.run(`
             CREATE TABLE IF NOT EXISTS tb_Form_1A3b_Participant (
                 Id INTEGER PRIMARY KEY AUTOINCREMENT,
                 SubmissionId INTEGER,
@@ -281,9 +281,9 @@ db.serialize(() => {
             );
             `);
 
-            
-            //Form 1A4 submission table
-        db.run(`
+
+    //Form 1A4 submission table
+    db.run(`
                 CREATE TABLE IF NOT EXISTS tb_Form_1A4_Submission (
                     Id INTEGER PRIMARY KEY,
                     Uuid TEXT,
@@ -312,8 +312,8 @@ db.serialize(() => {
                 );
             `);
 
-            //Form 1A4 particiapnt table
-        db.run(`
+    //Form 1A4 particiapnt table
+    db.run(`
                 CREATE TABLE IF NOT EXISTS tb_Form_1A4_Participant (
                     Id INTEGER PRIMARY KEY AUTOINCREMENT,
                     SubmissionId INTEGER,
@@ -330,6 +330,150 @@ db.serialize(() => {
                 );
             `);
 
+    //Form 1A5a submission table
+    db.run(`
+                CREATE TABLE IF NOT EXISTS "tb_Form_1A5a_Submission" (
+                    Id INTEGER PRIMARY KEY AUTOINCREMENT,
+                    Uuid TEXT,
+                    Start TEXT,
+                    End TEXT,
+                    Reporting_period TEXT,
+                    Province TEXT,
+                    District TEXT,
+                    Village TEXT,
+                    SubActivity TEXT,
+                    Conduct_date1 TEXT,
+                    Conduct_date2 TEXT,
+                    Approach TEXT,
+                    Conducted_by TEXT,
+                    IFAD INTEGER,
+                    MAF INTEGER,
+                    WFP INTEGER,
+                    GoL INTEGER,
+                    Ben INTEGER,
+                    OtherFund INTEGER,
+                    Version TEXT,
+                    Submission_time TEXT
+                );
+            `);
+
+    //Form 1A5a particiapnt table
+    db.run(`
+                CREATE TABLE IF NOT EXISTS "tb_Form_1A5a_Participant" (
+                    Id INTEGER PRIMARY KEY AUTOINCREMENT,
+                    SubmissionId INTEGER,
+                    HaveHH_id TEXT,
+                    HHId TEXT,
+                    NameAndSurname TEXT,
+                    Age INTEGER,
+                    Gender TEXT,
+                    Ethnicity TEXT,
+                    Poverty_level TEXT,
+                    PWD_status TEXT,
+                    FOREIGN KEY(SubmissionId) REFERENCES tb_Form_1A5a_Submission(Id)
+                );
+            `);
+
+    //Form 1A5b submission table
+    db.run(`
+                CREATE TABLE IF NOT EXISTS "tb_Form_1A5b_Submission" (
+                    Id INTEGER PRIMARY KEY,
+                    Uuid TEXT,
+                    Start TEXT,
+                    End TEXT,
+                    Reporting_period TEXT,
+                    Province TEXT,
+                    District TEXT,
+                    Village TEXT,
+                    SubActivity TEXT,
+                    Conduct_date1 TEXT,
+                    Conduct_date2 TEXT,
+                    SchoolName TEXT,
+                    Conducted_by TEXT,
+                    MaleStudent INTEGER,
+                    FemaleStudent INTEGER,
+                    CropType TEXT,
+                    CropQuantity INTEGER,
+                    LivestockType TEXT,
+                    LivestockQuantity INTEGER,
+                    IFAD INTEGER,
+                    MAF INTEGER,
+                    WFP INTEGER,
+                    GoL INTEGER,
+                    Ben INTEGER,
+                    OtherFund INTEGER,
+                    Version TEXT,
+                    Submission_time TEXT
+                );
+            `);
+
+    //Form 1A5a particiapnt table
+    db.run(`
+                CREATE TABLE IF NOT EXISTS "tb_Form_1A5b_Participant" (
+                    Id INTEGER PRIMARY KEY AUTOINCREMENT,
+                    SubmissionId INTEGER,
+                    NameAndSurname TEXT,
+                    FOREIGN KEY(SubmissionId) REFERENCES tb_Form_1A5b_Submission(Id)
+                );
+            `);
+
+    //Form 1BAct6 submission table
+    db.run(`
+                CREATE TABLE IF NOT EXISTS tb_Form_1BAct6_Submission (
+                    Id INTEGER PRIMARY KEY AUTOINCREMENT,
+                    Uuid TEXT,
+                    Start TEXT,
+                    End TEXT,
+                    Reporting_period TEXT,
+                    Province TEXT,
+                    District TEXT,
+                    Village TEXT,
+                    SubActivity TEXT,
+                    Conduct_Start TEXT,
+                    Conduct_End TEXT,
+                    CBOEstablish TEXT,
+                    Conducted_by TEXT,
+                    CropType TEXT,
+                    CropQuantity INTEGER,
+                    LivestockType TEXT,
+                    LivestockQuantity INTEGER,
+                    ForageQuantity INTEGER,
+                    ACRegistered TEXT,
+                    GrantReceived TEXT,
+                    IFAD INTEGER,
+                    MAF INTEGER,
+                    WFP INTEGER,
+                    GoL INTEGER,
+                    Ben INTEGER,
+                    OtherFund INTEGER,
+                    Version TEXT,
+                    Submission_time TEXT
+                );
+            `);
+
+    //Form 1BAct6 particiapnt table
+    db.run(`
+                CREATE TABLE IF NOT EXISTS tb_Form_1BAct6_Participant (
+                    Id INTEGER PRIMARY KEY AUTOINCREMENT,
+                    SubmissionId INTEGER,
+                    HaveHH_id TEXT,
+                    HHId TEXT,
+                    NameAndSurname TEXT,
+                    Age INTEGER,
+                    Gender TEXT,
+                    Ethnicity TEXT,
+                    Poverty_level TEXT,
+                    PWD_status TEXT,
+                    MSME TEXT,
+                    FOREIGN KEY (SubmissionId) REFERENCES tb_Form_1BAct6_Submission(Id)
+                );
+
+            `);
+
+
+
+
+            
 });
 
 export default db;

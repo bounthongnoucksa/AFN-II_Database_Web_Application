@@ -11,6 +11,10 @@ import Form1A2 from './1A2' //Import the form 1A2 component
 import Form1A3a from './1A3a' //Import the form 1A3a component
 import Form1A3b from './1A3b'; //Import the form 1A3a component
 import Form1A4 from './1A4'; //Import the form 1A4 component
+import Form1A5a from './1A5a'; //Import the form 1A5a component
+import Form1A5b from './1A5b';
+import Form1BAct6 from './1BAct6';
+import Form1BAct7 from './1BAct7';
 
 export default function MainPortalForm() {
     const [activeTab, setActiveTab] = useState('tab3');
@@ -51,7 +55,7 @@ export default function MainPortalForm() {
     });
 
     const tabs = [
-        
+
         { id: 'tab1', label: 'Outreach Cal' },
         { id: 'tab2', label: 'Logframe Update' },
         { id: 'tab3', label: 'Main Dashboard' },
@@ -70,8 +74,8 @@ export default function MainPortalForm() {
         { id: 'tab16', label: '2Act1' },
         { id: 'tab17', label: '2Act2' },
         { id: 'tab18', label: '2Act3' },
-        { id: 'tab19', label: '31a' },
-        { id: 'tab20', label: '31b' },
+        { id: 'tab19', label: '3Act1a' },
+        { id: 'tab20', label: '3Act1b' },
         { id: 'tab21', label: '3Act2' },
     ];
 
@@ -114,8 +118,6 @@ export default function MainPortalForm() {
 
             <div className="p-3 rounded shadow m-3" style={{ backgroundColor: '#ffffff', overflowX: 'auto' }}>
 
-
-
                 {/* Tab 4 content - stays mounted */}
                 <div style={{ display: activeTab === 'tab3' ? 'block' : 'none' }}>
                     <MainDashboard />
@@ -123,11 +125,11 @@ export default function MainPortalForm() {
 
                 <div style={{ display: activeTab === 'tab4' ? 'block' : 'none' }}>
                     <CBForStaff />
-                </div> 
+                </div>
 
                 <div style={{ display: activeTab === 'tab5' ? 'block' : 'none' }}>
                     <CBForVillagers />
-                </div> 
+                </div>
 
                 <div style={{ display: activeTab === 'tab6' ? 'block' : 'none' }}>
                     <Form1A1 />
@@ -135,28 +137,48 @@ export default function MainPortalForm() {
 
                 <div style={{ display: activeTab === 'tab7' ? 'block' : 'none' }}>
                     <Form1A2 />
-                </div> 
-                
+                </div>
+
                 <div style={{ display: activeTab === 'tab8' ? 'block' : 'none' }}>
                     <Form1A3a />
-                </div> 
+                </div>
 
                 <div style={{ display: activeTab === 'tab9' ? 'block' : 'none' }}>
                     <Form1A3b />
-                </div> 
+                </div>
 
                 <div style={{ display: activeTab === 'tab10' ? 'block' : 'none' }}>
                     <Form1A4 />
                 </div>
 
-                
+                <div style={{ display: activeTab === 'tab11' ? 'block' : 'none' }}>
+                    <Form1A5a />
+                </div>
+
+                <div style={{ display: activeTab === 'tab12' ? 'block' : 'none' }}>
+                    <Form1A5b />
+                </div>
+
+                <div style={{ display: activeTab === 'tab13' ? 'block' : 'none' }}>
+                    <Form1BAct6 />
+                </div>
+
+                <div style={{ display: activeTab === 'tab14' ? 'block' : 'none' }}>
+                    <Form1BAct7 />
+                </div>
+
+
+
+
 
 
 
 
                 {/* Other tabs - also mounted but hidden */}
                 {tabs
-                    .filter(tab => tab.id !== 'tab3' && tab.id !== 'tab4' && tab.id !== 'tab5' && tab.id !== 'tab6' && tab.id !== 'tab7' && tab.id !== 'tab8' && tab.id !== 'tab9' && tab.id !== 'tab10')
+                    .filter(tab => tab.id !== 'tab3' && tab.id !== 'tab4' && tab.id !== 'tab5'
+                        && tab.id !== 'tab6' && tab.id !== 'tab7' && tab.id !== 'tab8' && tab.id !== 'tab9'
+                        && tab.id !== 'tab10' && tab.id !== 'tab11' && tab.id !== 'tab12' && tab.id !== 'tab13' && tab.id !== 'tab14')
                     .map(tab => (
                         <div key={tab.id} style={{ display: activeTab === tab.id ? 'block' : 'none' }}>
                             {tab.label} Content

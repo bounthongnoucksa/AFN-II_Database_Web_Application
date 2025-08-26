@@ -1,4 +1,4 @@
-// frontend/src/components/1A4.js
+// frontend/src/components/1BAct7.js
 
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
@@ -8,7 +8,7 @@ import '../App.css'; // Import custom CSS for sticky header
 
 
 
-export default function Form1A4({ refreshTrigger }) {
+export default function Form1BAct7({ refreshTrigger }) {
     const [data, setData] = useState([]);
     const [language, setLanguage] = useState('LA'); // default language
     const [loading, setLoading] = useState(false);
@@ -35,14 +35,14 @@ export default function Form1A4({ refreshTrigger }) {
     const fetchData = async (lang) => {
         setLoading(true);
         try {
-            const res = await axios.get(`http://localhost:3001/api/form1A4/getParticipantData?lang=${lang}`);
+            const res = await axios.get(`http://localhost:3001/api/form1BAct6/getParticipantData?lang=${lang}`);
             if (res.data.success) {
                 setData(res.data.data);
             } else {
                 setData([]);
             }
         } catch (error) {
-            console.error('Error fetching form 1A4 data:', error);
+            console.error('Error fetching form 1BAct6 data:', error);
             setData([]);
         }
         setLoading(false);
@@ -53,7 +53,7 @@ export default function Form1A4({ refreshTrigger }) {
     // Fetch modal data for the selected submission
     const fetchModalData = async () => {
         try {
-            const res = await axios.get(`http://localhost:3001/api/form1A4/getParticipantDataBySID?submissionId=${submissionID}&lang=${language}`);
+            const res = await axios.get(`http://localhost:3001/api/form1BAct6/getParticipantDataBySID?submissionId=${submissionID}&lang=${language}`);
             if (res.data.success) {
                 const modalRows = res.data.data;
                 setModalData(modalRows);
@@ -100,7 +100,7 @@ export default function Form1A4({ refreshTrigger }) {
     //     //     if (window.confirm(`Are you sure you want to delete submission ID: ${submissionID}? This will remove all associated data.`)) {
     //     //         try {
     //     //             setLoadingModalMessage(true);
-    //     //             const response = await axios.delete(`http://localhost:3001/api/form1A4/deleteSubmission?submissionId=${submissionID}`);
+    //     //             const response = await axios.delete(`http://localhost:3001/api/form1A5b/deleteSubmission?submissionId=${submissionID}`);
     //     //             if (response.data.success) {
     //     //                 setModalMessage('✅ Submission deleted successfully');
     //     //                 setShowSuccessModalMessage(true);
@@ -133,7 +133,7 @@ export default function Form1A4({ refreshTrigger }) {
         }
 
         try {
-            const response = await axios.get(`http://localhost:3001/api/form1A4/getUUID?submissionId=${submissionID}`);
+            const response = await axios.get(`http://localhost:3001/api/form1BAct6/getUUID?submissionId=${submissionID}`);
             if (response.data.success) {
                 const uuid = response.data.uuid;
                 setSelectedUUID(uuid);
@@ -181,29 +181,29 @@ export default function Form1A4({ refreshTrigger }) {
     //cb for staff export to Excel
     const handleExcelExport = async () => {
         try {
-            const response = await axios.get(`http://localhost:3001/api/form1A4/exportToExcel?lang=${language}`, {
+            const response = await axios.get(`http://localhost:3001/api/form1BAct6/exportToExcel?lang=${language}`, {
                 responseType: 'blob',
             });
 
             const url = window.URL.createObjectURL(new Blob([response.data]));
             const link = document.createElement('a');
             link.href = url;
-            link.setAttribute('download', 'Form_1A4_Exported_Report.xlsx');
+            link.setAttribute('download', 'Form_1BAct6_Exported_Report.xlsx');
             document.body.appendChild(link);
             link.click();
             link.remove();
         } catch (error) {
             console.error('Export failed', error);
-            alert('Form 1A4 Export to Export failed');
+            alert('Form 1BAct6 Export to Export failed');
         }
     };
 
 
     //Download data from KoboToolbox to local database
-    const handleDownloadForm1A4DataFromKobo = async () => {
+    const handleDownloadForm1BAct6bDataFromKobo = async () => {
         try {
             setLoadingModalMessage(true); //for modal loading pop state
-            const response = await axios.get('http://localhost:3001/api/form1A4/downloadFromKoboToolbox');
+            const response = await axios.get('http://localhost:3001/api/form1BAct6/downloadFromKoboToolbox');
             if (response.data.success) {
                 //alert('Data downloaded successfully from KoboToolbox');
                 setModalMessage('✅ Operation completed successfully!');
@@ -213,13 +213,13 @@ export default function Form1A4({ refreshTrigger }) {
 
             } else {
                 //alert('Failed to download data from KoboToolbox');
-                setModalMessage('❌ Failed to download Form 1A4 data from KoboToolbox');
+                setModalMessage('❌ Failed to download Form 1BAct6 data from KoboToolbox');
                 setShowSuccessModalMessage(true); // Show the modal loading completed with the message
             }
         } catch (error) {
-            console.error('Error downloading Form 1A4 data from KoboToolbox:', error);
-            //alert('Error downloading Form 1A4 data from KoboToolbox');
-            setModalMessage('❌ Error downloading Form 1A4 data from KoboToolbox');
+            console.error('Error downloading Form 1BAct6 data from KoboToolbox:', error);
+            //alert('Error downloading Form 1BAct6 data from KoboToolbox');
+            setModalMessage('❌ Error downloading Form 1BAct6 data from KoboToolbox');
             setShowSuccessModalMessage(true); // Show the modal loading completed with the message
         } finally {
             setLoadingModalMessage(false); //for modal loading pop state
@@ -238,7 +238,7 @@ export default function Form1A4({ refreshTrigger }) {
 
         try {
             // Step 1: get the new submissionId
-            const response = await axios.get(`http://localhost:3001/api/form1A4/getNewSubmissionID?Uuid=${uuid}`);
+            const response = await axios.get(`http://localhost:3001/api/form1BAct6/getNewSubmissionID?Uuid=${uuid}`);
 
 
             if (response.data.success) {
@@ -248,7 +248,7 @@ export default function Form1A4({ refreshTrigger }) {
 
                 // Step 2: fetch modal data for this new submissionId
                 const res = await axios.get(
-                    `http://localhost:3001/api/form1A4/getParticipantDataBySID?submissionId=${newSubmissionId}&lang=${language}`
+                    `http://localhost:3001/api/form1BAct6/getParticipantDataBySID?submissionId=${newSubmissionId}&lang=${language}`
                 );
 
                 if (res.data.success) {
@@ -306,7 +306,7 @@ export default function Form1A4({ refreshTrigger }) {
     //     //     try {
     //     //         setLoadingModalMessage(true);
 
-    //     //         const response = await axios.post('http://localhost:3001/api/form1A4/deleteParticipant', { participantId, submissionId });
+    //     //         const response = await axios.post('http://localhost:3001/api/form1A5b/deleteParticipant', { participantId, submissionId });
 
     //     //         if (response.data.success) {
     //     //             setModalMessage('✅ Participant deleted successfully');
@@ -368,7 +368,7 @@ export default function Form1A4({ refreshTrigger }) {
     //     //         //for modal loading pop state
     //     //         setLoadingModalMessage(true); 
 
-    //     //         const response = await axios.post('http://localhost:3001/api/form1A4/updateParticipantAndSubmissionData', selectedRow); // Send the edited data object
+    //     //         const response = await axios.post('http://localhost:3001/api/form1A5b/updateParticipantAndSubmissionData', selectedRow); // Send the edited data object
 
     //     //         if (response.data.success) {
     //     //             //alert('✅ Record updated successfully');
@@ -428,7 +428,8 @@ export default function Form1A4({ refreshTrigger }) {
             {/* Header */}
             <div className="d-flex align-items-center justify-content-between mb-2">
                 <div className="text-center w-100">
-                    <div className="fw-bold fs-5">1A.4: ການບໍລິຫານຈັດການແຫຼ່ງອາຫານຂອງທ້ອງຖິ່ນ, ແຫຼ່ງອາຫານຈາກປ່າ ແລະ ສັດນ້ຳ (Local food sources and wild food management)</div>
+                    <div className="fw-bold fs-5">1B-Act 7: ປັບປຸງການບໍລິການ ໃຫ້ຄຳປຶກສາ/ການສົ່ງເສີມກະສິກຳ ຢູ່ໃນທ້ອງຖິ່ນ</div>
+                    <div>Agriculture/Rural Advisory Service improved</div>
                 </div>
 
                 {/* Language switchig button between LA and EN */}
@@ -442,7 +443,7 @@ export default function Form1A4({ refreshTrigger }) {
             <div className="d-flex justify-content-between mb-2">
                 <div>
                     <button className='btn btn-primary btn-sm me-2 ' style={{ width: '120px' }} onClick={() => fetchData(language)} title='To reload data from application database'>Refresh</button>
-                    <button className='btn btn-primary btn-sm me-2' style={{ width: '120px' }} onClick={handleDownloadForm1A4DataFromKobo} title='To cleanup application database and reload new data from KoboToolbox online database'>Load new data</button>
+                    <button className='btn btn-primary btn-sm me-2' style={{ width: '120px' }} onClick={handleDownloadForm1BAct6bDataFromKobo} title='To cleanup application database and reload new data from KoboToolbox online database'>Load new data</button>
                     <button className='btn btn-primary btn-sm' style={{ width: '120px' }} onClick={handleExcelExport} title='To export the data to Excel template file' >Export</button>
                 </div>
             </div>
@@ -507,7 +508,7 @@ export default function Form1A4({ refreshTrigger }) {
                                 >
                                     {Object.entries(row).map(([col, value], colIdx) => (
                                         <td key={col}>
-                                            {(colIdx >= 22 && colIdx <= 27 && !isNaN(value))
+                                            {(colIdx >= 26 && colIdx <= 31 && !isNaN(value))
                                                 ? Number(value).toLocaleString()
                                                 : value}
                                         </td>
@@ -561,18 +562,18 @@ export default function Form1A4({ refreshTrigger }) {
                                         {Object.entries(selectedRow).map(([key, value], idx) => {
                                             let colClass = 'col-lg-2'; // default column size
 
-                                            if ((idx >= 0 && idx <= 7) || idx === 10 || idx === 15 || (idx >= 17 && idx <= 28)) {
+                                            if ((idx >= 0 && idx <= 7) || idx === 10 || (idx >= 12 && idx <= 26)) {
                                                 colClass = 'col-lg-1';
                                             } //else if ( idx === 13) {
                                             //colClass = 'col-lg-3';
                                             //}
 
-                                            const needsNewLine = idx === 29;
+                                            const needsNewLine = (idx === 20) || (idx ===27);
 
                                             const isDateField = idx >= 3 && idx <= 5;
                                             //const isEditableText = (idx >= 11 && idx <= 7) || (idx >= 13 && idx <= 18);
-                                            const isEditableText = (idx === 14);
-                                            const isNumericField = (idx >= 23 && idx <= 28) || (idx === 12) || (idx === 17);
+                                            const isEditableText = (idx === 9) || (idx === 20) || (idx === 22);
+                                            const isNumericField = (idx >= 27 && idx <= 32) || (idx === 14) || (idx === 21) || (idx >= 23 && idx <= 24);
 
                                             return (
                                                 <React.Fragment key={idx}>
@@ -664,7 +665,7 @@ export default function Form1A4({ refreshTrigger }) {
                                                 >
                                                     {Object.entries(row).map(([col, value], colIdx) => (
                                                         <td key={col}>
-                                                            {(colIdx >= 19 && colIdx <= 24 && !isNaN(value))
+                                                            {(colIdx >= 27 && colIdx <= 32 && !isNaN(value))
                                                                 ? Number(value).toLocaleString()
                                                                 : value}
                                                         </td>
