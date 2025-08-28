@@ -134,6 +134,61 @@ import {
     deleteOnlyForm1BAct6SubmissionInKobo
 } from './1BAct6_controller.js'
 
+//Import Form 1BAct7 functions
+import { 
+    downloadForm1BAct7SubmissionDataFromKoboToolbox,
+    getForm1BAct7ParticipantData,
+    getForm1BAct7ParticipantDataBySID,
+    getForm1BAct7SubmissionUUIDBySubmissionId,
+    getForm1BAct7NewSubmissionIdByUUID,
+    deleteOnlyForm1BAct7ParticipantInDB,
+    deleteOnlyForm1BAct7SubmissionInKobo
+} from './1BAct7_controller.js';
+
+//Import Form 1BAct8 functions
+import { 
+    downloadForm1BAct8SubmissionDataFromKoboToolbox,
+    getForm1BAct8ParticipantData,
+    getForm1BAct8ParticipantDataBySID,
+    getForm1BAct8SubmissionUUIDBySubmissionId,
+    getForm1BAct8NewSubmissionIdByUUID,
+    deleteOnlyForm1BAct8ParticipantInDB,
+    deleteOnlyForm1BAct8SubmissionInKobo
+ } from './1BAct8_controller.js';
+
+//Import Form 2Act1 functions
+ import { 
+    downloadForm2Act1SubmissionDataFromKoboToolbox,
+    getForm2Act1ParticipantData,
+    getForm2Act1ParticipantDataBySID,
+    getForm2Act1SubmissionUUIDBySubmissionId,
+    getForm2Act1NewSubmissionIdByUUID,
+    deleteOnlyForm2Act1ParticipantInDB,
+    deleteOnlyForm2Act1SubmissionInKobo
+ } from './2Act1_controller.js';
+
+//Import Form 2Act2 functions
+import { 
+    downloadForm2Act2SubmissionDataFromKoboToolbox,
+    getForm2Act2ParticipantData,
+    getForm2Act2ParticipantDataBySID,
+    getForm2Act2SubmissionUUIDBySubmissionId,
+    getForm2Act2NewSubmissionIdByUUID,
+    deleteOnlyForm2Act2ParticipantInDB,
+    deleteOnlyForm2Act2SubmissionInKobo
+} from './2Act2_controller.js';
+
+//Import Form 2Act3 functions
+import { 
+    downloadForm2Act3SubmissionDataFromKoboToolbox,
+    getForm2Act3ParticipantData,
+    getForm2Act3ParticipantDataBySID,
+    getForm2Act3SubmissionUUIDBySubmissionId,
+    getForm2Act3NewSubmissionIdByUUID,
+    deleteOnlyForm2Act3ParticipantInDB,
+    deleteOnlyForm2Act3SubmissionInKobo
+ } from './2Act3_controller.js';
+
 
 //##########################################################################
 const __filename = fileURLToPath(import.meta.url);
@@ -2831,3 +2886,1326 @@ app.get('/api/form1BAct6/getNewSubmissionID', async (req, res) => {
 
 
 // //###################### End Function to handle Form 1BAct6 ################################
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+//##################### Function to handle Form 1BAct7 ####################################
+app.get('/api/form1BAct7/downloadFromKoboToolbox', async (req, res) => {
+    try {
+        //Call the function to download data from KoboToolbox
+        await downloadForm1BAct7SubmissionDataFromKoboToolbox();
+        res.json({ success: true, message: 'Data downloaded successfully from KoboToolbox' });
+    } catch (error) {
+        console.error('Error downloading data from KoboToolbox', error);
+        res.status(500).json({ success: false, message: 'Failed to download data from KoboToolbox', error: error.message });
+    }
+});
+
+
+app.get('/api/form1BAct7/getParticipantData', async (req, res) => {
+    try {
+        // Optional: language query parameter (default to LA)
+        const language = req.query.lang || 'LA';
+        if (!language) {
+            return res.status(400).json({ success: false, message: 'Language is required' });
+        }
+
+        const data = await getForm1BAct7ParticipantData(language);
+        res.json({ success: true, data });
+    } catch (error) {
+        console.error('Error fetching Form 1BAct7 data:', error);
+        res.status(500).json({ success: false, message: 'Failed to fetch Form 1BAct7 data', error: error.message });
+    }
+});
+
+
+// API endpoint to get Form 1BAct7 data by Submission ID
+app.get('/api/form1BAct7/getParticipantDataBySID', async (req, res) => {
+    try {
+        // Get the submissionId from query parameters
+        const language = req.query.lang || 'LA';
+        const submissionId = req.query.submissionId;
+
+        if (!submissionId) {
+            return res.status(400).json({ success: false, message: 'Submission ID is required' });
+        }
+        if (!language) {
+            return res.status(400).json({ success: false, message: 'Language is required' });
+        }
+
+        const data = await getForm1BAct7ParticipantDataBySID(submissionId, language);
+        res.json({ success: true, data });
+    } catch (error) {
+        console.error('Error fetching Form 1BAct7 data by Submission ID:', error);
+        res.status(500).json({ success: false, message: 'Failed to fetch Form 1BAct7 data by Submission ID', error: error.message });
+    }
+});
+
+
+
+// Excel Export Endpoint
+app.get('/api/form1BAct7/exportToExcel', async (req, res) => {
+    // Optional: language query parameter (default to LA)
+    const language = req.query.lang || 'LA';
+    if (!language) {
+        return res.status(400).json({ success: false, message: 'Language is required' });
+    }
+
+    const templatePath = path.join(__dirname, 'templates/Form_1BAct7_Export_Template.xlsx');
+
+    try {
+        const rows = await getForm1BAct7ParticipantData(language);
+
+        const workbook = new ExcelJS.Workbook();
+        await workbook.xlsx.readFile(templatePath);
+
+        const worksheet = workbook.getWorksheet('Sheet1');
+        const startRow = 8;
+        const startCol = 2;
+
+
+        //check if the value is a date string
+        const isDateString = (str) => {
+            // Checks if string matches YYYY-MM-DD
+            return /^\d{4}-\d{2}-\d{2}$/.test(str);
+        };
+
+        // Write data to worksheet
+        rows.forEach((row, rowIndex) => {
+            Object.values(row).forEach((value, colIndex) => {
+                const cell = worksheet.getCell(startRow + 1 + rowIndex, startCol + colIndex);
+
+                if (value === null || value === undefined) {
+                    cell.value = '';
+                } else if (value instanceof Date) {
+                    cell.value = value;
+                    // cell.numFmt = 'yyyy-MM-dd';
+                    cell.numFmt = 'dd/MM/yyyy';
+                } else if (typeof value === 'number') {
+                    cell.value = value;
+                } else if (typeof value === 'string' && isDateString(value)) {
+                    // Convert to Date object
+                    const jsDate = new Date(value + 'T00:00:00'); // safe for Excel
+                    cell.value = jsDate;
+                    cell.numFmt = 'dd/mm/yyyy';  // Excel format
+                } else {
+                    cell.value = value.toString();
+                }
+            });
+        });
+
+        // Add borders (optional)
+        const endRow = startRow + rows.length;
+        const endCol = startCol + Object.keys(rows[0] || {}).length - 1;
+
+        for (let r = startRow + 1; r <= endRow; r++) {
+            for (let c = startCol; c <= endCol; c++) {
+                const cell = worksheet.getCell(r, c);
+                cell.border = {
+                    top: { style: 'thin' },
+                    left: { style: 'thin' },
+                    bottom: { style: 'thin' },
+                    right: { style: 'thin' },
+                };
+            }
+        }
+
+        // Send file
+        res.setHeader('Content-Type', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
+        res.setHeader('Content-Disposition', 'attachment; filename=Form_1BAct7_Exported_Report.xlsx');
+
+        const buffer = await workbook.xlsx.writeBuffer();
+        res.send(buffer);
+
+    } catch (error) {
+        console.error('Export to Excel failed:', error);
+        res.status(500).send('Failed to export Form 1BAct7 data to Excel');
+    }
+});
+
+
+// // app.delete('/api/form1BAct7/deleteSubmission', async (req, res) => {
+// //     try {
+// //         const submissionId = req.query.submissionId;
+// //         if (!submissionId) {
+// //             return res.status(400).json({ success: false, message: 'Submission ID is required' });
+// //         }
+
+// //         // Call the function to delete the submission
+// //         await deleteSubmissionInKoboAndDatabase(submissionId);
+// //         res.json({ success: true, message: 'Submission deleted successfully' });
+// //     } catch (error) {
+
+// //         console.error('Error deleting submission:', error);
+// //         res.status(500).json({ success: false, message: 'Failed to delete submission hahaha', error: error.message });
+
+// //     }
+// // });
+
+// API endpoint to get UUID of a submission the UUID is important to get new submission ID from KoboToolbox when a previous submission is deleted
+app.get('/api/form1BAct7/getUUID', async (req, res) => {
+    try {
+        const submissionId = req.query.submissionId;
+        if (!submissionId) {
+            return res.status(400).json({ success: false, message: 'Submission ID is required' });
+        }
+
+        // Call the function to get the UUID
+        const uuid = await getForm1BAct7SubmissionUUIDBySubmissionId(submissionId);
+        if (!uuid) {
+            return res.status(404).json({ success: false, message: 'UUID not found for the given submission ID' });
+        }
+
+        res.json({ success: true, uuid });
+
+    } catch (error) {
+        console.error('Error fetching UUID:', error);
+        res.status(500).json({ success: false, message: 'Failed to fetch UUID', error: error.message });
+    }
+})
+
+//get new submission ID by UUID above function
+app.get('/api/form1BAct7/getNewSubmissionID', async (req, res) => {
+    try {
+        const uuid = req.query.Uuid;
+        if (!uuid) {
+            return res.status(400).json({ success: false, message: 'UUID is required' });
+        }
+
+        // Call the function to get the UUID
+        const newSubmissionId = await getForm1BAct7NewSubmissionIdByUUID(uuid);
+        if (!newSubmissionId) {
+            return res.status(404).json({ success: false, message: 'UUID not found for the given submission ID' });
+        }
+
+        res.json({ success: true, newSubmissionId });
+
+    } catch (error) {
+        console.error('Error fetching New SubmissionID:', error);
+        res.status(500).json({ success: false, message: 'Failed to fetch New SubmissionID', error: error.message });
+    }
+})
+
+
+// // //delete a participant and update the submission in KoboToolbox
+// // app.post('/api/form1BAct7/deleteParticipant', async (req, res) => {
+// //     const { participantId, submissionId } = req.body;
+// //     try {
+// //         await deleteOnlyParticipantInDB(participantId);
+// //         await deleteOnlySubmissionInKobo(submissionId);
+
+// //         const { submission, participants } = await getRawSubmissionAndParticipantsData(submissionId);
+// //         const xmlData = buildSubmissionXML(submission, participants);
+// //         await submitNewSubmissionToKobo(xmlData); //submit the updated submission to KoboToolbox
+// //         res.json({ success: true });
+// //     } catch (err) {
+// //         console.error(err);
+// //         res.status(500).json({ success: false, error: err.message });
+// //     }
+
+// // });
+
+// // // Function to update participant data and submission in local database and KoboToolbox
+// // app.post('/api/form1BAct7/updateParticipantAndSubmissionData', async (req, res) => {
+// //     const data = req.body;
+// //     if (!data.PID || !data.SubmissionID) {
+// //         return res.status(400).json({ success: false, message: 'Participant ID and Submission ID are required' });
+
+// //     }
+// //     try {
+// //         //update new data to local database
+// //         await editSubmissionAndParticipants(data);
+
+
+// //         //delete submission data in Kobo
+// //         await deleteOnlySubmissionInKobo(data.SubmissionID);
+
+// //         //Submit new submission data from local database to Kobo
+// //         const { submission, participants } = await getRawSubmissionAndParticipantsData(data.SubmissionID);
+// //         const xmlData = buildSubmissionXML(submission, participants);
+// //         await submitNewSubmissionToKobo(xmlData); //submit the updated submission to KoboToolbox
+// //         res.json({ success: true, message: 'Participant and submission data updated successfully' });
+
+
+
+// //     } catch (error) {
+// //         console.error('Error updating participant and submission data at backend:', error.message);
+// //         res.status(500).json({ success: false, message: 'Failed to update participant and submission data', error: error.message });
+// //     }
+// // });
+
+
+// //###################### End Function to handle Form 1BAct7 ################################
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+//##################### Function to handle Form 1BAct8 ####################################
+app.get('/api/form1BAct8/downloadFromKoboToolbox', async (req, res) => {
+    try {
+        //Call the function to download data from KoboToolbox
+        await downloadForm1BAct8SubmissionDataFromKoboToolbox();
+        res.json({ success: true, message: 'Data downloaded successfully from KoboToolbox' });
+    } catch (error) {
+        console.error('Error downloading data from KoboToolbox', error);
+        res.status(500).json({ success: false, message: 'Failed to download data from KoboToolbox', error: error.message });
+    }
+});
+
+
+app.get('/api/form1BAct8/getParticipantData', async (req, res) => {
+    try {
+        // Optional: language query parameter (default to LA)
+        const language = req.query.lang || 'LA';
+        if (!language) {
+            return res.status(400).json({ success: false, message: 'Language is required' });
+        }
+
+        const data = await getForm1BAct8ParticipantData(language);
+        res.json({ success: true, data });
+    } catch (error) {
+        console.error('Error fetching Form 1BAct8 data:', error);
+        res.status(500).json({ success: false, message: 'Failed to fetch Form 1BAct8 data', error: error.message });
+    }
+});
+
+
+// API endpoint to get Form 1BAct8 data by Submission ID
+app.get('/api/form1BAct8/getParticipantDataBySID', async (req, res) => {
+    try {
+        // Get the submissionId from query parameters
+        const language = req.query.lang || 'LA';
+        const submissionId = req.query.submissionId;
+
+        if (!submissionId) {
+            return res.status(400).json({ success: false, message: 'Submission ID is required' });
+        }
+        if (!language) {
+            return res.status(400).json({ success: false, message: 'Language is required' });
+        }
+
+        const data = await getForm1BAct8ParticipantDataBySID(submissionId, language);
+        res.json({ success: true, data });
+    } catch (error) {
+        console.error('Error fetching Form 1BAct8 data by Submission ID:', error);
+        res.status(500).json({ success: false, message: 'Failed to fetch Form 1BAct8 data by Submission ID', error: error.message });
+    }
+});
+
+
+
+// Excel Export Endpoint
+app.get('/api/form1BAct8/exportToExcel', async (req, res) => {
+    // Optional: language query parameter (default to LA)
+    const language = req.query.lang || 'LA';
+    if (!language) {
+        return res.status(400).json({ success: false, message: 'Language is required' });
+    }
+
+    const templatePath = path.join(__dirname, 'templates/Form_1BAct8_Export_Template.xlsx');
+
+    try {
+        const rows = await getForm1BAct8ParticipantData(language);
+
+        const workbook = new ExcelJS.Workbook();
+        await workbook.xlsx.readFile(templatePath);
+
+        const worksheet = workbook.getWorksheet('Sheet1');
+        const startRow = 8;
+        const startCol = 2;
+
+
+        //check if the value is a date string
+        const isDateString = (str) => {
+            // Checks if string matches YYYY-MM-DD
+            return /^\d{4}-\d{2}-\d{2}$/.test(str);
+        };
+
+        // Write data to worksheet
+        rows.forEach((row, rowIndex) => {
+            Object.values(row).forEach((value, colIndex) => {
+                const cell = worksheet.getCell(startRow + 1 + rowIndex, startCol + colIndex);
+
+                if (value === null || value === undefined) {
+                    cell.value = '';
+                } else if (value instanceof Date) {
+                    cell.value = value;
+                    // cell.numFmt = 'yyyy-MM-dd';
+                    cell.numFmt = 'dd/MM/yyyy';
+                } else if (typeof value === 'number') {
+                    cell.value = value;
+                } else if (typeof value === 'string' && isDateString(value)) {
+                    // Convert to Date object
+                    const jsDate = new Date(value + 'T00:00:00'); // safe for Excel
+                    cell.value = jsDate;
+                    cell.numFmt = 'dd/mm/yyyy';  // Excel format
+                } else {
+                    cell.value = value.toString();
+                }
+            });
+        });
+
+        // Add borders (optional)
+        const endRow = startRow + rows.length;
+        const endCol = startCol + Object.keys(rows[0] || {}).length - 1;
+
+        for (let r = startRow + 1; r <= endRow; r++) {
+            for (let c = startCol; c <= endCol; c++) {
+                const cell = worksheet.getCell(r, c);
+                cell.border = {
+                    top: { style: 'thin' },
+                    left: { style: 'thin' },
+                    bottom: { style: 'thin' },
+                    right: { style: 'thin' },
+                };
+            }
+        }
+
+        // Send file
+        res.setHeader('Content-Type', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
+        res.setHeader('Content-Disposition', 'attachment; filename=Form_1BAct8_Exported_Report.xlsx');
+
+        const buffer = await workbook.xlsx.writeBuffer();
+        res.send(buffer);
+
+    } catch (error) {
+        console.error('Export to Excel failed:', error);
+        res.status(500).send('Failed to export Form 1BAct8 data to Excel');
+    }
+});
+
+
+// // app.delete('/api/form1BAct8/deleteSubmission', async (req, res) => {
+// //     try {
+// //         const submissionId = req.query.submissionId;
+// //         if (!submissionId) {
+// //             return res.status(400).json({ success: false, message: 'Submission ID is required' });
+// //         }
+
+// //         // Call the function to delete the submission
+// //         await deleteSubmissionInKoboAndDatabase(submissionId);
+// //         res.json({ success: true, message: 'Submission deleted successfully' });
+// //     } catch (error) {
+
+// //         console.error('Error deleting submission:', error);
+// //         res.status(500).json({ success: false, message: 'Failed to delete submission hahaha', error: error.message });
+
+// //     }
+// // });
+
+// API endpoint to get UUID of a submission the UUID is important to get new submission ID from KoboToolbox when a previous submission is deleted
+app.get('/api/form1BAct8/getUUID', async (req, res) => {
+    try {
+        const submissionId = req.query.submissionId;
+        if (!submissionId) {
+            return res.status(400).json({ success: false, message: 'Submission ID is required' });
+        }
+
+        // Call the function to get the UUID
+        const uuid = await getForm1BAct8SubmissionUUIDBySubmissionId(submissionId);
+        if (!uuid) {
+            return res.status(404).json({ success: false, message: 'UUID not found for the given submission ID' });
+        }
+
+        res.json({ success: true, uuid });
+
+    } catch (error) {
+        console.error('Error fetching UUID:', error);
+        res.status(500).json({ success: false, message: 'Failed to fetch UUID', error: error.message });
+    }
+})
+
+//get new submission ID by UUID above function
+app.get('/api/form1BAct8/getNewSubmissionID', async (req, res) => {
+    try {
+        const uuid = req.query.Uuid;
+        if (!uuid) {
+            return res.status(400).json({ success: false, message: 'UUID is required' });
+        }
+
+        // Call the function to get the UUID
+        const newSubmissionId = await getForm1BAct8NewSubmissionIdByUUID(uuid);
+        if (!newSubmissionId) {
+            return res.status(404).json({ success: false, message: 'UUID not found for the given submission ID' });
+        }
+
+        res.json({ success: true, newSubmissionId });
+
+    } catch (error) {
+        console.error('Error fetching New SubmissionID:', error);
+        res.status(500).json({ success: false, message: 'Failed to fetch New SubmissionID', error: error.message });
+    }
+})
+
+
+// // //delete a participant and update the submission in KoboToolbox
+// // app.post('/api/form1BAct8/deleteParticipant', async (req, res) => {
+// //     const { participantId, submissionId } = req.body;
+// //     try {
+// //         await deleteOnlyParticipantInDB(participantId);
+// //         await deleteOnlySubmissionInKobo(submissionId);
+
+// //         const { submission, participants } = await getRawSubmissionAndParticipantsData(submissionId);
+// //         const xmlData = buildSubmissionXML(submission, participants);
+// //         await submitNewSubmissionToKobo(xmlData); //submit the updated submission to KoboToolbox
+// //         res.json({ success: true });
+// //     } catch (err) {
+// //         console.error(err);
+// //         res.status(500).json({ success: false, error: err.message });
+// //     }
+
+// // });
+
+// // // Function to update participant data and submission in local database and KoboToolbox
+// // app.post('/api/form1BAct8/updateParticipantAndSubmissionData', async (req, res) => {
+// //     const data = req.body;
+// //     if (!data.PID || !data.SubmissionID) {
+// //         return res.status(400).json({ success: false, message: 'Participant ID and Submission ID are required' });
+
+// //     }
+// //     try {
+// //         //update new data to local database
+// //         await editSubmissionAndParticipants(data);
+
+
+// //         //delete submission data in Kobo
+// //         await deleteOnlySubmissionInKobo(data.SubmissionID);
+
+// //         //Submit new submission data from local database to Kobo
+// //         const { submission, participants } = await getRawSubmissionAndParticipantsData(data.SubmissionID);
+// //         const xmlData = buildSubmissionXML(submission, participants);
+// //         await submitNewSubmissionToKobo(xmlData); //submit the updated submission to KoboToolbox
+// //         res.json({ success: true, message: 'Participant and submission data updated successfully' });
+
+
+
+// //     } catch (error) {
+// //         console.error('Error updating participant and submission data at backend:', error.message);
+// //         res.status(500).json({ success: false, message: 'Failed to update participant and submission data', error: error.message });
+// //     }
+// // });
+
+
+// //###################### End Function to handle Form 1BAct8 ################################
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+//##################### Function to handle Form 2Act1 ####################################
+app.get('/api/form2Act1/downloadFromKoboToolbox', async (req, res) => {
+    try {
+        //Call the function to download data from KoboToolbox
+        await downloadForm2Act1SubmissionDataFromKoboToolbox();
+        res.json({ success: true, message: 'Data downloaded successfully from KoboToolbox' });
+    } catch (error) {
+        console.error('Error downloading data from KoboToolbox', error);
+        res.status(500).json({ success: false, message: 'Failed to download data from KoboToolbox', error: error.message });
+    }
+});
+
+
+app.get('/api/form2Act1/getParticipantData', async (req, res) => {
+    try {
+        // Optional: language query parameter (default to LA)
+        const language = req.query.lang || 'LA';
+        if (!language) {
+            return res.status(400).json({ success: false, message: 'Language is required' });
+        }
+
+        const data = await getForm2Act1ParticipantData(language);
+        res.json({ success: true, data });
+    } catch (error) {
+        console.error('Error fetching Form 2Act1 data:', error);
+        res.status(500).json({ success: false, message: 'Failed to fetch Form 2Act1 data', error: error.message });
+    }
+});
+
+
+// API endpoint to get Form 2Act1 data by Submission ID
+app.get('/api/form2Act1/getParticipantDataBySID', async (req, res) => {
+    try {
+        // Get the submissionId from query parameters
+        const language = req.query.lang || 'LA';
+        const submissionId = req.query.submissionId;
+
+        if (!submissionId) {
+            return res.status(400).json({ success: false, message: 'Submission ID is required' });
+        }
+        if (!language) {
+            return res.status(400).json({ success: false, message: 'Language is required' });
+        }
+
+        const data = await getForm2Act1ParticipantDataBySID(submissionId, language);
+        res.json({ success: true, data });
+    } catch (error) {
+        console.error('Error fetching Form 2Act1 data by Submission ID:', error);
+        res.status(500).json({ success: false, message: 'Failed to fetch Form 2Act1 data by Submission ID', error: error.message });
+    }
+});
+
+
+
+// Excel Export Endpoint
+app.get('/api/form2Act1/exportToExcel', async (req, res) => {
+    // Optional: language query parameter (default to LA)
+    const language = req.query.lang || 'LA';
+    if (!language) {
+        return res.status(400).json({ success: false, message: 'Language is required' });
+    }
+
+    const templatePath = path.join(__dirname, 'templates/Form_2Act1_Export_Template.xlsx');
+
+    try {
+        const rows = await getForm2Act1ParticipantData(language);
+
+        const workbook = new ExcelJS.Workbook();
+        await workbook.xlsx.readFile(templatePath);
+
+        const worksheet = workbook.getWorksheet('Sheet1');
+        const startRow = 8;
+        const startCol = 2;
+
+
+        //check if the value is a date string
+        const isDateString = (str) => {
+            // Checks if string matches YYYY-MM-DD
+            return /^\d{4}-\d{2}-\d{2}$/.test(str);
+        };
+
+        // Write data to worksheet
+        rows.forEach((row, rowIndex) => {
+            Object.values(row).forEach((value, colIndex) => {
+                const cell = worksheet.getCell(startRow + 1 + rowIndex, startCol + colIndex);
+
+                if (value === null || value === undefined) {
+                    cell.value = '';
+                } else if (value instanceof Date) {
+                    cell.value = value;
+                    // cell.numFmt = 'yyyy-MM-dd';
+                    cell.numFmt = 'dd/MM/yyyy';
+                } else if (typeof value === 'number') {
+                    cell.value = value;
+                } else if (typeof value === 'string' && isDateString(value)) {
+                    // Convert to Date object
+                    const jsDate = new Date(value + 'T00:00:00'); // safe for Excel
+                    cell.value = jsDate;
+                    cell.numFmt = 'dd/mm/yyyy';  // Excel format
+                } else {
+                    cell.value = value.toString();
+                }
+            });
+        });
+
+        // Add borders (optional)
+        const endRow = startRow + rows.length;
+        const endCol = startCol + Object.keys(rows[0] || {}).length - 1;
+
+        for (let r = startRow + 1; r <= endRow; r++) {
+            for (let c = startCol; c <= endCol; c++) {
+                const cell = worksheet.getCell(r, c);
+                cell.border = {
+                    top: { style: 'thin' },
+                    left: { style: 'thin' },
+                    bottom: { style: 'thin' },
+                    right: { style: 'thin' },
+                };
+            }
+        }
+
+        // Send file
+        res.setHeader('Content-Type', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
+        res.setHeader('Content-Disposition', 'attachment; filename=Form_2Act1_Exported_Report.xlsx');
+
+        const buffer = await workbook.xlsx.writeBuffer();
+        res.send(buffer);
+
+    } catch (error) {
+        console.error('Export to Excel failed:', error);
+        res.status(500).send('Failed to export Form 2Act1 data to Excel');
+    }
+});
+
+
+// // app.delete('/api/form2Act1/deleteSubmission', async (req, res) => {
+// //     try {
+// //         const submissionId = req.query.submissionId;
+// //         if (!submissionId) {
+// //             return res.status(400).json({ success: false, message: 'Submission ID is required' });
+// //         }
+
+// //         // Call the function to delete the submission
+// //         await deleteSubmissionInKoboAndDatabase(submissionId);
+// //         res.json({ success: true, message: 'Submission deleted successfully' });
+// //     } catch (error) {
+
+// //         console.error('Error deleting submission:', error);
+// //         res.status(500).json({ success: false, message: 'Failed to delete submission hahaha', error: error.message });
+
+// //     }
+// // });
+
+// API endpoint to get UUID of a submission the UUID is important to get new submission ID from KoboToolbox when a previous submission is deleted
+app.get('/api/form2Act1/getUUID', async (req, res) => {
+    try {
+        const submissionId = req.query.submissionId;
+        if (!submissionId) {
+            return res.status(400).json({ success: false, message: 'Submission ID is required' });
+        }
+
+        // Call the function to get the UUID
+        const uuid = await getForm2Act1SubmissionUUIDBySubmissionId(submissionId);
+        if (!uuid) {
+            return res.status(404).json({ success: false, message: 'UUID not found for the given submission ID' });
+        }
+
+        res.json({ success: true, uuid });
+
+    } catch (error) {
+        console.error('Error fetching UUID:', error);
+        res.status(500).json({ success: false, message: 'Failed to fetch UUID', error: error.message });
+    }
+})
+
+//get new submission ID by UUID above function
+app.get('/api/form2Act1/getNewSubmissionID', async (req, res) => {
+    try {
+        const uuid = req.query.Uuid;
+        if (!uuid) {
+            return res.status(400).json({ success: false, message: 'UUID is required' });
+        }
+
+        // Call the function to get the UUID
+        const newSubmissionId = await getForm2Act1NewSubmissionIdByUUID(uuid);
+        if (!newSubmissionId) {
+            return res.status(404).json({ success: false, message: 'UUID not found for the given submission ID' });
+        }
+
+        res.json({ success: true, newSubmissionId });
+
+    } catch (error) {
+        console.error('Error fetching New SubmissionID:', error);
+        res.status(500).json({ success: false, message: 'Failed to fetch New SubmissionID', error: error.message });
+    }
+})
+
+
+// // //delete a participant and update the submission in KoboToolbox
+// // app.post('/api/form2Act1/deleteParticipant', async (req, res) => {
+// //     const { participantId, submissionId } = req.body;
+// //     try {
+// //         await deleteOnlyParticipantInDB(participantId);
+// //         await deleteOnlySubmissionInKobo(submissionId);
+
+// //         const { submission, participants } = await getRawSubmissionAndParticipantsData(submissionId);
+// //         const xmlData = buildSubmissionXML(submission, participants);
+// //         await submitNewSubmissionToKobo(xmlData); //submit the updated submission to KoboToolbox
+// //         res.json({ success: true });
+// //     } catch (err) {
+// //         console.error(err);
+// //         res.status(500).json({ success: false, error: err.message });
+// //     }
+
+// // });
+
+// // // Function to update participant data and submission in local database and KoboToolbox
+// // app.post('/api/form2Act1/updateParticipantAndSubmissionData', async (req, res) => {
+// //     const data = req.body;
+// //     if (!data.PID || !data.SubmissionID) {
+// //         return res.status(400).json({ success: false, message: 'Participant ID and Submission ID are required' });
+
+// //     }
+// //     try {
+// //         //update new data to local database
+// //         await editSubmissionAndParticipants(data);
+
+
+// //         //delete submission data in Kobo
+// //         await deleteOnlySubmissionInKobo(data.SubmissionID);
+
+// //         //Submit new submission data from local database to Kobo
+// //         const { submission, participants } = await getRawSubmissionAndParticipantsData(data.SubmissionID);
+// //         const xmlData = buildSubmissionXML(submission, participants);
+// //         await submitNewSubmissionToKobo(xmlData); //submit the updated submission to KoboToolbox
+// //         res.json({ success: true, message: 'Participant and submission data updated successfully' });
+
+
+
+// //     } catch (error) {
+// //         console.error('Error updating participant and submission data at backend:', error.message);
+// //         res.status(500).json({ success: false, message: 'Failed to update participant and submission data', error: error.message });
+// //     }
+// // });
+
+
+// //###################### End Function to handle Form 2Act1 ################################
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+//##################### Function to handle Form 2Act2 ####################################
+app.get('/api/form2Act2/downloadFromKoboToolbox', async (req, res) => {
+    try {
+        //Call the function to download data from KoboToolbox
+        await downloadForm2Act2SubmissionDataFromKoboToolbox();
+        res.json({ success: true, message: 'Data downloaded successfully from KoboToolbox' });
+    } catch (error) {
+        console.error('Error downloading data from KoboToolbox', error);
+        res.status(500).json({ success: false, message: 'Failed to download data from KoboToolbox', error: error.message });
+    }
+});
+
+
+app.get('/api/form2Act2/getParticipantData', async (req, res) => {
+    try {
+        // Optional: language query parameter (default to LA)
+        const language = req.query.lang || 'LA';
+        if (!language) {
+            return res.status(400).json({ success: false, message: 'Language is required' });
+        }
+
+        const data = await getForm2Act2ParticipantData(language);
+        res.json({ success: true, data });
+    } catch (error) {
+        console.error('Error fetching Form 2Act2 data:', error);
+        res.status(500).json({ success: false, message: 'Failed to fetch Form 2Act2 data', error: error.message });
+    }
+});
+
+
+// API endpoint to get Form 2Act2 data by Submission ID
+app.get('/api/form2Act2/getParticipantDataBySID', async (req, res) => {
+    try {
+        // Get the submissionId from query parameters
+        const language = req.query.lang || 'LA';
+        const submissionId = req.query.submissionId;
+
+        if (!submissionId) {
+            return res.status(400).json({ success: false, message: 'Submission ID is required' });
+        }
+        if (!language) {
+            return res.status(400).json({ success: false, message: 'Language is required' });
+        }
+
+        const data = await getForm2Act2ParticipantDataBySID(submissionId, language);
+        res.json({ success: true, data });
+    } catch (error) {
+        console.error('Error fetching Form 2Act2 data by Submission ID:', error);
+        res.status(500).json({ success: false, message: 'Failed to fetch Form 2Act2 data by Submission ID', error: error.message });
+    }
+});
+
+
+
+// Excel Export Endpoint
+app.get('/api/form2Act2/exportToExcel', async (req, res) => {
+    // Optional: language query parameter (default to LA)
+    const language = req.query.lang || 'LA';
+    if (!language) {
+        return res.status(400).json({ success: false, message: 'Language is required' });
+    }
+
+    const templatePath = path.join(__dirname, 'templates/Form_2Act2_Export_Template.xlsx');
+
+    try {
+        const rows = await getForm2Act2ParticipantData(language);
+
+        const workbook = new ExcelJS.Workbook();
+        await workbook.xlsx.readFile(templatePath);
+
+        const worksheet = workbook.getWorksheet('Sheet1');
+        const startRow = 8;
+        const startCol = 2;
+
+
+        //check if the value is a date string
+        const isDateString = (str) => {
+            // Checks if string matches YYYY-MM-DD
+            return /^\d{4}-\d{2}-\d{2}$/.test(str);
+        };
+
+        // Write data to worksheet
+        rows.forEach((row, rowIndex) => {
+            Object.values(row).forEach((value, colIndex) => {
+                const cell = worksheet.getCell(startRow + 1 + rowIndex, startCol + colIndex);
+
+                if (value === null || value === undefined) {
+                    cell.value = '';
+                } else if (value instanceof Date) {
+                    cell.value = value;
+                    // cell.numFmt = 'yyyy-MM-dd';
+                    cell.numFmt = 'dd/MM/yyyy';
+                } else if (typeof value === 'number') {
+                    cell.value = value;
+                } else if (typeof value === 'string' && isDateString(value)) {
+                    // Convert to Date object
+                    const jsDate = new Date(value + 'T00:00:00'); // safe for Excel
+                    cell.value = jsDate;
+                    cell.numFmt = 'dd/mm/yyyy';  // Excel format
+                } else {
+                    cell.value = value.toString();
+                }
+            });
+        });
+
+        // Add borders (optional)
+        const endRow = startRow + rows.length;
+        const endCol = startCol + Object.keys(rows[0] || {}).length - 1;
+
+        for (let r = startRow + 1; r <= endRow; r++) {
+            for (let c = startCol; c <= endCol; c++) {
+                const cell = worksheet.getCell(r, c);
+                cell.border = {
+                    top: { style: 'thin' },
+                    left: { style: 'thin' },
+                    bottom: { style: 'thin' },
+                    right: { style: 'thin' },
+                };
+            }
+        }
+
+        // Send file
+        res.setHeader('Content-Type', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
+        res.setHeader('Content-Disposition', 'attachment; filename=Form_2Act2_Exported_Report.xlsx');
+
+        const buffer = await workbook.xlsx.writeBuffer();
+        res.send(buffer);
+
+    } catch (error) {
+        console.error('Export to Excel failed:', error);
+        res.status(500).send('Failed to export Form 2Act1 data to Excel');
+    }
+});
+
+
+// // app.delete('/api/form2Act2/deleteSubmission', async (req, res) => {
+// //     try {
+// //         const submissionId = req.query.submissionId;
+// //         if (!submissionId) {
+// //             return res.status(400).json({ success: false, message: 'Submission ID is required' });
+// //         }
+
+// //         // Call the function to delete the submission
+// //         await deleteSubmissionInKoboAndDatabase(submissionId);
+// //         res.json({ success: true, message: 'Submission deleted successfully' });
+// //     } catch (error) {
+
+// //         console.error('Error deleting submission:', error);
+// //         res.status(500).json({ success: false, message: 'Failed to delete submission hahaha', error: error.message });
+
+// //     }
+// // });
+
+// API endpoint to get UUID of a submission the UUID is important to get new submission ID from KoboToolbox when a previous submission is deleted
+app.get('/api/form2Act2/getUUID', async (req, res) => {
+    try {
+        const submissionId = req.query.submissionId;
+        if (!submissionId) {
+            return res.status(400).json({ success: false, message: 'Submission ID is required' });
+        }
+
+        // Call the function to get the UUID
+        const uuid = await getForm2Act2SubmissionUUIDBySubmissionId(submissionId);
+        if (!uuid) {
+            return res.status(404).json({ success: false, message: 'UUID not found for the given submission ID' });
+        }
+
+        res.json({ success: true, uuid });
+
+    } catch (error) {
+        console.error('Error fetching UUID:', error);
+        res.status(500).json({ success: false, message: 'Failed to fetch UUID', error: error.message });
+    }
+})
+
+//get new submission ID by UUID above function
+app.get('/api/form2Act2/getNewSubmissionID', async (req, res) => {
+    try {
+        const uuid = req.query.Uuid;
+        if (!uuid) {
+            return res.status(400).json({ success: false, message: 'UUID is required' });
+        }
+
+        // Call the function to get the UUID
+        const newSubmissionId = await getForm2Act2NewSubmissionIdByUUID(uuid);
+        if (!newSubmissionId) {
+            return res.status(404).json({ success: false, message: 'UUID not found for the given submission ID' });
+        }
+
+        res.json({ success: true, newSubmissionId });
+
+    } catch (error) {
+        console.error('Error fetching New SubmissionID:', error);
+        res.status(500).json({ success: false, message: 'Failed to fetch New SubmissionID', error: error.message });
+    }
+})
+
+
+// // //delete a participant and update the submission in KoboToolbox
+// // app.post('/api/form2Act2/deleteParticipant', async (req, res) => {
+// //     const { participantId, submissionId } = req.body;
+// //     try {
+// //         await deleteOnlyParticipantInDB(participantId);
+// //         await deleteOnlySubmissionInKobo(submissionId);
+
+// //         const { submission, participants } = await getRawSubmissionAndParticipantsData(submissionId);
+// //         const xmlData = buildSubmissionXML(submission, participants);
+// //         await submitNewSubmissionToKobo(xmlData); //submit the updated submission to KoboToolbox
+// //         res.json({ success: true });
+// //     } catch (err) {
+// //         console.error(err);
+// //         res.status(500).json({ success: false, error: err.message });
+// //     }
+
+// // });
+
+// // // Function to update participant data and submission in local database and KoboToolbox
+// // app.post('/api/form2Act2/updateParticipantAndSubmissionData', async (req, res) => {
+// //     const data = req.body;
+// //     if (!data.PID || !data.SubmissionID) {
+// //         return res.status(400).json({ success: false, message: 'Participant ID and Submission ID are required' });
+
+// //     }
+// //     try {
+// //         //update new data to local database
+// //         await editSubmissionAndParticipants(data);
+
+
+// //         //delete submission data in Kobo
+// //         await deleteOnlySubmissionInKobo(data.SubmissionID);
+
+// //         //Submit new submission data from local database to Kobo
+// //         const { submission, participants } = await getRawSubmissionAndParticipantsData(data.SubmissionID);
+// //         const xmlData = buildSubmissionXML(submission, participants);
+// //         await submitNewSubmissionToKobo(xmlData); //submit the updated submission to KoboToolbox
+// //         res.json({ success: true, message: 'Participant and submission data updated successfully' });
+
+
+
+// //     } catch (error) {
+// //         console.error('Error updating participant and submission data at backend:', error.message);
+// //         res.status(500).json({ success: false, message: 'Failed to update participant and submission data', error: error.message });
+// //     }
+// // });
+
+
+// //###################### End Function to handle Form 2Act2 ################################
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+//##################### Function to handle Form 2Act3 ####################################
+app.get('/api/form2Act3/downloadFromKoboToolbox', async (req, res) => {
+    try {
+        //Call the function to download data from KoboToolbox
+        await downloadForm2Act3SubmissionDataFromKoboToolbox();
+        res.json({ success: true, message: 'Data downloaded successfully from KoboToolbox' });
+    } catch (error) {
+        console.error('Error downloading data from KoboToolbox', error);
+        res.status(500).json({ success: false, message: 'Failed to download data from KoboToolbox', error: error.message });
+    }
+});
+
+
+app.get('/api/form2Act3/getParticipantData', async (req, res) => {
+    try {
+        // Optional: language query parameter (default to LA)
+        const language = req.query.lang || 'LA';
+        if (!language) {
+            return res.status(400).json({ success: false, message: 'Language is required' });
+        }
+
+        const data = await getForm2Act3ParticipantData(language);
+        res.json({ success: true, data });
+    } catch (error) {
+        console.error('Error fetching Form 2Act3 data:', error);
+        res.status(500).json({ success: false, message: 'Failed to fetch Form 2Act3 data', error: error.message });
+    }
+});
+
+
+// API endpoint to get Form 2Act3 data by Submission ID
+app.get('/api/form2Act3/getParticipantDataBySID', async (req, res) => {
+    try {
+        // Get the submissionId from query parameters
+        const language = req.query.lang || 'LA';
+        const submissionId = req.query.submissionId;
+
+        if (!submissionId) {
+            return res.status(400).json({ success: false, message: 'Submission ID is required' });
+        }
+        if (!language) {
+            return res.status(400).json({ success: false, message: 'Language is required' });
+        }
+
+        const data = await getForm2Act3ParticipantDataBySID(submissionId, language);
+        res.json({ success: true, data });
+    } catch (error) {
+        console.error('Error fetching Form 2Act3 data by Submission ID:', error);
+        res.status(500).json({ success: false, message: 'Failed to fetch Form 2Act3 data by Submission ID', error: error.message });
+    }
+});
+
+
+
+// Excel Export Endpoint
+app.get('/api/form2Act3/exportToExcel', async (req, res) => {
+    // Optional: language query parameter (default to LA)
+    const language = req.query.lang || 'LA';
+    if (!language) {
+        return res.status(400).json({ success: false, message: 'Language is required' });
+    }
+
+    const templatePath = path.join(__dirname, 'templates/Form_2Act3_Export_Template.xlsx');
+
+    try {
+        const rows = await getForm2Act3ParticipantData(language);
+
+        const workbook = new ExcelJS.Workbook();
+        await workbook.xlsx.readFile(templatePath);
+
+        const worksheet = workbook.getWorksheet('Sheet1');
+        const startRow = 8;
+        const startCol = 2;
+
+
+        //check if the value is a date string
+        const isDateString = (str) => {
+            // Checks if string matches YYYY-MM-DD
+            return /^\d{4}-\d{2}-\d{2}$/.test(str);
+        };
+
+        // Write data to worksheet
+        rows.forEach((row, rowIndex) => {
+            Object.values(row).forEach((value, colIndex) => {
+                const cell = worksheet.getCell(startRow + 1 + rowIndex, startCol + colIndex);
+
+                if (value === null || value === undefined) {
+                    cell.value = '';
+                } else if (value instanceof Date) {
+                    cell.value = value;
+                    // cell.numFmt = 'yyyy-MM-dd';
+                    cell.numFmt = 'dd/MM/yyyy';
+                } else if (typeof value === 'number') {
+                    cell.value = value;
+                } else if (typeof value === 'string' && isDateString(value)) {
+                    // Convert to Date object
+                    const jsDate = new Date(value + 'T00:00:00'); // safe for Excel
+                    cell.value = jsDate;
+                    cell.numFmt = 'dd/mm/yyyy';  // Excel format
+                } else {
+                    cell.value = value.toString();
+                }
+            });
+        });
+
+        // Add borders (optional)
+        const endRow = startRow + rows.length;
+        const endCol = startCol + Object.keys(rows[0] || {}).length - 1;
+
+        for (let r = startRow + 1; r <= endRow; r++) {
+            for (let c = startCol; c <= endCol; c++) {
+                const cell = worksheet.getCell(r, c);
+                cell.border = {
+                    top: { style: 'thin' },
+                    left: { style: 'thin' },
+                    bottom: { style: 'thin' },
+                    right: { style: 'thin' },
+                };
+            }
+        }
+
+        // Send file
+        res.setHeader('Content-Type', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
+        res.setHeader('Content-Disposition', 'attachment; filename=Form_2Act3_Exported_Report.xlsx');
+
+        const buffer = await workbook.xlsx.writeBuffer();
+        res.send(buffer);
+
+    } catch (error) {
+        console.error('Export to Excel failed:', error);
+        res.status(500).send('Failed to export Form 2Act3 data to Excel');
+    }
+});
+
+
+// // app.delete('/api/form2Act3/deleteSubmission', async (req, res) => {
+// //     try {
+// //         const submissionId = req.query.submissionId;
+// //         if (!submissionId) {
+// //             return res.status(400).json({ success: false, message: 'Submission ID is required' });
+// //         }
+
+// //         // Call the function to delete the submission
+// //         await deleteSubmissionInKoboAndDatabase(submissionId);
+// //         res.json({ success: true, message: 'Submission deleted successfully' });
+// //     } catch (error) {
+
+// //         console.error('Error deleting submission:', error);
+// //         res.status(500).json({ success: false, message: 'Failed to delete submission hahaha', error: error.message });
+
+// //     }
+// // });
+
+// API endpoint to get UUID of a submission the UUID is important to get new submission ID from KoboToolbox when a previous submission is deleted
+app.get('/api/form2Act3/getUUID', async (req, res) => {
+    try {
+        const submissionId = req.query.submissionId;
+        if (!submissionId) {
+            return res.status(400).json({ success: false, message: 'Submission ID is required' });
+        }
+
+        // Call the function to get the UUID
+        const uuid = await getForm2Act3SubmissionUUIDBySubmissionId(submissionId);
+        if (!uuid) {
+            return res.status(404).json({ success: false, message: 'UUID not found for the given submission ID' });
+        }
+
+        res.json({ success: true, uuid });
+
+    } catch (error) {
+        console.error('Error fetching UUID:', error);
+        res.status(500).json({ success: false, message: 'Failed to fetch UUID', error: error.message });
+    }
+})
+
+//get new submission ID by UUID above function
+app.get('/api/form2Act3/getNewSubmissionID', async (req, res) => {
+    try {
+        const uuid = req.query.Uuid;
+        if (!uuid) {
+            return res.status(400).json({ success: false, message: 'UUID is required' });
+        }
+
+        // Call the function to get the UUID
+        const newSubmissionId = await getForm2Act3NewSubmissionIdByUUID(uuid);
+        if (!newSubmissionId) {
+            return res.status(404).json({ success: false, message: 'UUID not found for the given submission ID' });
+        }
+
+        res.json({ success: true, newSubmissionId });
+
+    } catch (error) {
+        console.error('Error fetching New SubmissionID:', error);
+        res.status(500).json({ success: false, message: 'Failed to fetch New SubmissionID', error: error.message });
+    }
+})
+
+
+// // //delete a participant and update the submission in KoboToolbox
+// // app.post('/api/form2Act3/deleteParticipant', async (req, res) => {
+// //     const { participantId, submissionId } = req.body;
+// //     try {
+// //         await deleteOnlyParticipantInDB(participantId);
+// //         await deleteOnlySubmissionInKobo(submissionId);
+
+// //         const { submission, participants } = await getRawSubmissionAndParticipantsData(submissionId);
+// //         const xmlData = buildSubmissionXML(submission, participants);
+// //         await submitNewSubmissionToKobo(xmlData); //submit the updated submission to KoboToolbox
+// //         res.json({ success: true });
+// //     } catch (err) {
+// //         console.error(err);
+// //         res.status(500).json({ success: false, error: err.message });
+// //     }
+
+// // });
+
+// // // Function to update participant data and submission in local database and KoboToolbox
+// // app.post('/api/form2Act3/updateParticipantAndSubmissionData', async (req, res) => {
+// //     const data = req.body;
+// //     if (!data.PID || !data.SubmissionID) {
+// //         return res.status(400).json({ success: false, message: 'Participant ID and Submission ID are required' });
+
+// //     }
+// //     try {
+// //         //update new data to local database
+// //         await editSubmissionAndParticipants(data);
+
+
+// //         //delete submission data in Kobo
+// //         await deleteOnlySubmissionInKobo(data.SubmissionID);
+
+// //         //Submit new submission data from local database to Kobo
+// //         const { submission, participants } = await getRawSubmissionAndParticipantsData(data.SubmissionID);
+// //         const xmlData = buildSubmissionXML(submission, participants);
+// //         await submitNewSubmissionToKobo(xmlData); //submit the updated submission to KoboToolbox
+// //         res.json({ success: true, message: 'Participant and submission data updated successfully' });
+
+
+
+// //     } catch (error) {
+// //         console.error('Error updating participant and submission data at backend:', error.message);
+// //         res.status(500).json({ success: false, message: 'Failed to update participant and submission data', error: error.message });
+// //     }
+// // });
+
+
+// //###################### End Function to handle Form 2Act3 ################################

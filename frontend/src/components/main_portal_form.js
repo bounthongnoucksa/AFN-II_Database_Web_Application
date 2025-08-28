@@ -15,6 +15,10 @@ import Form1A5a from './1A5a'; //Import the form 1A5a component
 import Form1A5b from './1A5b';
 import Form1BAct6 from './1BAct6';
 import Form1BAct7 from './1BAct7';
+import Form1BAct8 from './1BAct8';
+import Form2Act1 from './2Act1';
+import Form2Act2 from './2Act2';
+import Form2Act3 from './2Act3';
 
 export default function MainPortalForm() {
     const [activeTab, setActiveTab] = useState('tab3');
@@ -167,6 +171,22 @@ export default function MainPortalForm() {
                     <Form1BAct7 />
                 </div>
 
+                <div style={{ display: activeTab === 'tab15' ? 'block' : 'none' }}>
+                    <Form1BAct8 />
+                </div>
+
+                <div style={{ display: activeTab === 'tab16' ? 'block' : 'none' }}>
+                    <Form2Act1 />
+                </div>
+
+                <div style={{ display: activeTab === 'tab17' ? 'block' : 'none' }}>
+                    <Form2Act2 />
+                </div>
+
+                <div style={{ display: activeTab === 'tab18' ? 'block' : 'none' }}>
+                    <Form2Act3 />
+                </div>
+
 
 
 
@@ -178,7 +198,9 @@ export default function MainPortalForm() {
                 {tabs
                     .filter(tab => tab.id !== 'tab3' && tab.id !== 'tab4' && tab.id !== 'tab5'
                         && tab.id !== 'tab6' && tab.id !== 'tab7' && tab.id !== 'tab8' && tab.id !== 'tab9'
-                        && tab.id !== 'tab10' && tab.id !== 'tab11' && tab.id !== 'tab12' && tab.id !== 'tab13' && tab.id !== 'tab14')
+                        && tab.id !== 'tab10' && tab.id !== 'tab11' && tab.id !== 'tab12' && tab.id !== 'tab13' 
+                        && tab.id !== 'tab14' && tab.id !== 'tab15' && tab.id !== 'tab16' && tab.id !== 'tab17' 
+                        && tab.id !== 'tab18')
                     .map(tab => (
                         <div key={tab.id} style={{ display: activeTab === tab.id ? 'block' : 'none' }}>
                             {tab.label} Content

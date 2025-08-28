@@ -1,4 +1,4 @@
-//backend/1BAct7_controller.js
+//backend/2Act3_controller.js
 import 'dotenv/config'; // Load environment variables from .env file
 import axios from 'axios'; // Importing axios for HTTP requests
 import { getDBConnection } from './getDBConnection.js'; // Importing the database connection helper
@@ -9,23 +9,27 @@ import fs from 'fs'; // Importing fs for file system operations
 //require('dotenv').config(); // Load environment variables from .env file
 const KOBO_API_KEY = process.env.KOBO_API_KEY; // KoboToolbox API key from environment variables
 const KOBO_NEW_SUBMISSION_API = process.env.KOBO_NEW_SUBMISSION_API_URL; // KoboToolbox API endpoint for new submissions
-const KOBO_FORM_1BAct7_FORM_ID = process.env.KOBO_FORM_1BAct7_UID;
-//const KOBO_FORM_1BAct7_FORM_ID = process.env.KOBO_FORM_1BAct7_UID_TEST; // KoboToolbox form ID for CB for Villagers
-const KOBO_DELETE_SUBMISSION_API = `${process.env.KOBO_API_URL}/${KOBO_FORM_1BAct7_FORM_ID}/data/`; // KoboToolbox API endpoint for deleting submissions
-const KOBO_DOWNLOAD_SUBMISSION_API = `${process.env.KOBO_API_URL}/${KOBO_FORM_1BAct7_FORM_ID}/data.json`; // KoboToolbox API endpoint for downloading submissions
+const KOBO_FORM_2Act3FORM_ID = process.env.KOBO_FORM_2Act3_UID;
+//const KOBO_FORM_2Act3FORM_ID = process.env.KOBO_FORM_2Act2_UID_TEST; // KoboToolbox form ID for CB for Villagers
+const KOBO_DELETE_SUBMISSION_API = `${process.env.KOBO_API_URL}/${KOBO_FORM_2Act3FORM_ID}/data/`; // KoboToolbox API endpoint for deleting submissions
+const KOBO_DOWNLOAD_SUBMISSION_API = `${process.env.KOBO_API_URL}/${KOBO_FORM_2Act3FORM_ID}/data.json`; // KoboToolbox API endpoint for downloading submissions
 
 
 //Download new data from Kobo Toolbox
-async function downloadForm1BAct7SubmissionDataFromKoboToolbox() {
+async function downloadForm2Act3SubmissionDataFromKoboToolbox() {
     let db;
     try {
         db = getDBConnection();
-        const headers = { Authorization: `Token ${KOBO_API_KEY}` };
+
+        const headers = {
+            Authorization: `Token ${KOBO_API_KEY}`
+        };
+
         let nextUrl = KOBO_DOWNLOAD_SUBMISSION_API;
 
-        // Clear old data
-        await runQuery(db, "DELETE FROM tb_Form_1BAct7_Participant");
-        await runQuery(db, "DELETE FROM tb_Form_1BAct7_Submission");
+        // Clear old data (optional)
+        await runQuery(db, "DELETE FROM tb_Form_2Act3_Participant");
+        await runQuery(db, "DELETE FROM tb_Form_2Act3_Submission");
 
         while (nextUrl) {
             const resp = await axios.get(nextUrl, { headers });
@@ -35,74 +39,84 @@ async function downloadForm1BAct7SubmissionDataFromKoboToolbox() {
             for (const el of root.results) {
                 const submissionId = el["_id"];
 
-                // Insert submission
-                await runQuery(db, `
-                    INSERT INTO tb_Form_1BAct7_Submission (
-                        Id, Uuid, Start, End, Reporting_period,
-                        Province, District, Village, SubActivity,
-                        Conduct_Start, Conduct_End, Equipment_received,
-                        Certified, Engaged, IFAD, MAF, WFP, GoL, Ben,
-                        Version, Submission_time
-                    ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
-                `, [
-                    submissionId,
-                    el["_uuid"] || el["formhub/uuid"] || null,
-                    el["start"] || null,
-                    el["end"] || null,
-                    el["_reportingperiod"] || null,
-                    el["select_one_province"] || null,
-                    el["select_one_district"] || null,
-                    el["select_one_district_village"] || null,
-                    el["_subactivity"] || null,
-                    el["group_actconductdate_sa1oe86/date_ha2jz81"] || null,
-                    el["group_actconductdate_sa1oe86/date_up9xu24"] || null,
-                    el["_0_1_"] || null,
-                    el["_certified"] || null,
-                    el["_engaged"] || null,
-                    parseInt(el["group_wz1ah68/_IFAD_"] || 0),
-                    parseInt(el["group_wz1ah68/_MAF_"] || 0),
-                    parseInt(el["group_wz1ah68/_WFP_"] || 0),
-                    parseInt(el["group_wz1ah68/_GoL_"] || 0),
-                    parseInt(el["group_wz1ah68/_Ben_"] || 0),
-                    el["__version__"] || null,
-                    el["_submission_time"] || null
-                ]);
+                // Insert into tb_Form_2Act3_Submission
+                await runQuery(
+                    db,
+                    `INSERT INTO tb_Form_2Act3_Submission (
+                        Id, Uuid, Start, End, Reporting_period, Province, District, Village,
+                        SubActivity, Conduct_Start, Conduct_End, ConstructionStatus, RoadLengthKM,
+                        PostHarvest, HaveOMCommity, HaveOMFund, TotalCost, IFAD, MAF, WFP, GoL,
+                        Ben, OtherFund, Version, Submission_time
+                    ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+                    [
+                        submissionId,
+                        el["_uuid"] || el["formhub/uuid"] || null,
+                        el["start"] || null,
+                        el["end"] || null,
+                        el["_reportingperiod"] || null,
+                        el["select_one_province"] || null,
+                        el["select_one_district"] || null,
+                        el["select_one_district_village"] || null,
+                        el["_nameofactivity"] || null,
+                        el["group_actconductdate_sa1oe86/date_ha2jz81"] || null,
+                        el["group_actconductdate_sa1oe86/date_up9xu24"] || null,
+                        el["_N_R_"] || null,
+                        parseInt(el["_KM"] || 0),
+                        parseInt(el["_post_harvest"] || 0),
+                        el["group_cn0mv65/_Yes_No_"] || null,
+                        el["group_cn0mv65/_Yes_No__001"] || null,
+                        parseInt(el["group_cn0mv65/_totalcost"] || 0),
+                        parseInt(el["group_wz1ah68/_IFAD_"] || 0),
+                        parseInt(el["group_wz1ah68/_MAF_"] || 0),
+                        parseInt(el["group_wz1ah68/_WFP_"] || 0),
+                        parseInt(el["group_wz1ah68/_GoL_"] || 0),
+                        parseInt(el["group_wz1ah68/_Ben_"] || 0),
+                        parseInt(el["group_wz1ah68/integer_oz4sh88"] || 0),
+                        el["__version__"] || null,
+                        el["_submission_time"] || null
+                    ]
+                );
 
                 // Insert participants
                 const participants = el["group_participantdetail_hp48r4"];
                 if (Array.isArray(participants)) {
                     for (const p of participants) {
-                        const haveHHId = p["group_participantdetail_hp48r4/doyouhavehh_id"];
-                        const name = haveHHId === "hhidyes"
-                            ? p["group_participantdetail_hp48r4/select_one_mainNameAndSurname"]
-                            : p["group_participantdetail_hp48r4/text_hx6fh11"];
+                        const haveHHId = p["group_participantdetail_hp48r4/doyouhavehh_id"] || null;
 
-                        await runQuery(db, `
-                            INSERT INTO tb_Form_1BAct7_Participant (
-                                SubmissionId, HaveHH_id, HHId, NameAndSurname,
-                                Responsibility, Age, Gender, Ethnicity,
-                                Poverty_level, PWD_status
-                            ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
-                        `, [
-                            submissionId,
-                            haveHHId || null,
-                            p["group_participantdetail_hp48r4/mainhhid"] || null,
-                            name || null,
-                            p["group_participantdetail_hp48r4/_responsibility"] || null,
-                            parseInt(p["group_participantdetail_hp48r4/_mainAge"] || 0),
-                            p["group_participantdetail_hp48r4/_mainGender"] || null,
-                            p["group_participantdetail_hp48r4/_mainEthnicity"] || null,
-                            p["group_participantdetail_hp48r4/_mainPovertyLevel"] || null,
-                            p["group_participantdetail_hp48r4/_mainPWD"] || null
-                        ]);
+                        const name =
+                            haveHHId === "hhidyes"
+                                ? p["group_participantdetail_hp48r4/select_one_mainNameAndSurname"]
+                                : p["group_participantdetail_hp48r4/text_hx6fh11"];
+
+                        const hhId =
+                            haveHHId === "hhidyes"
+                                ? p["group_participantdetail_hp48r4/mainhhid"]
+                                : null;
+
+                        await runQuery(
+                            db,
+                            `INSERT INTO tb_Form_2Act3_Participant (
+                                SubmissionId, HHId, NameAndSurname, Age, Gender, Ethnicity, PovertyLevel, PWD
+                            ) VALUES (?, ?, ?, ?, ?, ?, ?, ?)`,
+                            [
+                                submissionId,
+                                hhId || "",
+                                name || "",
+                                parseInt(p["group_participantdetail_hp48r4/_mainAge"] || 0),
+                                p["group_participantdetail_hp48r4/_mainGender"] || null,
+                                p["group_participantdetail_hp48r4/_mainEthnicity"] || null,
+                                p["group_participantdetail_hp48r4/_mainPovertyLevel"] || null,
+                                p["group_participantdetail_hp48r4/_mainPWD"] || null
+                            ]
+                        );
                     }
                 }
             }
         }
 
-        console.log("✅ Form 1BAct7 submission data downloaded and saved.");
+        console.log("✅ Form 2Act3 submission data downloaded and saved.");
     } catch (err) {
-        console.error("❌ Error downloading Form 1BAct7 data:", err.message);
+        console.error("❌ Error downloading Form 2Act3 data:", err.message);
         throw err;
     } finally {
         if (db) await db.close();
@@ -120,8 +134,8 @@ function runQuery(db, sql, params = []) {
 
 
 
-// ############################ Function to get Form 1A3b participant data ############################
-function getForm1BAct7ParticipantData(language) {
+// ############################ Function to get Form 1BAct8 participant data ############################
+function getForm2Act3ParticipantData(language) {
     return new Promise((resolve, reject) => {
 
         const db = getDBConnection(); // Get the database connection
@@ -142,57 +156,62 @@ function getForm1BAct7ParticipantData(language) {
                         s.SubActivity,
                         s.Conduct_Start,
                         s.Conduct_End,
-                        s.Equipment_received,
-                        s.Certified,
-                        s.Engaged,
+                        s.RoadLengthKM,
+                        s.PostHarvest,
+                        s.ConstructionStatus,
+                        s.HaveOMCommity,
+                        s.HaveOMFund,
+                        s.TotalCost,
                         s.IFAD,
                         s.MAF,
                         s.WFP,
                         s.GoL,
                         s.Ben,
+                        s.OtherFund,
                         s.Version,
                         s.Submission_time,
                         p.Id AS ParticipantId,
-                        p.HaveHH_id,
                         p.HHId,
                         p.NameAndSurname,
-                        p.Responsibility,
                         p.Age,
                         p.Gender,
                         p.Ethnicity,
-                        p.Poverty_level,
-                        p.PWD_status,
+                        p.PovertyLevel,
+                        p.PWD,
                         ROW_NUMBER() OVER (PARTITION BY p.SubmissionId ORDER BY p.Id) AS rn
-                    FROM tb_Form_1BAct7_Participant p
-                    JOIN tb_Form_1BAct7_Submission s ON p.SubmissionId = s.Id
-                )
-                SELECT
+                    FROM tb_Form_2Act3_Participant p
+                    JOIN tb_Form_2Act3_Submission s ON p.SubmissionId = s.Id
+                    )
+                    SELECT
                     np.Id AS SubmissionID,
                     np.Reporting_period AS 'ໄລຍະເວລາລາຍງານ',
-                    (SELECT Label_Lao FROM Translation_EN_LA WHERE FormName='form_1bact7' AND ItemCode=np.Province LIMIT 1) AS 'ແຂວງ',
-                    (SELECT Label_Lao FROM Translation_EN_LA WHERE FormName='form_1bact7' AND ItemCode=np.District LIMIT 1) AS 'ເມືອງ',
-                    (SELECT Label_Lao FROM Translation_EN_LA WHERE FormName='form_1bact7' AND ItemCode=np.Village LIMIT 1) AS 'ບ້ານ',
-                    np.SubActivity AS 'ກິດຈະກຳຍ່ອຍທີ່ເຂົ້າຮ່ວມ',
+                    (SELECT Label_Lao FROM Translation_EN_LA WHERE FormName = 'form_2act3' AND ItemCode = np.Province LIMIT 1) AS 'ແຂວງ',
+                    (SELECT Label_Lao FROM Translation_EN_LA WHERE FormName = 'form_2act3' AND ItemCode = np.District LIMIT 1) AS 'ເມືອງ',
+                    (SELECT Label_Lao FROM Translation_EN_LA WHERE FormName = 'form_2act3' AND ItemCode = np.Village LIMIT 1) AS 'ບ້ານ',
+                    (SELECT Label_Lao FROM Translation_EN_LA WHERE FormName = 'form_2act3' AND ItemCode = np.SubActivity LIMIT 1) AS 'ຊື່ກິດຈະກຳຕາມແຜນ',
                     np.Conduct_Start AS 'ວັນເລີ່ມ',
                     np.Conduct_End AS 'ວັນສຳເລັດ',
-                    np.HHId AS 'ລະຫັດຄົວເຮືອນ',
-                    np.NameAndSurname AS 'ຊື່ ແລະ ນາມສະກຸນ',
-                    (SELECT Label_Lao FROM Translation_EN_LA WHERE FormName='form_1bact7' AND ItemCode=np.Responsibility LIMIT 1) AS 'ໜ້າທີ່ຮັບຜິດຊອບ',
+                    CASE WHEN np.rn = 1 THEN (SELECT Label_Lao FROM Translation_EN_LA WHERE FormName = 'form_2act3' AND ItemCode = np.ConstructionStatus LIMIT 1) ELSE NULL END AS 'ສະຖານະການກໍ່ສ້າງ',	  
+                    CASE WHEN np.rn = 1 THEN np.RoadLengthKM ELSE NULL END AS 'ຄວາມຍາວຂອງທາງ (km)',
+                    CASE WHEN np.rn = 1 THEN np.PostHarvest ELSE NULL END AS 'ນຳນວນທີໄດ້ໂຕຈິງພາຍຫຼັງການເກັບກ່ຽວ',
+                    np.HHId AS 'HH ID',
+                    np.NameAndSurname AS 'ຊື່ຜູ້ເຂົ້າຮ່ວມ',                   
                     np.Age AS 'ອາຍຸ',
-                    (SELECT Label_Lao FROM Translation_EN_LA WHERE FormName='form_1bact7' AND ItemCode=np.Gender LIMIT 1) AS 'ເພດ',
-                    (SELECT Label_Lao FROM Translation_EN_LA WHERE FormName='form_1bact7' AND ItemCode=np.Ethnicity LIMIT 1) AS 'ຊົນເຜົ່າ',
-                    (SELECT Label_Lao FROM Translation_EN_LA WHERE FormName='form_1bact7' AND ItemCode=np.Poverty_level LIMIT 1) AS 'ຄວາມທຸກຍາກ',
-                    (SELECT Label_Lao FROM Translation_EN_LA WHERE FormName='form_1bact7' AND ItemCode=np.PWD_status LIMIT 1) AS 'ເສຍອົງຄະບໍ',					
-                    CASE WHEN np.rn = 1 THEN (SELECT Label_Lao FROM Translation_EN_LA WHERE FormName='form_1bact7' AND ItemCode=np.Equipment_received LIMIT 1) ELSE NULL END AS 'ໄດ້ຮັບອຸປະກອນ',
-                    CASE WHEN np.rn = 1 THEN (SELECT Label_Lao FROM Translation_EN_LA WHERE FormName='form_1bact7' AND ItemCode=np.Certified LIMIT 1) ELSE NULL END AS 'ໄດ້ຮັບໃບຢັ້ງຢືນ',
-                    CASE WHEN np.rn = 1 THEN (SELECT Label_Lao FROM Translation_EN_LA WHERE FormName='form_1bact7' AND ItemCode=np.Engaged LIMIT 1) ELSE NULL END AS 'ໄດ້ເລີ່ມຊື້ຂາບປັດໃຈການຜະລິດ',
-                    CASE WHEN np.rn = 1 THEN np.IFAD ELSE NULL END AS IFAD,
-                    CASE WHEN np.rn = 1 THEN np.MAF ELSE NULL END AS MAF,
-                    CASE WHEN np.rn = 1 THEN np.WFP ELSE NULL END AS WFP,
-                    CASE WHEN np.rn = 1 THEN np.GoL ELSE NULL END AS GoL,
-                    CASE WHEN np.rn = 1 THEN np.Ben ELSE NULL END AS Ben
-                FROM NumberedParticipants np
-                ORDER BY np.Id DESC, np.rn;
+                    (SELECT Label_Lao FROM Translation_EN_LA WHERE FormName = 'form_2act3' AND ItemCode = np.Gender LIMIT 1) AS 'ເພດ',
+                    (SELECT Label_Lao FROM Translation_EN_LA WHERE FormName = 'form_2act3' AND ItemCode = np.Ethnicity LIMIT 1) AS 'ຊົນເຜົ່າ',
+                    (SELECT Label_Lao FROM Translation_EN_LA WHERE FormName = 'form_2act3' AND ItemCode = np.PovertyLevel LIMIT 1) AS 'ຖານະຄອບຄົວ',
+                    (SELECT Label_Lao FROM Translation_EN_LA WHERE FormName = 'form_2act3' AND ItemCode = np.PWD LIMIT 1) AS 'ເສຍອົງຄະ',                    
+                    CASE WHEN np.rn = 1 THEN (SELECT Label_Lao FROM Translation_EN_LA WHERE FormName = 'form_2act3' AND ItemCode = np.HaveOMCommity LIMIT 1) ELSE NULL END AS 'ຄະນະຄຸ້ມຄອງນໍາໃຊ້',
+                    CASE WHEN np.rn = 1 THEN (SELECT Label_Lao FROM Translation_EN_LA WHERE FormName = 'form_2act3' AND ItemCode = np.HaveOMFund LIMIT 1) ELSE NULL END AS 'ກອງທຶນຄຸ້ມຄອງນໍາໃຊ້ໍ່',                    
+                    CASE WHEN np.rn = 1 THEN np.TotalCost ELSE NULL END AS 'ມູນຄ່າສົມທົບເທົ່າໃດ',
+                    CASE WHEN np.rn = 1 THEN np.IFAD ELSE NULL END AS 'IFAD',
+                    CASE WHEN np.rn = 1 THEN np.MAF ELSE NULL END AS 'MAF',
+                    CASE WHEN np.rn = 1 THEN np.WFP ELSE NULL END AS 'WFP',
+                    CASE WHEN np.rn = 1 THEN np.GoL ELSE NULL END AS 'GoL',
+                    CASE WHEN np.rn = 1 THEN np.Ben ELSE NULL END AS 'Ben',
+                    CASE WHEN np.rn = 1 THEN np.OtherFund ELSE NULL END AS 'Other Fund'
+                    FROM NumberedParticipants np
+                    ORDER BY np.Id DESC, np.rn;
             `;
         } else if (language === 'EN') {
             // EN version
@@ -210,59 +229,62 @@ function getForm1BAct7ParticipantData(language) {
                         s.SubActivity,
                         s.Conduct_Start,
                         s.Conduct_End,
-                        s.Equipment_received,
-                        s.Certified,
-                        s.Engaged,
+                        s.RoadLengthKM,
+                        s.PostHarvest,
+                        s.ConstructionStatus,
+                        s.HaveOMCommity,
+                        s.HaveOMFund,
+                        s.TotalCost,
                         s.IFAD,
                         s.MAF,
                         s.WFP,
                         s.GoL,
                         s.Ben,
+                        s.OtherFund,
                         s.Version,
                         s.Submission_time,
                         p.Id AS ParticipantId,
-                        p.HaveHH_id,
                         p.HHId,
                         p.NameAndSurname,
-                        p.Responsibility,
                         p.Age,
                         p.Gender,
                         p.Ethnicity,
-                        p.Poverty_level,
-                        p.PWD_status,
+                        p.PovertyLevel,
+                        p.PWD,
                         ROW_NUMBER() OVER (PARTITION BY p.SubmissionId ORDER BY p.Id) AS rn
-                    FROM tb_Form_1BAct7_Participant p
-                    JOIN tb_Form_1BAct7_Submission s ON p.SubmissionId = s.Id
-                )
-                SELECT
+                    FROM tb_Form_2Act3_Participant p
+                    JOIN tb_Form_2Act3_Submission s ON p.SubmissionId = s.Id
+                    )
+                    SELECT
                     np.Id AS SubmissionID,
                     np.Reporting_period AS 'Reporting Period',
-                    (SELECT Label_English FROM Translation_EN_LA WHERE FormName='form_1bact7' AND ItemCode=np.Province LIMIT 1) AS 'Province',
-                    (SELECT Label_English FROM Translation_EN_LA WHERE FormName='form_1bact7' AND ItemCode=np.District LIMIT 1) AS 'District',
-                    (SELECT Label_English FROM Translation_EN_LA WHERE FormName='form_1bact7' AND ItemCode=np.Village LIMIT 1) AS 'Village',
-                    np.SubActivity AS 'Sub-Activity',
+                    (SELECT Label_English FROM Translation_EN_LA WHERE FormName = 'form_2act3' AND ItemCode = np.Province LIMIT 1) AS 'Province',
+                    (SELECT Label_English FROM Translation_EN_LA WHERE FormName = 'form_2act3' AND ItemCode = np.District LIMIT 1) AS 'District',
+                    (SELECT Label_English FROM Translation_EN_LA WHERE FormName = 'form_2act3' AND ItemCode = np.Village LIMIT 1) AS 'Village',
+                    (SELECT Label_English FROM Translation_EN_LA WHERE FormName = 'form_2act3' AND ItemCode = np.SubActivity LIMIT 1) AS 'Sub-Activity',
                     np.Conduct_Start AS 'Start Date',
                     np.Conduct_End AS 'End Date',
-                    np.HHId AS 'HH Code',
-                    np.NameAndSurname AS 'Name',
-                    (SELECT Label_English FROM Translation_EN_LA WHERE FormName='form_1bact7' AND ItemCode=np.Responsibility LIMIT 1) AS 'Responsibility',
+                    CASE WHEN np.rn = 1 THEN (SELECT Label_English FROM Translation_EN_LA WHERE FormName = 'form_2act3' AND ItemCode = np.ConstructionStatus LIMIT 1) ELSE NULL END AS 'Construction Status',	  
+                    CASE WHEN np.rn = 1 THEN np.RoadLengthKM ELSE NULL END AS 'Road Length (km)',
+                    CASE WHEN np.rn = 1 THEN np.PostHarvest ELSE NULL END AS 'Post-Harvest Area',                    
+                    np.HHId AS 'HH ID',
+                    np.NameAndSurname AS 'Participant Name',
                     np.Age AS 'Age',
-                    (SELECT Label_English FROM Translation_EN_LA WHERE FormName='form_1bact7' AND ItemCode=np.Gender LIMIT 1) AS 'Gender',
-                    (SELECT Label_English FROM Translation_EN_LA WHERE FormName='form_1bact7' AND ItemCode=np.Ethnicity LIMIT 1) AS 'Ethnicity',
-                    (SELECT Label_English FROM Translation_EN_LA WHERE FormName='form_1bact7' AND ItemCode=np.Poverty_level LIMIT 1) AS 'Poverty Level',
-                    (SELECT Label_English FROM Translation_EN_LA WHERE FormName='form_1bact7' AND ItemCode=np.PWD_status LIMIT 1) AS 'PWD',
-                    CASE WHEN np.rn = 1 THEN (SELECT Label_English FROM Translation_EN_LA WHERE FormName='form_1bact7' AND ItemCode=np.Equipment_received LIMIT 1) ELSE NULL END AS 'Starter Kit Received',
-                    CASE WHEN np.rn = 1 THEN (SELECT Label_English FROM Translation_EN_LA WHERE FormName='form_1bact7' AND ItemCode=np.Certified LIMIT 1) ELSE NULL END AS 'Certified',
-                    CASE WHEN np.rn = 1 THEN (SELECT Label_English FROM Translation_EN_LA WHERE FormName='form_1bact7' AND ItemCode=np.Engaged LIMIT 1) ELSE NULL END AS 'Engaged in commercial',
-
-
+                    (SELECT Label_English FROM Translation_EN_LA WHERE FormName = 'form_2act3' AND ItemCode = np.Gender LIMIT 1) AS 'Gender',
+                    (SELECT Label_English FROM Translation_EN_LA WHERE FormName = 'form_2act3' AND ItemCode = np.Ethnicity LIMIT 1) AS 'Ethnicity',
+                    (SELECT Label_English FROM Translation_EN_LA WHERE FormName = 'form_2act3' AND ItemCode = np.PovertyLevel LIMIT 1) AS 'Poverty Level',
+                    (SELECT Label_English FROM Translation_EN_LA WHERE FormName = 'form_2act3' AND ItemCode = np.PWD LIMIT 1) AS 'PWD',
+                    CASE WHEN np.rn = 1 THEN (SELECT Label_English FROM Translation_EN_LA WHERE FormName = 'form_2act3' AND ItemCode = np.HaveOMCommity LIMIT 1) ELSE NULL END AS 'OM Committee',
+                    CASE WHEN np.rn = 1 THEN (SELECT Label_English FROM Translation_EN_LA WHERE FormName = 'form_2act3' AND ItemCode = np.HaveOMFund LIMIT 1) ELSE NULL END AS 'OM Fund',
+                    CASE WHEN np.rn = 1 THEN np.TotalCost ELSE NULL END AS 'Total Cost',
                     CASE WHEN np.rn = 1 THEN np.IFAD ELSE NULL END AS IFAD,
                     CASE WHEN np.rn = 1 THEN np.MAF ELSE NULL END AS MAF,
                     CASE WHEN np.rn = 1 THEN np.WFP ELSE NULL END AS WFP,
                     CASE WHEN np.rn = 1 THEN np.GoL ELSE NULL END AS GoL,
-                    CASE WHEN np.rn = 1 THEN np.Ben ELSE NULL END AS Ben
-                FROM NumberedParticipants np
-                ORDER BY np.Id DESC, np.rn;
+                    CASE WHEN np.rn = 1 THEN np.Ben ELSE NULL END AS Ben,
+                    CASE WHEN np.rn = 1 THEN np.OtherFund ELSE NULL END AS 'Other Fund'
+                    FROM NumberedParticipants np
+                    ORDER BY np.Id DESC, np.rn;
             `;
         }
 
@@ -282,8 +304,8 @@ function getForm1BAct7ParticipantData(language) {
 }
 
 
-// ############################ Function to get Form 1BAct7 data by SubmissionId ############################
-function getForm1BAct7ParticipantDataBySID(SubmissionId, language) {
+// ############################ Function to get Form 2Act3 data by SubmissionId ############################
+function getForm2Act3ParticipantDataBySID(SubmissionId, language) {
     return new Promise((resolve, reject) => {
 
         const db = getDBConnection(); // Get the database connection
@@ -304,59 +326,66 @@ function getForm1BAct7ParticipantDataBySID(SubmissionId, language) {
                         s.SubActivity,
                         s.Conduct_Start,
                         s.Conduct_End,
-                        s.Equipment_received,
-                        s.Certified,
-                        s.Engaged,
+                        s.RoadLengthKM,
+                        s.PostHarvest,
+                        s.ConstructionStatus,
+                        s.HaveOMCommity,
+                        s.HaveOMFund,
+                        s.TotalCost,
                         s.IFAD,
                         s.MAF,
                         s.WFP,
                         s.GoL,
                         s.Ben,
+                        s.OtherFund,
                         s.Version,
                         s.Submission_time,
                         p.Id AS ParticipantId,
-                        p.HaveHH_id,
                         p.HHId,
                         p.NameAndSurname,
-                        p.Responsibility,
                         p.Age,
                         p.Gender,
                         p.Ethnicity,
-                        p.Poverty_level,
-                        p.PWD_status,
+                        p.PovertyLevel,
+                        p.PWD,
                         ROW_NUMBER() OVER (PARTITION BY p.SubmissionId ORDER BY p.Id) AS rn
-                    FROM tb_Form_1BAct7_Participant p
-                    JOIN tb_Form_1BAct7_Submission s ON p.SubmissionId = s.Id
-					WHERE s.Id =?
-                )
-                SELECT
+                    FROM tb_Form_2Act3_Participant p
+                    JOIN tb_Form_2Act3_Submission s ON p.SubmissionId = s.Id
+                    WHERE s.Id =?
+                    )
+
+                    SELECT
                     np.ParticipantId as PID,
-					np.Id AS SubmissionID,
+                    np.Id AS SubmissionID,
                     np.Reporting_period AS 'ໄລຍະເວລາລາຍງານ',
-					np.Conduct_Start AS 'ວັນເລີ່ມ',
+                    np.Conduct_Start AS 'ວັນເລີ່ມ',
                     np.Conduct_End AS 'ວັນສຳເລັດ',
-                    (SELECT Label_Lao FROM Translation_EN_LA WHERE FormName='form_1bact7' AND ItemCode=np.Province LIMIT 1) AS 'ແຂວງ',
-                    (SELECT Label_Lao FROM Translation_EN_LA WHERE FormName='form_1bact7' AND ItemCode=np.District LIMIT 1) AS 'ເມືອງ',
-                    (SELECT Label_Lao FROM Translation_EN_LA WHERE FormName='form_1bact7' AND ItemCode=np.Village LIMIT 1) AS 'ບ້ານ',
-                    np.SubActivity AS 'ກິດຈະກຳຍ່ອຍທີ່ເຂົ້າຮ່ວມ',
-                    np.HHId AS 'ລະຫັດຄົວເຮືອນ',
-                    np.NameAndSurname AS 'ຊື່ ແລະ ນາມສະກຸນ',
-                    (SELECT Label_Lao FROM Translation_EN_LA WHERE FormName='form_1bact7' AND ItemCode=np.Responsibility LIMIT 1) AS 'ໜ້າທີ່ຮັບຜິດຊອບ',
+                    (SELECT Label_Lao FROM Translation_EN_LA WHERE FormName = 'form_2act3' AND ItemCode = np.Province LIMIT 1) AS 'ແຂວງ',
+                    (SELECT Label_Lao FROM Translation_EN_LA WHERE FormName = 'form_2act3' AND ItemCode = np.District LIMIT 1) AS 'ເມືອງ',
+                    (SELECT Label_Lao FROM Translation_EN_LA WHERE FormName = 'form_2act3' AND ItemCode = np.Village LIMIT 1) AS 'ບ້ານ',
+                    (SELECT Label_Lao FROM Translation_EN_LA WHERE FormName = 'form_2act3' AND ItemCode = np.SubActivity LIMIT 1) AS 'ຊື່ກິດຈະກຳຕາມແຜນ',
+                    
+                    CASE WHEN np.rn = 1 THEN (SELECT Label_Lao FROM Translation_EN_LA WHERE FormName = 'form_2act3' AND ItemCode = np.ConstructionStatus LIMIT 1) ELSE NULL END AS 'ສະຖານະການກໍ່ສ້າງ',	  
+                    CASE WHEN np.rn = 1 THEN np.RoadLengthKM ELSE NULL END AS 'ຄວາມຍາວທາງ (km)',
+                    CASE WHEN np.rn = 1 THEN np.PostHarvest ELSE NULL END AS 'ນຳນວນທີໄດ້ໂຕຈິງພາຍຫຼັງການເກັບກ່ຽວ',
+                    np.HHId AS 'HH ID',
+                    np.NameAndSurname AS 'ຊື່ຜູ້ເຂົ້າຮ່ວມ',      
                     np.Age AS 'ອາຍຸ',
-                    (SELECT Label_Lao FROM Translation_EN_LA WHERE FormName='form_1bact7' AND ItemCode=np.Gender LIMIT 1) AS 'ເພດ',
-                    (SELECT Label_Lao FROM Translation_EN_LA WHERE FormName='form_1bact7' AND ItemCode=np.Ethnicity LIMIT 1) AS 'ຊົນເຜົ່າ',
-                    (SELECT Label_Lao FROM Translation_EN_LA WHERE FormName='form_1bact7' AND ItemCode=np.Poverty_level LIMIT 1) AS 'ຄວາມທຸກຍາກ',
-                    (SELECT Label_Lao FROM Translation_EN_LA WHERE FormName='form_1bact7' AND ItemCode=np.PWD_status LIMIT 1) AS 'ເສຍອົງຄະບໍ',
-					CASE WHEN np.rn = 1 THEN (SELECT Label_Lao FROM Translation_EN_LA WHERE FormName='form_1bact7' AND ItemCode=np.Equipment_received LIMIT 1) ELSE NULL END AS 'ໄດ້ຮັບອຸປະກອນ',
-                    CASE WHEN np.rn = 1 THEN (SELECT Label_Lao FROM Translation_EN_LA WHERE FormName='form_1bact7' AND ItemCode=np.Certified LIMIT 1) ELSE NULL END AS 'ໄດ້ຮັບໃບຢັ້ງຢືນ',
-                    CASE WHEN np.rn = 1 THEN (SELECT Label_Lao FROM Translation_EN_LA WHERE FormName='form_1bact7' AND ItemCode=np.Engaged LIMIT 1) ELSE NULL END AS 'ໄດ້ເລີ່ມຊື້ຂາບປັດໃຈການຜະລິດ',
-                    CASE WHEN np.rn = 1 THEN np.IFAD ELSE NULL END AS IFAD,
-                    CASE WHEN np.rn = 1 THEN np.MAF ELSE NULL END AS MAF,
-                    CASE WHEN np.rn = 1 THEN np.WFP ELSE NULL END AS WFP,
-                    CASE WHEN np.rn = 1 THEN np.GoL ELSE NULL END AS GoL,
-                    CASE WHEN np.rn = 1 THEN np.Ben ELSE NULL END AS Ben
-                FROM NumberedParticipants np
-                ORDER BY np.Id DESC, np.rn;
+                    (SELECT Label_Lao FROM Translation_EN_LA WHERE FormName = 'form_2act3' AND ItemCode = np.Gender LIMIT 1) AS 'ເພດ',
+                    (SELECT Label_Lao FROM Translation_EN_LA WHERE FormName = 'form_2act3' AND ItemCode = np.Ethnicity LIMIT 1) AS 'ຊົນເຜົ່າ',
+                    (SELECT Label_Lao FROM Translation_EN_LA WHERE FormName = 'form_2act3' AND ItemCode = np.PovertyLevel LIMIT 1) AS 'ຖານະຄອບຄົວ',
+                    (SELECT Label_Lao FROM Translation_EN_LA WHERE FormName = 'form_2act3' AND ItemCode = np.PWD LIMIT 1) AS 'ເສຍອົງຄະ',	  
+                    CASE WHEN np.rn = 1 THEN (SELECT Label_Lao FROM Translation_EN_LA WHERE FormName = 'form_2act3' AND ItemCode = np.HaveOMCommity LIMIT 1) ELSE NULL END AS 'ຄະນະຄຸ້ມຄອງນໍາໃຊ້',
+                    CASE WHEN np.rn = 1 THEN (SELECT Label_Lao FROM Translation_EN_LA WHERE FormName = 'form_2act3' AND ItemCode = np.HaveOMFund LIMIT 1) ELSE NULL END AS 'ກອງທຶນຄຸ້ມຄອງນໍາໃຊ້ໍ່',	  
+                    CASE WHEN np.rn = 1 THEN np.TotalCost ELSE NULL END AS 'ມູນຄ່າສົມທົບເທົ່າໃດ',
+                    CASE WHEN np.rn = 1 THEN np.IFAD ELSE NULL END AS 'IFAD',
+                    CASE WHEN np.rn = 1 THEN np.MAF ELSE NULL END AS 'MAF',
+                    CASE WHEN np.rn = 1 THEN np.WFP ELSE NULL END AS 'WFP',
+                    CASE WHEN np.rn = 1 THEN np.GoL ELSE NULL END AS 'GoL',
+                    CASE WHEN np.rn = 1 THEN np.Ben ELSE NULL END AS 'Ben',
+                    CASE WHEN np.rn = 1 THEN np.OtherFund ELSE NULL END AS 'Other Fund'
+                    FROM NumberedParticipants np
+                    ORDER BY np.Id DESC, np.rn;
             `;
         } else if (language === 'EN') {
             // EN version
@@ -374,59 +403,66 @@ function getForm1BAct7ParticipantDataBySID(SubmissionId, language) {
                         s.SubActivity,
                         s.Conduct_Start,
                         s.Conduct_End,
-                        s.Equipment_received,
-                        s.Certified,
-                        s.Engaged,
+                        s.RoadLengthKM,
+                        s.PostHarvest,
+                        s.ConstructionStatus,
+                        s.HaveOMCommity,
+                        s.HaveOMFund,
+                        s.TotalCost,
                         s.IFAD,
                         s.MAF,
                         s.WFP,
                         s.GoL,
                         s.Ben,
+                        s.OtherFund,
                         s.Version,
                         s.Submission_time,
                         p.Id AS ParticipantId,
-                        p.HaveHH_id,
                         p.HHId,
                         p.NameAndSurname,
-                        p.Responsibility,
                         p.Age,
                         p.Gender,
                         p.Ethnicity,
-                        p.Poverty_level,
-                        p.PWD_status,
+                        p.PovertyLevel,
+                        p.PWD,
                         ROW_NUMBER() OVER (PARTITION BY p.SubmissionId ORDER BY p.Id) AS rn
-                    FROM tb_Form_1BAct7_Participant p
-                    JOIN tb_Form_1BAct7_Submission s ON p.SubmissionId = s.Id
-					WHERE s.Id =?
-                )
-                SELECT
+                    FROM tb_Form_2Act3_Participant p
+                    JOIN tb_Form_2Act3_Submission s ON p.SubmissionId = s.Id
+                    WHERE s.Id =?
+                    )
+
+                    SELECT
                     np.ParticipantId as PID,
-					np.Id AS SubmissionID,
+                    np.Id AS SubmissionID,
                     np.Reporting_period AS 'Reporting Period',
-					np.Conduct_Start AS 'Start Date',
+                    np.Conduct_Start AS 'Start Date',
                     np.Conduct_End AS 'End Date',
-                    (SELECT Label_English FROM Translation_EN_LA WHERE FormName='form_1bact7' AND ItemCode=np.Province LIMIT 1) AS 'Province',
-                    (SELECT Label_English FROM Translation_EN_LA WHERE FormName='form_1bact7' AND ItemCode=np.District LIMIT 1) AS 'District',
-                    (SELECT Label_English FROM Translation_EN_LA WHERE FormName='form_1bact7' AND ItemCode=np.Village LIMIT 1) AS 'Village',
-                    np.SubActivity AS 'Sub-Activity',                    
-                    np.HHId AS 'HH Code',
-                    np.NameAndSurname AS 'Name',
-                    (SELECT Label_English FROM Translation_EN_LA WHERE FormName='form_1bact7' AND ItemCode=np.Responsibility LIMIT 1) AS 'Responsibility',
+                    (SELECT Label_English FROM Translation_EN_LA WHERE FormName = 'form_2act3' AND ItemCode = np.Province LIMIT 1) AS 'Province',
+                    (SELECT Label_English FROM Translation_EN_LA WHERE FormName = 'form_2act3' AND ItemCode = np.District LIMIT 1) AS 'District',
+                    (SELECT Label_English FROM Translation_EN_LA WHERE FormName = 'form_2act3' AND ItemCode = np.Village LIMIT 1) AS 'Village',
+                    (SELECT Label_English FROM Translation_EN_LA WHERE FormName = 'form_2act3' AND ItemCode = np.SubActivity LIMIT 1) AS 'Sub-Activity',
+                    
+                    CASE WHEN np.rn = 1 THEN (SELECT Label_English FROM Translation_EN_LA WHERE FormName = 'form_2act3' AND ItemCode = np.ConstructionStatus LIMIT 1) ELSE NULL END AS 'Const. Status',	  
+                    CASE WHEN np.rn = 1 THEN np.RoadLengthKM ELSE NULL END AS 'Road Length (km)',
+                    CASE WHEN np.rn = 1 THEN np.PostHarvest ELSE NULL END AS 'Post-Harvest Area',	  
+                    np.HHId AS 'HH ID',
+                    np.NameAndSurname AS 'Participant Name',
                     np.Age AS 'Age',
-                    (SELECT Label_English FROM Translation_EN_LA WHERE FormName='form_1bact7' AND ItemCode=np.Gender LIMIT 1) AS 'Gender',
-                    (SELECT Label_English FROM Translation_EN_LA WHERE FormName='form_1bact7' AND ItemCode=np.Ethnicity LIMIT 1) AS 'Ethnicity',
-                    (SELECT Label_English FROM Translation_EN_LA WHERE FormName='form_1bact7' AND ItemCode=np.Poverty_level LIMIT 1) AS 'Poverty Level',
-                    (SELECT Label_English FROM Translation_EN_LA WHERE FormName='form_1bact7' AND ItemCode=np.PWD_status LIMIT 1) AS 'PWD',
-					CASE WHEN np.rn = 1 THEN (SELECT Label_English FROM Translation_EN_LA WHERE FormName='form_1bact7' AND ItemCode=np.Equipment_received LIMIT 1) ELSE NULL END AS 'Starter Kit Rcvd.',
-                    CASE WHEN np.rn = 1 THEN (SELECT Label_English FROM Translation_EN_LA WHERE FormName='form_1bact7' AND ItemCode=np.Certified LIMIT 1) ELSE NULL END AS 'Certified',
-                    CASE WHEN np.rn = 1 THEN (SELECT Label_English FROM Translation_EN_LA WHERE FormName='form_1bact7' AND ItemCode=np.Engaged LIMIT 1) ELSE NULL END AS 'Engaged in commercial',
+                    (SELECT Label_English FROM Translation_EN_LA WHERE FormName = 'form_2act3' AND ItemCode = np.Gender LIMIT 1) AS 'Gender',
+                    (SELECT Label_English FROM Translation_EN_LA WHERE FormName = 'form_2act3' AND ItemCode = np.Ethnicity LIMIT 1) AS 'Ethnicity',
+                    (SELECT Label_English FROM Translation_EN_LA WHERE FormName = 'form_2act3' AND ItemCode = np.PovertyLevel LIMIT 1) AS 'Poverty Level',
+                    (SELECT Label_English FROM Translation_EN_LA WHERE FormName = 'form_2act3' AND ItemCode = np.PWD LIMIT 1) AS 'PWD',
+                    CASE WHEN np.rn = 1 THEN (SELECT Label_English FROM Translation_EN_LA WHERE FormName = 'form_2act3' AND ItemCode = np.HaveOMCommity LIMIT 1) ELSE NULL END AS 'OM Committee',
+                    CASE WHEN np.rn = 1 THEN (SELECT Label_English FROM Translation_EN_LA WHERE FormName = 'form_2act3' AND ItemCode = np.HaveOMFund LIMIT 1) ELSE NULL END AS 'OM Fund',
+                    CASE WHEN np.rn = 1 THEN np.TotalCost ELSE NULL END AS 'Total Cost',
                     CASE WHEN np.rn = 1 THEN np.IFAD ELSE NULL END AS IFAD,
                     CASE WHEN np.rn = 1 THEN np.MAF ELSE NULL END AS MAF,
                     CASE WHEN np.rn = 1 THEN np.WFP ELSE NULL END AS WFP,
                     CASE WHEN np.rn = 1 THEN np.GoL ELSE NULL END AS GoL,
-                    CASE WHEN np.rn = 1 THEN np.Ben ELSE NULL END AS Ben
-                FROM NumberedParticipants np
-                ORDER BY np.Id DESC, np.rn;
+                    CASE WHEN np.rn = 1 THEN np.Ben ELSE NULL END AS Ben,
+                    CASE WHEN np.rn = 1 THEN np.OtherFund ELSE NULL END AS 'Other Fund'
+                    FROM NumberedParticipants np
+                    ORDER BY np.Id DESC, np.rn;
             `;
         }
 
@@ -458,7 +494,7 @@ function getForm1BAct7ParticipantDataBySID(SubmissionId, language) {
 
 
 
-// ############################ Function to delete Form 1BAct7 submission data from both local database and KoboToolbox Online ############################
+// ############################ Function to delete Form 2Act3 submission data from both local database and KoboToolbox Online ############################
 async function deleteSubmissionInKoboAndDatabase(submissionId) {
     try {
         // Delete the whole submission from Kobo
@@ -482,11 +518,11 @@ async function deleteSubmissionInKoboAndDatabase(submissionId) {
         const db = getDBConnection();
         await new Promise((resolve, reject) => {
             // Delete participants first
-            db.run("DELETE FROM tb_Form_1BAct7_Participant WHERE SubmissionId = ?", [submissionId], function (err) {
+            db.run("DELETE FROM tb_Form_2Act3_Participant WHERE SubmissionId = ?", [submissionId], function (err) {
                 if (err) return reject(err);
 
                 // Then delete the submission itself
-                db.run("DELETE FROM tb_Form_1BAct7_Submission WHERE Id = ?", [submissionId], function (err) {
+                db.run("DELETE FROM tb_Form_2Act3_Submission WHERE Id = ?", [submissionId], function (err) {
                     db.close();
                     if (err) return reject(err);
                     resolve();
@@ -510,20 +546,20 @@ async function deleteSubmissionInKoboAndDatabase(submissionId) {
 
 
 // ############################ Function to UUID of a specific submissionID from local database before delete a participant ############################
-async function getForm1BAct7SubmissionUUIDBySubmissionId(submissionId) {
+async function getForm2Act3SubmissionUUIDBySubmissionId(submissionId) {
     const db = getDBConnection();
 
-    const row = await runGet(db, "SELECT Uuid FROM tb_Form_1BAct7_Submission WHERE Id = ?", [submissionId]);
+    const row = await runGet(db, "SELECT Uuid FROM tb_Form_2Act3_Submission WHERE Id = ?", [submissionId]);
     db.close();
 
     return row ? row.Uuid : null; // Return the UUID or null if not found
 
 }
 //function get new submissionID from local database by UUID
-async function getForm1BAct7NewSubmissionIdByUUID(uuId) {
+async function getForm2Act3NewSubmissionIdByUUID(uuId) {
     const db = getDBConnection();
 
-    const row = await runGet(db, "SELECT Id as SubmissionId FROM tb_Form_1BAct7_Submission WHERE Uuid = ?", [uuId]);
+    const row = await runGet(db, "SELECT Id as SubmissionId FROM tb_Form_2Act3_Submission WHERE Uuid = ?", [uuId]);
     db.close();
 
     return row ? row.SubmissionId : null; // Return the UUID or null if not found
@@ -538,11 +574,11 @@ async function getForm1BAct7NewSubmissionIdByUUID(uuId) {
 
 
 // ############################ Delete only participant in local DB ############################
-async function deleteOnlyForm1BAct7ParticipantInDB(participantId) {
+async function deleteOnlyForm2Act3ParticipantInDB(participantId) {
     const db = getDBConnection();
 
     return new Promise((resolve, reject) => {
-        db.run("DELETE FROM tb_Form_1BAct7_Participant WHERE Id = ?", [participantId], function (err) {
+        db.run("DELETE FROM tb_Form_2Act3_Participant WHERE Id = ?", [participantId], function (err) {
             if (err) reject(err);
             else resolve();
         });
@@ -550,7 +586,7 @@ async function deleteOnlyForm1BAct7ParticipantInDB(participantId) {
 }
 
 // ############################ Delete a submission in KoboToolbox ############################
-async function deleteOnlyForm1BAct7SubmissionInKobo(submissionId) {
+async function deleteOnlyForm2Act3SubmissionInKobo(submissionId) {
     try {
         // Delete the whole submission from Kobo
 
@@ -599,8 +635,8 @@ function runAll(db, sql, params = []) {
 async function getRawSubmissionAndParticipantsData(submissionId) {
     const db = getDBConnection();
 
-    const submission = await runGet(db, "SELECT * FROM tb_Form_1BAct7_Submission WHERE Id = ?", [submissionId]);
-    const participants = await runAll(db, "SELECT * FROM tb_Form_1BAct7_Participant WHERE SubmissionId = ?", [submissionId]);
+    const submission = await runGet(db, "SELECT * FROM tb_Form_2Act3_Submission WHERE Id = ?", [submissionId]);
+    const participants = await runAll(db, "SELECT * FROM tb_Form_2Act3_Participant WHERE SubmissionId = ?", [submissionId]);
 
     db.close();
     return { submission, participants };
@@ -627,7 +663,7 @@ async function getRawSubmissionAndParticipantsData(submissionId) {
 // }
 
 
-// ############################ Function to create Form 1A2 submission XML data to submit to KoboToolbox Online ############################
+// ############################ Function to create Form 2Act2 submission XML data to submit to KoboToolbox Online ############################
 //Datetime formatting function to match KoboToolbox's expected format:
 function formatLocalISOWithOffset(date = new Date()) {
     const tzOffset = -date.getTimezoneOffset(); // minutes
@@ -802,12 +838,12 @@ function escapeXML(str) {
 
 //Export component
 export {
-    downloadForm1BAct7SubmissionDataFromKoboToolbox,    
-    getForm1BAct7ParticipantData,
-    getForm1BAct7ParticipantDataBySID,
-    getForm1BAct7SubmissionUUIDBySubmissionId,
-    getForm1BAct7NewSubmissionIdByUUID,
-    deleteOnlyForm1BAct7ParticipantInDB,
-    deleteOnlyForm1BAct7SubmissionInKobo
+    downloadForm2Act3SubmissionDataFromKoboToolbox,
+    getForm2Act3ParticipantData,
+    getForm2Act3ParticipantDataBySID,
+    getForm2Act3SubmissionUUIDBySubmissionId,
+    getForm2Act3NewSubmissionIdByUUID,
+    deleteOnlyForm2Act3ParticipantInDB,
+    deleteOnlyForm2Act3SubmissionInKobo
 
 }

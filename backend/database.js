@@ -470,10 +470,257 @@ db.serialize(() => {
 
             `);
 
+    //Form 1BAct7 submission table
+    db.run(`
+                CREATE TABLE IF NOT EXISTS tb_Form_1BAct7_Submission (
+                    Id INTEGER PRIMARY KEY AUTOINCREMENT,
+                    Uuid TEXT,
+                    Start TEXT,
+                    End TEXT,
+                    Reporting_period TEXT,
+                    Province TEXT,
+                    District TEXT,
+                    Village TEXT,
+                    SubActivity TEXT,
+                    Conduct_Start TEXT,
+                    Conduct_End TEXT,
+                    Equipment_received TEXT,
+                    Certified TEXT,
+                    Engaged TEXT,
+                    IFAD INTEGER,
+                    MAF INTEGER,
+                    WFP INTEGER,
+                    GoL INTEGER,
+                    Ben INTEGER,
+                    Version TEXT,
+                    Submission_time TEXT
+                );
+            `);
+
+    //Form 1BAct7 particiapnt table
+    db.run(`
+                CREATE TABLE IF NOT EXISTS tb_Form_1BAct7_Participant (
+                    Id INTEGER PRIMARY KEY AUTOINCREMENT,
+                    SubmissionId INTEGER,
+                    HaveHH_id TEXT,
+                    HHId TEXT,
+                    NameAndSurname TEXT,
+                    Responsibility TEXT,
+                    Age INTEGER,
+                    Gender TEXT,
+                    Ethnicity TEXT,
+                    Poverty_level TEXT,
+                    PWD_status TEXT,
+                    FOREIGN KEY (SubmissionId) REFERENCES tb_Form_1BAct7_Submission(Id)
+                );
+            `);
+
+
+    //Form 1BAct8 submission table
+    db.run(`
+                CREATE TABLE IF NOT EXISTS tb_Form_1BAct8_Submission (
+                    Id INTEGER PRIMARY KEY AUTOINCREMENT,
+                    Uuid TEXT,
+                    Start TEXT,
+                    End TEXT,
+                    Reporting_period TEXT,
+                    Province TEXT,
+                    District TEXT,
+                    Village TEXT,
+                    SubActivity TEXT,
+                    Conduct_Start TEXT,
+                    Conduct_End TEXT,
+                    MUS_built TEXT,         -- _0_1_2_
+                    Community_assigned TEXT,      -- _0_1_cominty
+                    OM_Fund_Collected TEXT,            -- _No_Yes_
+                    OM_Fund_Total_amount INTEGER,           -- _amount
+                    Annual_cost INTEGER,            -- _annualcost
+                    IFAD INTEGER,
+                    MAF INTEGER,
+                    WFP INTEGER,
+                    GoL INTEGER,
+                    Ben INTEGER,
+                    OtherFund INTEGER,              -- integer_oz4sh88
+                    Version TEXT,
+                    Submission_time TEXT
+                );
+            `);
+
+    //Form 1BAct8 particiapnt table
+    db.run(`
+                CREATE TABLE IF NOT EXISTS tb_Form_1BAct8_Participant (
+                    Id INTEGER PRIMARY KEY AUTOINCREMENT,
+                    SubmissionId INTEGER,
+                    HaveHH_id TEXT,
+                    HHId TEXT,
+                    NameAndSurname TEXT,
+                    Age INTEGER,
+                    Gender TEXT,
+                    Ethnicity TEXT,
+                    Poverty_level TEXT,
+                    PWD_status TEXT,
+                    AreaAmount REAL,     -- _amountofarea
+                    FOREIGN KEY (SubmissionId) REFERENCES tb_Form_1BAct8_Submission(Id)
+                );
+            `);
+
+    //Form 2Act1 submission table
+    db.run(`
+                CREATE TABLE IF NOT EXISTS tb_Form_2Act1_Submission (
+                    Id INTEGER PRIMARY KEY,
+                    Uuid TEXT,
+                    Start TEXT,
+                    End TEXT,
+                    Reporting_period TEXT,
+                    Province TEXT,
+                    District TEXT,
+                    Village TEXT,
+                    SubActivity TEXT,
+                    Conduct_Start TEXT,
+                    Conduct_End TEXT,
+                    IFAD INTEGER,
+                    MAF INTEGER,
+                    WFP INTEGER,
+                    GoL INTEGER,
+                    Ben INTEGER,
+                    OtherFund INTEGER,
+                    Version TEXT,
+                    Submission_time TEXT
+                );
+            `);
+
+    //Form 2Act1 particiapnt table
+    db.run(`
+                CREATE TABLE IF NOT EXISTS tb_Form_2Act1_Participant (
+                    Id INTEGER PRIMARY KEY AUTOINCREMENT,
+                    SubmissionId INTEGER,
+                    EstablishmentDate TEXT,
+                    NameOfMSME_Owner TEXT,
+                    Age INTEGER,
+                    Gender TEXT,
+                    Ethnicity TEXT,
+                    PWD_status TEXT,
+                    BusinessType TEXT,
+                    Existing TEXT,
+                    SUN_Member TEXT,
+                    ContactWithOther TEXT,
+                    DMY_Signed TEXT,
+                    NameExistingMSME TEXT,
+                    NameOfNewPartnershipBusiness TEXT,
+                    AmountMSME_APGmembers INTEGER,
+                    AccessFin TEXT,
+                    AccessFinUnit TEXT,
+                    AccessFinAmount INTEGER,
+                    FOREIGN KEY (SubmissionId) REFERENCES tb_Form_2Act1_Submission(Id)
+                );
+            `);
+
+    //Form 2Act2 submission table
+    db.run(`
+                CREATE TABLE IF NOT EXISTS tb_Form_2Act2_Submission (
+                    Id INTEGER PRIMARY KEY AUTOINCREMENT, -- _id from API
+                    Uuid TEXT,							-- _uuid
+                    Start TEXT,
+                    End TEXT,
+                    Reporting_period TEXT,
+                    Province TEXT,
+                    District TEXT,
+                    Village TEXT,
+                    SubActivity TEXT,
+                    Conduct_Start TEXT,
+                    Conduct_End TEXT,
+                    MSME_Invited INTEGER,
+                    MSME_Selected INTEGER,
+                    TypeOfContracted TEXT,		--Types of enteprises
+                    DateApproved TEXT, 			--DMY of partnership
+                    NumberOfMSME INTEGER, 		--MSME Number of APG engaged in the contract
+                    TotalInvestment INTEGER,
+                    IFAD INTEGER,
+                    MAF INTEGER,
+                    WFP INTEGER,
+                    GoL INTEGER,
+                    Ben INTEGER,
+                    OtherFund INTEGER,
+                    Version TEXT,
+                    Submission_time TEXT
+                );
+            `);
+
+    //Form 2Act2 particiapnt table
+    db.run(`
+                CREATE TABLE IF NOT EXISTS tb_Form_2Act2_Participant (
+                    Id INTEGER PRIMARY KEY AUTOINCREMENT,
+                    SubmissionId INTEGER,
+                    HHId TEXT,
+                    NameAndSurname TEXT,
+                    TypeOfOrg TEXT,
+                    Age INTEGER,
+                    Gender TEXT,
+                    Ethnicity TEXT,
+                    WhatOrgDo TEXT, 			--Types of Enterprise sector direction
+                    MSP TEXT,
+                    BusinessPlan TEXT,
+                    SUN_Member TEXT,
+                    ContractedWithOther TEXT, 	--Currently Contracted with others
+                    TypeOfPartner TEXT,
+                    DMYPartnership TEXT,
+                    FOREIGN KEY (SubmissionId) REFERENCES tb_Form_2Act2_Submission(Id)
+                );
+            `);
+
+
+    //Form 2Act3 submission table
+    db.run(`
+                CREATE TABLE IF NOT EXISTS tb_Form_2Act3_Submission (
+                    Id INTEGER PRIMARY KEY,              -- _id from API
+                    Uuid TEXT,                           -- _uuid
+                    Start TEXT,
+                    End TEXT,
+                    Reporting_period TEXT,
+                    Province TEXT,
+                    District TEXT,
+                    Village TEXT,
+                    SubActivity TEXT,
+                    Conduct_Start TEXT,
+                    Conduct_End TEXT,
+                    ConstructionStatus TEXT,
+                    RoadLengthKM INTEGER,
+                    PostHarvest INTEGER,
+                    HaveOMCommity TEXT,
+                    HaveOMFund TEXT,
+                    TotalCost INTEGER,
+                    IFAD INTEGER,
+                    MAF INTEGER,
+                    WFP INTEGER,
+                    GoL INTEGER,
+                    Ben INTEGER,
+                    OtherFund INTEGER,
+                    Version TEXT,
+                    Submission_time TEXT
+                );
+            `);
+
+    //Form 2Act3 particiapnt table
+    db.run(`
+                CREATE TABLE IF NOT EXISTS tb_Form_2Act3_Participant (
+                    Id INTEGER PRIMARY KEY AUTOINCREMENT,
+                    SubmissionId INTEGER,               -- Foreign key to the submission
+                    HHId TEXT,
+                    NameAndSurname TEXT,
+                    Age INTEGER,
+                    Gender TEXT,
+                    Ethnicity TEXT,
+                    PovertyLevel TEXT,
+                    PWD TEXT,
+                    FOREIGN KEY (SubmissionId) REFERENCES tb_Form_2Act3_Submission(Id)
+                );
+            `);
 
 
 
-            
+
+
+
 });
 
 export default db;
