@@ -716,7 +716,50 @@ db.serialize(() => {
                 );
             `);
 
+//Form 3Act1a submission table
+    db.run(`
+                CREATE TABLE IF NOT EXISTS tb_Form_3Act1a_Submission (
+                    Id INTEGER PRIMARY KEY,
+                    Uuid TEXT,
+                    Start TEXT,
+                    End TEXT,
+                    Reporting_period TEXT,
+                    Province TEXT,
+                    District TEXT,
+                    Village TEXT,
+                    SubActivity TEXT,
+                    Conduct_Start TEXT,
+                    Conduct_End TEXT,
+                    MeetingNo TEXT,
+                    VDPApproval TEXT,
+                    InvestmentItems TEXT, 			-- _actlist
+                    OtherInfo,                      --_othersinfo
+                    IFAD INTEGER DEFAULT 0,
+                    MAF INTEGER DEFAULT 0,
+                    WFP INTEGER DEFAULT 0,
+                    GoL INTEGER DEFAULT 0,
+                    Ben INTEGER DEFAULT 0,
+                    OtherFund INTEGER DEFAULT 0,
+                    Version TEXT,
+                    Submission_time TEXT
+                );
+            `);
 
+    //Form 3Act1a particiapnt table
+    db.run(`
+                CREATE TABLE IF NOT EXISTS tb_Form_3Act1a_Participant (
+                    Id INTEGER PRIMARY KEY AUTOINCREMENT,
+                    SubmissionId INTEGER,
+                    HHId TEXT,
+                    NameAndSurname TEXT,
+                    Age INTEGER,
+                    Gender TEXT,
+                    Ethnicity TEXT,
+                    PovertyLevel TEXT,
+                    PWD TEXT,
+                    FOREIGN KEY (SubmissionId) REFERENCES tb_Form_3Act1a_Submission(Id)
+                );
+            `);
 
 
 
