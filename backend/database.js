@@ -716,7 +716,7 @@ db.serialize(() => {
                 );
             `);
 
-//Form 3Act1a submission table
+    //Form 3Act1a submission table
     db.run(`
                 CREATE TABLE IF NOT EXISTS tb_Form_3Act1a_Submission (
                     Id INTEGER PRIMARY KEY,
@@ -761,8 +761,94 @@ db.serialize(() => {
                 );
             `);
 
+    //Form 3Act1b submission table
+    db.run(`
+                CREATE TABLE IF NOT EXISTS tb_Form_3Act1b_Submission (
+                    Id INTEGER PRIMARY KEY,
+                    Uuid TEXT,
+                    start TEXT,
+                    end TEXT,
+                    Reporting_period TEXT,
+                    Province TEXT,
+                    District TEXT,
+                    Activity TEXT,
+                    Conduct_date_1 TEXT,
+                    Conduct_date_2 TEXT,
+                    MeetingNo TEXT,
+                    VDPApprovalNumber TEXT,
+                    DNCPApproval TEXT,
+                    DNCP_Item TEXT,						--_DNCP_item
+                    EquiptSupported TEXT,
+                    IFAD INTEGER,
+                    MAF INTEGER,
+                    WFP INTEGER,
+                    GoL INTEGER,
+                    Ben INTEGER,
+                    OtherFund INTEGER,
+                    Version TEXT,
+                    Submission_time TEXT
+                );
+            `);
 
+    //Form 3Act1b particiapnt table
+    db.run(`
+                CREATE TABLE IF NOT EXISTS tb_Form_3Act1b_Participant (
+                    Id INTEGER PRIMARY KEY AUTOINCREMENT,
+                    Submission_id INTEGER,
+                    Full_name TEXT,
+                    Office TEXT,
+                    Age INTEGER,
+                    Gender TEXT,
+                    FOREIGN KEY(Submission_id) REFERENCES tb_Form_3Act1b_Submission(Id)
+                );
+            `);
 
+    //Form 3Act2 submission table
+    db.run(`
+                CREATE TABLE IF NOT EXISTS tb_Form_3Act2_Submission (
+                    Id INTEGER PRIMARY KEY,
+                    Uuid TEXT,
+                    Start TEXT,
+                    End TEXT,
+                    Reporting_period TEXT,
+                    Province TEXT,
+                    District TEXT,
+                    Village TEXT,
+                    SubActivity TEXT,
+                    Conduct_Start TEXT,
+                    Conduct_End TEXT,
+                    CSO_Est_Date TEXT,
+                    CSO_Head_Name TEXT,
+                    CSO_Head_Age INTEGER,
+                    CSO_Head_Gender TEXT,
+                    CSO_Head_Ethnicity TEXT,
+                    CSO_Commitment TEXT,
+                    BNetwork_Member TEXT,
+                    BNContractWithOther TEXT,
+                    CSO_approved_date TEXT,
+                    APGs_Received_Support_From_CSO TEXT,
+                    MAF INTEGER,
+                    CSO_contribution INTEGER,
+                    CSO_cash INTEGER,
+                    OtherFund INTEGER,
+                    Version TEXT,
+                    Submission_time TEXT
+                );
+            `);
+
+    //Form 3Act2 particiapnt table
+    db.run(`
+                CREATE TABLE IF NOT EXISTS tb_Form_3Act2_Participant (
+                    Id INTEGER PRIMARY KEY AUTOINCREMENT,
+                    Submission_id INTEGER,
+                    HHId TEXT,
+                    NameOfAPG TEXT,
+                    Age INTEGER,
+                    Gender TEXT,
+                    Ethnicity TEXT,
+                    FOREIGN KEY(Submission_id) REFERENCES tb_Form_3Act2_Submission(Id)
+                );
+            `);
 
 });
 
