@@ -464,6 +464,7 @@ db.serialize(() => {
                     Ethnicity TEXT,
                     Poverty_level TEXT,
                     PWD_status TEXT,
+                    PositionInGroup TEXT,
                     MSME TEXT,
                     FOREIGN KEY (SubmissionId) REFERENCES tb_Form_1BAct6_Submission(Id)
                 );

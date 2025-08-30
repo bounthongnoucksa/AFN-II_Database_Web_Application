@@ -55,7 +55,7 @@ async function downloadForm1BAct6SubmissionDataFromKoboToolbox() {
                     el["select_one_province"] || null,
                     el["select_one_district"] || null,
                     el["select_one_district_village"] || null,
-                    el["_subactivity"] || null,
+                    el["_select_one_subactivity"] || null,
                     el["group_actconductdate_sa1oe86/date_ha2jz81"] || null,
                     el["group_actconductdate_sa1oe86/date_up9xu24"] || null,
                     el["_1_2_"] || null,
@@ -91,8 +91,8 @@ async function downloadForm1BAct6SubmissionDataFromKoboToolbox() {
                         await runQuery(db, `
                             INSERT INTO tb_Form_1BAct6_Participant (
                                 SubmissionId, HaveHH_id, HHId, NameAndSurname,
-                                Age, Gender, Ethnicity, Poverty_level, PWD_status, MSME
-                            ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+                                Age, Gender, Ethnicity, Poverty_level, PWD_status, PositionInGroup, MSME
+                            ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
                         `, [
                             submissionId,
                             haveHHId || null,
@@ -103,6 +103,7 @@ async function downloadForm1BAct6SubmissionDataFromKoboToolbox() {
                             p["group_participantdetail_hp48r4/_mainEthnicity"] || null,
                             p["group_participantdetail_hp48r4/_mainPovertyLevel"] || null,
                             p["group_participantdetail_hp48r4/_mainPWD"] || null,
+                            p["group_participantdetail_hp48r4/_group_position"] || null,
                             p["group_participantdetail_hp48r4/_MSME_Yes_No_"] || null
                         ]);
                     }
@@ -178,6 +179,7 @@ function getForm1BAct6ParticipantData(language) {
                         p.Ethnicity,
                         p.Poverty_level,
                         p.PWD_status,
+                        p.PositionInGroup,
                         p.MSME,
                         ROW_NUMBER() OVER (PARTITION BY p.SubmissionId ORDER BY p.Id) AS rn
                     FROM tb_Form_1BAct6_Participant p
@@ -189,7 +191,8 @@ function getForm1BAct6ParticipantData(language) {
                     (SELECT Label_Lao FROM Translation_EN_LA WHERE FormName='form_1bact6' AND ItemCode=np.Province LIMIT 1) AS 'ແຂວງ',
                     (SELECT Label_Lao FROM Translation_EN_LA WHERE FormName='form_1bact6' AND ItemCode=np.District LIMIT 1) AS 'ເມືອງ',
                     (SELECT Label_Lao FROM Translation_EN_LA WHERE FormName='form_1bact6' AND ItemCode=np.Village LIMIT 1) AS 'ບ້ານ',
-                    np.SubActivity AS 'ກິດຈະກຳຍ່ອຍທີ່ເຂົ້າຮ່ວມ',
+                    (SELECT Label_Lao FROM Translation_EN_LA WHERE FormName='form_1bact6' AND ItemCode=np.SubActivity LIMIT 1) AS 'ກິດຈະກຳຍ່ອຍທີ່ເຂົ້າຮ່ວມ',
+                    --np.SubActivity AS 'ກິດຈະກຳຍ່ອຍທີ່ເຂົ້າຮ່ວມ',
                     np.Conduct_Start AS 'ວັນເລີ່ມ',
                     np.Conduct_End AS 'ວັນສຳເລັດ',
                     (SELECT Label_Lao FROM Translation_EN_LA WHERE FormName='form_1bact6' AND ItemCode=np.CBOEstablish LIMIT 1) AS 'ມີການຈັດຕັ້ງກຸ່ມຜະລິດບໍ',
@@ -201,6 +204,7 @@ function getForm1BAct6ParticipantData(language) {
                     (SELECT Label_Lao FROM Translation_EN_LA WHERE FormName='form_1bact6' AND ItemCode=np.Ethnicity LIMIT 1) AS 'ຊົນເຜົ່າ',
                     (SELECT Label_Lao FROM Translation_EN_LA WHERE FormName='form_1bact6' AND ItemCode=np.Poverty_level LIMIT 1) AS 'ຖານະຄອບຄົວ',
                     (SELECT Label_Lao FROM Translation_EN_LA WHERE FormName='form_1bact6' AND ItemCode=np.PWD_status LIMIT 1) AS 'ເສຍອົງຄະບໍ',
+                    (SELECT Label_Lao FROM Translation_EN_LA WHERE FormName='form_1bact6' AND ItemCode=np.PositionInGroup LIMIT 1) AS 'ຕຳແໜ່ງໃນກຸ່ມ',
                     (SELECT Label_Lao FROM Translation_EN_LA WHERE FormName='form_1bact6' AND ItemCode=np.MSME LIMIT 1) AS 'MSME Member',
 					
 					CASE WHEN np.rn = 1 THEN np.CropType ELSE NULL END AS 'ປະເພດພືດອາຫານ',
@@ -262,6 +266,7 @@ function getForm1BAct6ParticipantData(language) {
                         p.Ethnicity,
                         p.Poverty_level,
                         p.PWD_status,
+                        p.PositionInGroup,
                         p.MSME,
                         ROW_NUMBER() OVER (PARTITION BY p.SubmissionId ORDER BY p.Id) AS rn
                     FROM tb_Form_1BAct6_Participant p
@@ -273,7 +278,8 @@ function getForm1BAct6ParticipantData(language) {
                     (SELECT Label_English FROM Translation_EN_LA WHERE FormName='form_1bact6' AND ItemCode=np.Province LIMIT 1) AS 'Province',
                     (SELECT Label_English FROM Translation_EN_LA WHERE FormName='form_1bact6' AND ItemCode=np.District LIMIT 1) AS 'District',
                     (SELECT Label_English FROM Translation_EN_LA WHERE FormName='form_1bact6' AND ItemCode=np.Village LIMIT 1) AS 'Village',
-                    np.SubActivity AS 'Sub-Activity',
+                    (SELECT Label_English FROM Translation_EN_LA WHERE FormName='form_1bact6' AND ItemCode=np.SubActivity LIMIT 1) AS 'Sub-Activity',
+                    --np.SubActivity AS 'Sub-Activity',
                     np.Conduct_Start AS 'Start Date',
                     np.Conduct_End AS 'End Date',
                     (SELECT Label_English FROM Translation_EN_LA WHERE FormName='form_1bact6' AND ItemCode=np.CBOEstablish LIMIT 1) AS 'CBO Established',
@@ -285,6 +291,7 @@ function getForm1BAct6ParticipantData(language) {
                     (SELECT Label_English FROM Translation_EN_LA WHERE FormName='form_1bact6' AND ItemCode=np.Ethnicity LIMIT 1) AS 'Ethnicity',
                     (SELECT Label_English FROM Translation_EN_LA WHERE FormName='form_1bact6' AND ItemCode=np.Poverty_level LIMIT 1) AS 'Poverty Level',
                     (SELECT Label_English FROM Translation_EN_LA WHERE FormName='form_1bact6' AND ItemCode=np.PWD_status LIMIT 1) AS 'PWD Status',
+                    (SELECT Label_English FROM Translation_EN_LA WHERE FormName='form_1bact6' AND ItemCode=np.PositionInGroup LIMIT 1) AS 'Position in group',
                     (SELECT Label_English FROM Translation_EN_LA WHERE FormName='form_1bact6' AND ItemCode=np.MSME LIMIT 1) AS 'MSME',
 					CASE WHEN np.rn = 1 THEN np.CropType ELSE NULL END AS 'Crop Type',
                     CASE WHEN np.rn = 1 THEN np.CropQuantity ELSE NULL END AS 'Crop Qty (kg)',
@@ -370,6 +377,7 @@ function getForm1BAct6ParticipantDataBySID(SubmissionId, language) {
                         p.Ethnicity,
                         p.Poverty_level,
                         p.PWD_status,
+                        p.PositionInGroup,
                         p.MSME,
                         ROW_NUMBER() OVER (PARTITION BY p.SubmissionId ORDER BY p.Id) AS rn
                     FROM tb_Form_1BAct6_Participant p
@@ -385,7 +393,8 @@ function getForm1BAct6ParticipantDataBySID(SubmissionId, language) {
                     (SELECT Label_Lao FROM Translation_EN_LA WHERE FormName='form_1bact6' AND ItemCode=np.Province LIMIT 1) AS 'ແຂວງ',
                     (SELECT Label_Lao FROM Translation_EN_LA WHERE FormName='form_1bact6' AND ItemCode=np.District LIMIT 1) AS 'ເມືອງ',
                     (SELECT Label_Lao FROM Translation_EN_LA WHERE FormName='form_1bact6' AND ItemCode=np.Village LIMIT 1) AS 'ບ້ານ',
-                    np.SubActivity AS 'ກິດຈະກຳຍ່ອຍທີ່ເຂົ້າຮ່ວມ',
+                    (SELECT Label_Lao FROM Translation_EN_LA WHERE FormName='form_1bact6' AND ItemCode=np.SubActivity LIMIT 1) AS 'ກິດຈະກຳຍ່ອຍທີ່ເຂົ້າຮ່ວມ',
+                    --np.SubActivity AS 'ກິດຈະກຳຍ່ອຍທີ່ເຂົ້າຮ່ວມ',
                     (SELECT Label_Lao FROM Translation_EN_LA WHERE FormName='form_1bact6' AND ItemCode=np.CBOEstablish LIMIT 1) AS 'ມີການຕັ້ງກຸ່ມຜະລິດບໍ',
                     (SELECT Label_Lao FROM Translation_EN_LA WHERE FormName='form_1bact6' AND ItemCode=np.Conducted_by LIMIT 1) AS 'ຈັດຕັ້ງປະຕິບັດໂດຍ',
 					np.HHId AS 'ລະຫັດຄົວເຮືອນ',
@@ -395,6 +404,7 @@ function getForm1BAct6ParticipantDataBySID(SubmissionId, language) {
                     (SELECT Label_Lao FROM Translation_EN_LA WHERE FormName='form_1bact6' AND ItemCode=np.Ethnicity LIMIT 1) AS 'ຊົນເຜົ່າ',
                     (SELECT Label_Lao FROM Translation_EN_LA WHERE FormName='form_1bact6' AND ItemCode=np.Poverty_level LIMIT 1) AS 'ຖານະຄອບຄົວ',
                     (SELECT Label_Lao FROM Translation_EN_LA WHERE FormName='form_1bact6' AND ItemCode=np.PWD_status LIMIT 1) AS 'ເສຍອົງຄະບໍ',
+                    (SELECT Label_Lao FROM Translation_EN_LA WHERE FormName='form_1bact6' AND ItemCode=np.PositionInGroup LIMIT 1) AS 'ຕຳແໜ່ງໃນກຸ່ມ',
                     (SELECT Label_Lao FROM Translation_EN_LA WHERE FormName='form_1bact6' AND ItemCode=np.MSME LIMIT 1) AS 'MSME Member',
 					
 					CASE WHEN np.rn = 1 THEN np.CropType ELSE NULL END AS 'ປະເພດພືດອາຫານ',
@@ -456,6 +466,7 @@ function getForm1BAct6ParticipantDataBySID(SubmissionId, language) {
                         p.Ethnicity,
                         p.Poverty_level,
                         p.PWD_status,
+                        p.PositionInGroup,
                         p.MSME,
                         ROW_NUMBER() OVER (PARTITION BY p.SubmissionId ORDER BY p.Id) AS rn
                     FROM tb_Form_1BAct6_Participant p
@@ -471,7 +482,8 @@ function getForm1BAct6ParticipantDataBySID(SubmissionId, language) {
                     (SELECT Label_English FROM Translation_EN_LA WHERE FormName='form_1bact6' AND ItemCode=np.Province LIMIT 1) AS 'Province',
                     (SELECT Label_English FROM Translation_EN_LA WHERE FormName='form_1bact6' AND ItemCode=np.District LIMIT 1) AS 'District',
                     (SELECT Label_English FROM Translation_EN_LA WHERE FormName='form_1bact6' AND ItemCode=np.Village LIMIT 1) AS 'Village',
-                    np.SubActivity AS 'Sub-Activity',
+                    (SELECT Label_English FROM Translation_EN_LA WHERE FormName='form_1bact6' AND ItemCode=np.SubActivity LIMIT 1) AS 'Sub-Activity',
+                    --np.SubActivity AS 'Sub-Activity',
                     (SELECT Label_English FROM Translation_EN_LA WHERE FormName='form_1bact6' AND ItemCode=np.CBOEstablish LIMIT 1) AS 'CBO Established',
                     (SELECT Label_English FROM Translation_EN_LA WHERE FormName='form_1bact6' AND ItemCode=np.Conducted_by LIMIT 1) AS 'Conducted By',
 					np.HHId AS 'HH-ID',
@@ -481,6 +493,7 @@ function getForm1BAct6ParticipantDataBySID(SubmissionId, language) {
                     (SELECT Label_English FROM Translation_EN_LA WHERE FormName='form_1bact6' AND ItemCode=np.Ethnicity LIMIT 1) AS 'Ethnicity',
                     (SELECT Label_English FROM Translation_EN_LA WHERE FormName='form_1bact6' AND ItemCode=np.Poverty_level LIMIT 1) AS 'Poverty Level',
                     (SELECT Label_English FROM Translation_EN_LA WHERE FormName='form_1bact6' AND ItemCode=np.PWD_status LIMIT 1) AS 'PWD Status',
+                    (SELECT Label_English FROM Translation_EN_LA WHERE FormName='form_1bact6' AND ItemCode=np.PositionInGroup LIMIT 1) AS 'Position in group',
                     (SELECT Label_English FROM Translation_EN_LA WHERE FormName='form_1bact6' AND ItemCode=np.MSME LIMIT 1) AS 'MSME',
 					CASE WHEN np.rn = 1 THEN np.CropType ELSE NULL END AS 'Crop Type',
                     CASE WHEN np.rn = 1 THEN np.CropQuantity ELSE NULL END AS 'Crop Qty (kg)',

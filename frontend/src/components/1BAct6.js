@@ -508,7 +508,7 @@ export default function Form1BAct6({ refreshTrigger }) {
                                 >
                                     {Object.entries(row).map(([col, value], colIdx) => (
                                         <td key={col}>
-                                            {(colIdx >= 26 && colIdx <= 31 && !isNaN(value))
+                                            {(colIdx >= 27 && colIdx <= 32 && !isNaN(value))
                                                 ? Number(value).toLocaleString()
                                                 : value}
                                         </td>
@@ -562,18 +562,18 @@ export default function Form1BAct6({ refreshTrigger }) {
                                         {Object.entries(selectedRow).map(([key, value], idx) => {
                                             let colClass = 'col-lg-2'; // default column size
 
-                                            if ((idx >= 0 && idx <= 7) || idx === 10 || (idx >= 12 && idx <= 26)) {
+                                            if ((idx >= 0 && idx <= 7) || idx === 10 || (idx >= 12 && idx <= 27)) {
                                                 colClass = 'col-lg-1';
                                             } //else if ( idx === 13) {
                                             //colClass = 'col-lg-3';
                                             //}
 
-                                            const needsNewLine = (idx === 20) || (idx ===27);
+                                            const needsNewLine = (idx === 21) || (idx ===28);
 
                                             const isDateField = idx >= 3 && idx <= 5;
                                             //const isEditableText = (idx >= 11 && idx <= 7) || (idx >= 13 && idx <= 18);
-                                            const isEditableText = (idx === 9) || (idx === 20) || (idx === 22);
-                                            const isNumericField = (idx >= 27 && idx <= 32) || (idx === 14) || (idx === 21) || (idx >= 23 && idx <= 24);
+                                            const isEditableText = (idx === 21) || (idx === 23);
+                                            const isNumericField = (idx >= 28 && idx <= 33) || (idx === 14) || (idx === 22) || (idx >= 24 && idx <= 25);
 
                                             return (
                                                 <React.Fragment key={idx}>
@@ -665,7 +665,7 @@ export default function Form1BAct6({ refreshTrigger }) {
                                                 >
                                                     {Object.entries(row).map(([col, value], colIdx) => (
                                                         <td key={col}>
-                                                            {(colIdx >= 27 && colIdx <= 32 && !isNaN(value))
+                                                            {(colIdx >= 28 && colIdx <= 33 && !isNaN(value))
                                                                 ? Number(value).toLocaleString()
                                                                 : value}
                                                         </td>
