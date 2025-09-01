@@ -224,6 +224,150 @@ function getForm1A2Statics() {
 }
 
 
+//Get Form 1A3a Statistics
+function getForm1A3aStatics() {
+    return new Promise((resolve, reject) => {
+        const db = getDBConnection(); // Get the database connection
+        const query = `
+                        WITH AllParticipants AS (
+                            SELECT DISTINCT 
+                                s.Province || '|' || s.District || '|' || s.Village || '|' || p.HHId || '|' || p.NameAndSurname AS UniqueParticipant,
+                                p.Gender,
+                                p.Age,
+                                p.Ethnicity
+                            FROM tb_Form_1A3a_Participant p
+                            JOIN tb_Form_1A3a_Submission s ON p.SubmissionId = s.Id
+                        ),
+                        AllVillagesWithEquipment AS (
+                            SELECT DISTINCT 
+                                Province || '|' || District || '|' || Village AS UniqueVillage
+                            FROM tb_Form_1A3a_Submission
+                            WHERE Equipment_received = 'yes'
+                        )
+
+                        SELECT
+                            -- 1. # of Villages Received Equipment
+                            (SELECT COUNT(*) FROM AllVillagesWithEquipment) AS Villages_Received_Equipment,
+
+                            -- 2. Total Farmers Participants
+                            (SELECT COUNT(*) FROM AllParticipants) AS Total_Farmers,
+
+                            -- 3. % Women Farmers
+                            ROUND(100.0 * (SELECT COUNT(*) FROM AllParticipants WHERE Gender = 'Female') 
+                                / (SELECT COUNT(*) FROM AllParticipants), 2) AS Percent_Women_Farmers,
+
+                            -- 4. % Youth Farmers
+                            ROUND(100.0 * (SELECT COUNT(*) FROM AllParticipants WHERE Age BETWEEN 15 AND 35) 
+                                / (SELECT COUNT(*) FROM AllParticipants), 2) AS Percent_Youth_Farmers,
+
+                            -- 5. % Ethnic Minority Farmers
+                            ROUND(100.0 * (SELECT COUNT(*) FROM AllParticipants 
+                                        WHERE Ethnicity NOT IN ('_e01', '_e02', '_e03', '_e04', '_e05', '_e06', '_e07', '_e08')) 
+                                / (SELECT COUNT(*) FROM AllParticipants), 2) AS Percent_Ethnic_Minority_Farmers;
+        `;
+        db.get(query, [], (err, row) => {
+            db.close();
+            if (err) {
+                reject(err);
+            } else {
+                resolve(row);
+            }
+        });
+
+    })
+}
 
 
-export { getCBForStaffStatics, getCBForVillagersStatics, getForm1A1Statics, getForm1A2Statics };
+//Get Form 1A3b Statistics
+function getForm1A3bStatics() {
+    return new Promise((resolve, reject) => {
+        const db = getDBConnection(); // Get the database connection
+        const query = `
+                        WITH ValidStorages AS (
+                            SELECT DISTINCT Province || '|' || District || '|' || Village AS UniqueLocation
+                            FROM tb_Form_1A3b_Submission
+                            WHERE Storage_built IN ('construction', 'Rehabilitation')
+                        ),
+
+                        ValidCommittees AS (
+                            SELECT DISTINCT Province || '|' || District || '|' || Village AS UniqueLocation
+                            FROM tb_Form_1A3b_Submission
+                            WHERE Storage_built IN ('construction', 'Rehabilitation') AND CommityExist = 'yes'
+                        ),
+
+                        AllParticipants AS (
+                            SELECT DISTINCT 
+                                HHId || '|' || NameAndSurname AS UniqueParticipant,
+                                Gender,
+                                Age,
+                                Ethnicity,
+                                ParticipantRole
+                            FROM tb_Form_1A3b_Participant
+                        ),
+
+                        BorrowerHHs AS (
+                            SELECT DISTINCT HHId || '|' || NameAndSurname AS UniqueBorrower
+                            FROM tb_Form_1A3b_Participant
+                            WHERE ParticipantRole IN ('2', '3')
+                        ),
+
+                        InitialRiceByLocation AS (
+                            SELECT DISTINCT Province || '|' || District || '|' || Village AS UniqueLocation, InitialRice
+                            FROM tb_Form_1A3b_Submission
+                            WHERE InitialRice IS NOT NULL
+                        )
+
+                        SELECT
+                            -- 1. # of Rice Storages Built
+                            (SELECT COUNT(*) FROM ValidStorages) AS Num_Storages_Built,
+
+                            -- 2. # of Rice Bank Committees
+                            (SELECT COUNT(*) FROM ValidCommittees) AS Num_RiceBank_Committees,
+
+                            -- 3. Total Farmer Participants
+                            (SELECT COUNT(*) FROM AllParticipants) AS Total_Farmers,
+
+                            -- 4. % Women Participants
+                            ROUND(
+                                100.0 * (SELECT COUNT(*) FROM AllParticipants WHERE Gender = 'Female') /
+                                (SELECT COUNT(*) FROM AllParticipants),
+                                2
+                            ) AS Percent_Women,
+
+                            -- 5. % Youth Participants
+                            ROUND(
+                                100.0 * (SELECT COUNT(*) FROM AllParticipants WHERE Age BETWEEN 15 AND 35) /
+                                (SELECT COUNT(*) FROM AllParticipants),
+                                2
+                            ) AS Percent_Youth,
+
+                            -- 6. % Ethnic Minority Participants
+                            ROUND(
+                                100.0 * (SELECT COUNT(*) FROM AllParticipants 
+                                        WHERE Ethnicity NOT IN ('_e01', '_e02', '_e03', '_e04', '_e05', '_e06', '_e07', '_e08')) /
+                                (SELECT COUNT(*) FROM AllParticipants),
+                                2
+                            ) AS Percent_Ethnic,
+
+                            -- 7. Cumulative Borrower HHs
+                            (SELECT COUNT(*) FROM BorrowerHHs) AS Cumulative_Borrower_HHs,
+
+                            -- 8. Initial Amount of Rice (Tons)
+                            Round(((SELECT SUM(InitialRice) FROM InitialRiceByLocation))/1000, 2) AS Total_Initial_Rice_Tons;
+        `;
+        db.get(query, [], (err, row) => {
+            db.close();
+            if (err) {
+                reject(err);
+            } else {
+                resolve(row);
+            }
+        });
+
+    })
+}
+
+
+
+
+export { getCBForStaffStatics, getCBForVillagersStatics, getForm1A1Statics, getForm1A2Statics, getForm1A3aStatics, getForm1A3bStatics };

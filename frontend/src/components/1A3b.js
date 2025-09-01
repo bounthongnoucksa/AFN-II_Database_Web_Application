@@ -428,7 +428,8 @@ export default function Form1A3b({ refreshTrigger }) {
             {/* Header */}
             <div className="d-flex align-items-center justify-content-between mb-2">
                 <div className="text-center w-100">
-                    <div className="fw-bold fs-5">1A.3b : ການຊ່ວຍເຫຼືອຈັດຕັ້ງທະນາຄານເຂົ້າ - Rice Bank(Domestic Food Processing)</div>
+                    <div className="fw-bold fs-5">1A.3b : ການຊ່ວຍເຫຼືອຈັດຕັ້ງທະນາຄານເຂົ້າ</div>
+                    <div>Rice Bank</div>
                 </div>
 
                 {/* Language switchig button between LA and EN */}

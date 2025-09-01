@@ -513,7 +513,7 @@ export default function CBForStaff({ refreshTrigger }) {
                                 >
                                     {Object.entries(row).map(([col, value], colIdx) => (
                                         <td key={col}>
-                                            {(colIdx >= 13 && colIdx <= 17 && !isNaN(value))
+                                            {(colIdx >= 14 && colIdx <= 18 && !isNaN(value))
                                                 ? Number(value).toLocaleString()
                                                 : value}
                                         </td>
@@ -568,17 +568,17 @@ export default function CBForStaff({ refreshTrigger }) {
                                         {Object.entries(selectedRow).map(([key, value], idx) => {
                                             let colClass = 'col-lg-2'; // default column size
 
-                                            if ((idx >= 0 && idx <= 5) || idx === 10 || idx === 11) {
+                                            if ((idx >= 0 && idx <= 5) || (idx >= 7 && idx <= 8) || idx === 12) {
                                                 colClass = 'col-lg-1';
                                             } else if (idx === 12 || idx === 13) {
                                                 colClass = 'col-lg-3';
                                             }
 
-                                            const needsNewLine = idx === 14;
+                                            const needsNewLine = idx === 15;
 
                                             const isDateField = idx >= 3 && idx <= 5;
-                                            const isEditableText = (idx >= 6 && idx <= 7) || (idx >= 13 && idx <= 18);
-                                            const isNumericField = idx >= 14 && idx <= 18;
+                                            const isEditableText = (idx >= 6 && idx <= 7) || idx === 9 || (idx >= 14 && idx <= 19);
+                                            const isNumericField = (idx >= 15 && idx <= 19) || idx === 7;
 
                                             return (
                                                 <React.Fragment key={idx}>
@@ -670,7 +670,7 @@ export default function CBForStaff({ refreshTrigger }) {
                                                 >
                                                     {Object.entries(row).map(([col, value], colIdx) => (
                                                         <td key={col}>
-                                                            {(colIdx >= 14 && colIdx <= 18 && !isNaN(value))
+                                                            {(colIdx >= 15 && colIdx <= 19 && !isNaN(value))
                                                                 ? Number(value).toLocaleString()
                                                                 : value}
                                                         </td>

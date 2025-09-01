@@ -19,7 +19,7 @@ db.serialize(() => {
             Id INTEGER PRIMARY KEY AUTOINCREMENT,
             SubmissionId INTEGER,
             Name TEXT, Responsibility TEXT,
-            Office TEXT, StaffType TEXT, Gender TEXT,
+            Office TEXT, StaffType TEXT, Age INTEGER, Gender TEXT,
             FOREIGN KEY (SubmissionId) REFERENCES tb_CB_Staff_Submission(Id)
         ); 
     
@@ -851,6 +851,17 @@ db.serialize(() => {
                 );
             `);
 
+
+
+
+
+    //Create indexes for faster searching
+    db.run(`
+                CREATE INDEX IF NOT EXISTS idx_tb_Form_1BAct6_Participant_SubmissionId ON tb_Form_1BAct6_Participant(SubmissionId);
+            `);
+            db.run(`
+                CREATE INDEX IF NOT EXISTS idx_Translation_EN_LA_FormName_ItemCode ON Translation_EN_LA(FormName, ItemCode);
+            `);
 });
 
 export default db;

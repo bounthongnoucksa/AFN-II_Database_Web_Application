@@ -14,7 +14,7 @@ import { fileURLToPath } from 'url';
 
 // Import your controller functions using ES module syntax
 //Import statistics data for chart
-import { getCBForStaffStatics, getCBForVillagersStatics, getForm1A1Statics, getForm1A2Statics } from './main_dashboard_controller.js';
+import { getCBForStaffStatics, getCBForVillagersStatics, getForm1A1Statics, getForm1A2Statics, getForm1A3aStatics, getForm1A3bStatics } from './main_dashboard_controller.js';
 
 
 //Import CB for staff functions
@@ -285,6 +285,28 @@ app.get('/api/form1A2/getDashboardData', async (req, res) => {
 
     } catch (err) {
         console.err('rror getting Form 1A2 dashboard data', err);
+        res.status(500).json({ error: 'Internal Server Error' });
+    }
+});
+
+app.get('/api/form1A3a/getDashboardData', async (req, res) => {
+    try {
+        const data = await getForm1A3aStatics();
+        res.json(data); // send result data to frontend
+
+    } catch (err) {
+        console.err('rror getting Form 1A3a dashboard data', err);
+        res.status(500).json({ error: 'Internal Server Error' });
+    }
+});
+
+app.get('/api/form1A3b/getDashboardData', async (req, res) => {
+    try {
+        const data = await getForm1A3bStatics();
+        res.json(data); // send result data to frontend
+
+    } catch (err) {
+        console.err('rror getting Form 1A3b dashboard data', err);
         res.status(500).json({ error: 'Internal Server Error' });
     }
 });

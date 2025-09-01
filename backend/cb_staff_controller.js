@@ -38,6 +38,7 @@ function getCBStaffParticipantData(language) {
                     p.Responsibility,
                     p.Office,
                     p.StaffType,
+                    p.Age,
                     p.Gender,
                     s.Category,
                     s.Topic,
@@ -58,10 +59,11 @@ function getCBStaffParticipantData(language) {
                 np.ActivityStartDate AS 'ວັນເລີ່ມ',
                 np.ActivityEndDate AS 'ວັນສຳເລັດ',
                 np.Name AS 'ຊື່ ແລະ ນາມສະກຸນ ຜູ້ເຂົ້າຮ່ວມ',
+                np.Age AS 'ອາຍຸ',
+                genderT.Label_Lao AS 'ເພດ',
                 np.Responsibility AS 'ໜ້າທີ່ຮັບຜິດຊອບ',
                 officeT.Label_Lao AS 'ມາຈາກຫ້ອງການ',
                 staffT.Label_Lao AS 'ເປັນພະນັກງານຂອງ',
-                genderT.Label_Lao AS 'ເພດ',
                 categoryT.Label_Lao AS 'ຮູບແບບການຝຶກ',
                 topicT.Label_Lao AS 'ຫົວຂໍ້ສະເພາະດ້ານໃດ',
                 np.ActivityLocation AS 'ສະຖານທີ ຈັດປະຊຸມ ຫຼື ຝຶກອົບຮົມ',
@@ -91,6 +93,7 @@ function getCBStaffParticipantData(language) {
                     p.Responsibility,
                     p.Office,
                     p.StaffType,
+                    p.Age,
                     p.Gender,
                     s.Category,
                     s.Topic,
@@ -111,10 +114,12 @@ function getCBStaffParticipantData(language) {
                 np.ActivityStartDate AS StartDate,
                 np.ActivityEndDate AS EndDate,
                 np.Name,
+                np.Age,
+                genderT.Label_English AS Gender,
                 np.Responsibility,
                 officeT.Label_English AS Office,
                 staffT.Label_English AS StaffType,
-                genderT.Label_English AS Gender,
+                
                 categoryT.Label_English AS Category,
                 topicT.Label_English AS Topic,
                 np.ActivityLocation,
@@ -143,6 +148,7 @@ function getCBStaffParticipantData(language) {
                                     p.Responsibility,
                                     p.Office,
                                     p.StaffType,
+                                    p.Age,
                                     p.Gender,             
                                     s.Category,
                                     s.Topic,
@@ -227,6 +233,7 @@ function getCBStaffParticipantDataBySID(SubmissionId, language) {
                                 p.Responsibility,
                                 p.Office,
                                 p.StaffType,
+                                p.Age,
                                 p.Gender,
                                 s.Category,
                                 s.Topic,
@@ -250,12 +257,14 @@ function getCBStaffParticipantDataBySID(SubmissionId, language) {
                               np.ActivityStartDate AS 'ວັນເລີ່ມ',
                               np.ActivityEndDate AS 'ວັນສຳເລັດ',
                               np.Name AS 'ຊື່ ແລະ ນາມສະກຸນ ຜູ້ເຂົ້າຮ່ວມ',
+                              np.Age AS 'ອາຍຸ',
+                              genderT.Label_Lao   AS 'ເພດ',
                               np.Responsibility AS 'ໜ້າທີ່ຮັບຜິດຊອບ',
 
                               -- Translated fields
                               officeT.Label_Lao   AS 'ມາຈາກຫ້ອງການ',
                               staffT.Label_Lao    AS 'ເປັນພະນັກງານຂອງ',
-                              genderT.Label_Lao   AS 'ເພດ',
+                              
                               categoryT.Label_Lao AS 'ຮູບແບບການຝຶກ',
                               topicT.Label_Lao    AS 'ຫົວຂໍ້ສະເພາະດ້ານໃດ',
 
@@ -311,6 +320,7 @@ function getCBStaffParticipantDataBySID(SubmissionId, language) {
                                 p.Responsibility,
                                 p.Office,
                                 p.StaffType,
+                                p.Age,
                                 p.Gender,
                                 s.Category,
                                 s.Topic,
@@ -334,12 +344,15 @@ function getCBStaffParticipantDataBySID(SubmissionId, language) {
                                 np.ActivityStartDate AS StartDate,
                                 np.ActivityEndDate AS EndDate,
                                 np.Name,
+                                np.Age,
+
+                                genderT.Label_English   AS Gender,
                                 np.Responsibility,
 
                                 -- Translated fields
                                 officeT.Label_English   AS Office,
                                 staffT.Label_English    AS StaffType,
-                                genderT.Label_English   AS Gender,
+                                
                                 categoryT.Label_English AS Category,
                                 topicT.Label_English    AS Topic,
 
@@ -468,14 +481,15 @@ async function downloadCBStaffSubmissionDataFromKoboToolbox() {
                     for (const p of el["group_ap1ti89"]) {
                         await runQuery(db, `
                             INSERT INTO tb_CB_Staff_Participant 
-                            (SubmissionId, Name, Responsibility, Office, StaffType, Gender)
-                            VALUES (?, ?, ?, ?, ?, ?)
+                            (SubmissionId, Name, Responsibility, Office, StaffType, Age, Gender)
+                            VALUES (?, ?, ?, ?, ?, ?, ?)
                         `, [
                             submissionId,
                             p["group_ap1ti89/_participation_name"],
                             p["group_ap1ti89/_reponsibility"],
                             p["group_ap1ti89/_office"],
                             p["group_ap1ti89/_type_of_staff"],
+                            p["group_ap1ti89/_age"],
                             p["group_ap1ti89/_gender"],
                         ]);
                     }

@@ -12,6 +12,8 @@ export default function MainDashboard({ refreshTrigger }) {
     const [chartDataForm1A1, setChartDataForm1A1] = useState([]);
     const [chartDataForm1A1_2, setChartDataForm1A1_2] = useState([]);
     const [chartDataForm1A2, setchartDataForm1A2] = useState([]);
+    const [chartDataForm1A3a, setchartDataForm1A3a] = useState([]);
+    const [chartDataForm1A3b, setchartDataForm1A3b] = useState([]);
     const [loading, setLoading] = useState(false);
 
     /**
@@ -54,11 +56,11 @@ export default function MainDashboard({ refreshTrigger }) {
 
     // Formatter function for Form 1A1 data
     const formatForm1A1ChartData1 = (d) => [
-        { name: '# of VNC', value: d.Total_VNC, fill: '#ff6b00' },
-        { name: '# New construction', value: d.New_Construction, fill: '#ff6b00' },
-        { name: '# Renovation', value: d.Renovation, fill: '#ff6b00' },
-        { name: '# of VF', value: d.VF_Total, fill: '#ff6b00' },
-        { name: '# of female VF', value: d.VF_Female, fill: '#ff6b00' }
+        { name: '# of VNC', value: d.Total_VNC, fill: '#07beb8' },
+        { name: '# New construction', value: d.New_Construction, fill: '#07beb8' },
+        { name: '# Renovation', value: d.Renovation, fill: '#07beb8' },
+        { name: '# of VF', value: d.VF_Total, fill: '#07beb8' },
+        { name: '# of female VF', value: d.VF_Female, fill: '#07beb8' }
     ];
     // Formatter function for Form 1A1 data
     const formatForm1A1ChartData2 = (d) => [
@@ -78,6 +80,32 @@ export default function MainDashboard({ refreshTrigger }) {
         { name: '#BW', value: d.Breastfeeding_Women, fill: '#082d0f' },
         { name: '#PBW', value: d.Pregnant_Breastfeeding_Women, fill: '#082d0f' } 
     ];
+    // Formatter function for Form 1A3a data
+    const formatForm1A3aChartData = (d) => [
+        { name: "#Village rec'd eqpt.", value: d.Villages_Received_Equipment, fill: '#070847ff' },
+        { name: '#Total farmers', value: d.Total_Farmers, fill: '#070847ff' },
+        { name: '% women farmers', value: d.Percent_Women_Farmers, fill: '#070847ff' },
+        { name: '% of youth farmers', value: d.Percent_Youth_Farmers, fill: '#070847ff' },
+        { name: '% of ethnic farmer', value: d.Percent_Ethnic_Minority_Farmers, fill: '#070847ff' } 
+    ];
+    // Formatter function for Form 1A3b data
+    const formatForm1A3bChartData = (d) => [
+        { name: "#Rice storages built", value: d.Num_Storages_Built, fill: '#301d38ff' },
+        { name: '#Rice Bank Committee', value: d.Num_RiceBank_Committees, fill: '#301d38ff' },
+        { name: '#Total farmers', value: d.Total_Farmers, fill: '#301d38ff' },
+        { name: '%of women farmers', value: d.Percent_Women, fill: '#301d38ff' },
+        { name: '% of youth farmers', value: d.Percent_Youth, fill: '#301d38ff' },
+        { name: '%of ethnic farmer', value: d.Percent_Ethnic, fill: '#301d38ff' },
+        { name: 'Cum. No. Borrower HHs', value: d.Cumulative_Borrower_HHs, fill: '#301d38ff' } ,
+        { name: 'Init. amt. rice (Tons)', value: d.Total_Initial_Rice_Tons, fill: '#301d38ff' }
+    ];
+
+
+
+
+
+
+
 
     // Fetch all charts
     const fetchAllCharts = useCallback(async () => {
@@ -87,7 +115,9 @@ export default function MainDashboard({ refreshTrigger }) {
             loadChartData('http://localhost:3001/api/cbForVillagers/getDashboardData', setChartDataVillagers, formatVillagersChartData),
             loadChartData('http://localhost:3001/api/form1A1/getDashboardData', setChartDataForm1A1, formatForm1A1ChartData1),
             loadChartData('http://localhost:3001/api/form1A1/getDashboardData', setChartDataForm1A1_2, formatForm1A1ChartData2),
-            loadChartData('http://localhost:3001/api/form1A2/getDashboardData', setchartDataForm1A2, formatForm1A2ChartData1)
+            loadChartData('http://localhost:3001/api/form1A2/getDashboardData', setchartDataForm1A2, formatForm1A2ChartData1),
+            loadChartData('http://localhost:3001/api/form1A3a/getDashboardData', setchartDataForm1A3a, formatForm1A3aChartData),
+            loadChartData('http://localhost:3001/api/form1A3b/getDashboardData', setchartDataForm1A3b, formatForm1A3bChartData)
         ]);
         setLoading(false);
     }, []);
@@ -102,6 +132,8 @@ export default function MainDashboard({ refreshTrigger }) {
         { title: '(FNSs) Farmer Nutrition School / VNC Overview', data: chartDataForm1A1 },
         { title: '(FNSs) Farmer Nutrition School / Participants', data: chartDataForm1A1_2 },
         { title: '(1A.2) IHHG', data: chartDataForm1A2 },
+        { title: '(1A.3a) Domestic Food Processing', data: chartDataForm1A3a },
+        { title: '(1A.3b) Rice Bank', data: chartDataForm1A3b },
         // Add more charts if needed
     ];
 

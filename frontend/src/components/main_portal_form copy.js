@@ -25,6 +25,7 @@ import Form3Act2 from './3Act2';
 
 export default function MainPortalForm() {
     const [activeTab, setActiveTab] = useState('tab3');
+    //const [refreshTrigger, setRefreshTrigger] = useState(0);
 
     const switchTab = (tabId) => {
         setActiveTab(tabId);
@@ -87,92 +88,6 @@ export default function MainPortalForm() {
 
 
 
-    //########## Optimization part##########################
-    const [tabCache, setTabCache] = useState({});
-
-    const renderTab = (tabId) => {
-        if (tabCache[tabId]) {
-            return tabCache[tabId];
-        }
-
-        let tabComponent = null;
-
-        switch (tabId) {
-            case 'tab1':
-                tabComponent = <div>Outreach Cal Content</div>;
-                break;
-            case 'tab2':
-                tabComponent = <div>Logframe Update Content</div>;
-                break;
-            case 'tab3':
-                tabComponent = <MainDashboard />;
-                break;
-            case 'tab4':
-                tabComponent = <CBForStaff />;
-                break;
-            case 'tab5':
-                tabComponent = <CBForVillagers />;
-                break;
-            case 'tab6':
-                tabComponent = <Form1A1 />;
-                break;
-            case 'tab7':
-                tabComponent = <Form1A2 />;
-                break;
-            case 'tab8':
-                tabComponent = <Form1A3a />;
-                break;
-            case 'tab9':
-                tabComponent = <Form1A3b />;
-                break;
-            case 'tab10':
-                tabComponent = <Form1A4 />;
-                break;
-            case 'tab11':
-                tabComponent = <Form1A5a />;
-                break;
-            case 'tab12':
-                tabComponent = <Form1A5b />;
-                break;
-            case 'tab13':
-                tabComponent = <Form1BAct6 />;
-                break;
-            case 'tab14':
-                tabComponent = <Form1BAct7 />;
-                break;
-            case 'tab15':
-                tabComponent = <Form1BAct8 />;
-                break;
-            case 'tab16':
-                tabComponent = <Form2Act1 />;
-                break;
-            case 'tab17':
-                tabComponent = <Form2Act2 />;
-                break;
-            case 'tab18':
-                tabComponent = <Form2Act3 />;
-                break;
-            case 'tab19':
-                tabComponent = <Form3Act1a />;
-                break;
-            case 'tab20':
-                tabComponent = <Form3Act1b />;
-                break;
-            case 'tab21':
-                tabComponent = <Form3Act2 />;
-                break;
-            default:
-                tabComponent = <div>No content available</div>;
-        }
-
-        setTabCache(prev => ({ ...prev, [tabId]: tabComponent }));
-        return tabComponent;
-    };
-
-    //####################### End Optimization part #########################
-
-
-
     return (
         <div style={{ fontFamily: "'Phetsarath OT', sans-serif", backgroundColor: theme.contentBg, color: '#333', minHeight: '100vh' }}>
 
@@ -210,18 +125,105 @@ export default function MainPortalForm() {
                 ))}
             </div>
 
-
-
-
-
-            {/* Optimization part for table showing data*/}
-
             <div className="p-3 rounded shadow m-3" style={{ backgroundColor: '#ffffff', overflowX: 'auto' }}>
-                {renderTab(activeTab)}
+
+                {/* Tab 4 content - stays mounted */}
+                <div style={{ display: activeTab === 'tab3' ? 'block' : 'none' }}>
+                    <MainDashboard />
+                </div>
+
+                <div style={{ display: activeTab === 'tab4' ? 'block' : 'none' }}>
+                    <CBForStaff />
+                </div>
+
+                <div style={{ display: activeTab === 'tab5' ? 'block' : 'none' }}>
+                    <CBForVillagers />
+                </div>
+
+                <div style={{ display: activeTab === 'tab6' ? 'block' : 'none' }}>
+                    <Form1A1 />
+                </div>
+
+                <div style={{ display: activeTab === 'tab7' ? 'block' : 'none' }}>
+                    <Form1A2 />
+                </div>
+
+                <div style={{ display: activeTab === 'tab8' ? 'block' : 'none' }}>
+                    <Form1A3a />
+                </div>
+
+                <div style={{ display: activeTab === 'tab9' ? 'block' : 'none' }}>
+                    <Form1A3b />
+                </div>
+
+                <div style={{ display: activeTab === 'tab10' ? 'block' : 'none' }}>
+                    <Form1A4 />
+                </div>
+
+                <div style={{ display: activeTab === 'tab11' ? 'block' : 'none' }}>
+                    <Form1A5a />
+                </div>
+
+                <div style={{ display: activeTab === 'tab12' ? 'block' : 'none' }}>
+                    <Form1A5b />
+                </div>
+
+                <div style={{ display: activeTab === 'tab13' ? 'block' : 'none' }}>
+                    <Form1BAct6 />
+                </div>
+
+                <div style={{ display: activeTab === 'tab14' ? 'block' : 'none' }}>
+                    <Form1BAct7 />
+                </div>
+
+                <div style={{ display: activeTab === 'tab15' ? 'block' : 'none' }}>
+                    <Form1BAct8 />
+                </div>
+
+                <div style={{ display: activeTab === 'tab16' ? 'block' : 'none' }}>
+                    <Form2Act1 />
+                </div>
+
+                <div style={{ display: activeTab === 'tab17' ? 'block' : 'none' }}>
+                    <Form2Act2 />
+                </div>
+
+                <div style={{ display: activeTab === 'tab18' ? 'block' : 'none' }}>
+                    <Form2Act3 />
+                </div>
+
+                <div style={{ display: activeTab === 'tab19' ? 'block' : 'none' }}>
+                    <Form3Act1a />
+                </div>
+
+                <div style={{ display: activeTab === 'tab20' ? 'block' : 'none' }}>
+                    <Form3Act1b />
+                </div>
+
+                <div style={{ display: activeTab === 'tab21' ? 'block' : 'none' }}>
+                    <Form3Act2 />
+                </div>
+
+
+
+
+
+
+
+
+                {/* Other tabs - also mounted but hidden */}
+                {tabs
+                    .filter(tab => tab.id !== 'tab3' && tab.id !== 'tab4' && tab.id !== 'tab5'
+                        && tab.id !== 'tab6' && tab.id !== 'tab7' && tab.id !== 'tab8' && tab.id !== 'tab9'
+                        && tab.id !== 'tab10' && tab.id !== 'tab11' && tab.id !== 'tab12' && tab.id !== 'tab13'
+                        && tab.id !== 'tab14' && tab.id !== 'tab15' && tab.id !== 'tab16' && tab.id !== 'tab17'
+                        && tab.id !== 'tab18' && tab.id !== 'tab19' && tab.id !== 'tab20' && tab.id !== 'tab21')
+                    .map(tab => (
+                        <div key={tab.id} style={{ display: activeTab === tab.id ? 'block' : 'none' }}>
+                            {tab.label} Content
+                        </div>
+                    ))}
             </div>
-            {/* End of Optimization part */}
-
-
         </div>
     );
 }
