@@ -221,6 +221,7 @@ import {
     deleteOnlyForm3Act2ParticipantInDB,
     deleteOnlyForm3Act2SubmissionInKobo
  } from './3Act2_controller.js';
+import { get1A1OutreachData } from './outreach_controller.js';
 
 
 //##########################################################################
@@ -236,6 +237,36 @@ app.listen(PORT, () => {
 app.use(cors()); // allow cross-origin requests from frontend to backend
 app.use(express.json());
 //###########################################################################
+
+
+
+
+
+
+
+
+
+
+//##################### Function to handle all Outreach Report data #####################
+app.get('/api/form1A1/getOutreachData', async (req, res) => {
+    
+    const { reportingPeriod, reportYear } = req.query;
+    if (!reportingPeriod || !reportYear) {
+        return res.status(400).json({ error: 'Missing ReportYear or ReportingPeriod' });
+    }
+
+    try {
+        const data = await get1A1OutreachData(reportingPeriod, reportYear);
+        res.json({ success: true, data }); // send result data and status code 200 to frontend
+
+    } catch (err) {
+        console.err('error getting 1A1 Outreach data', err);
+        res.status(500).json({ success: false, message: 'Internal Server Error',error: err.message  });
+    }
+});
+
+
+
 
 
 

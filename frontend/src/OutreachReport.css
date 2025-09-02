@@ -1,0 +1,14 @@
+.outreach-table th, .outreach-table td {
+  vertical-align: middle !important;
+  font-size: 0.95rem;
+}
+
+.outreach-table tfoot td {
+  background-color: #f9caa8 !important;
+  /* font-size: 0.75rem; */
+}
+
+.outreach-table tbody {
+  font-size: 0.75rem;
+  white-space: normal;
+}
