@@ -188,7 +188,7 @@ function getForm1A2ParticipantData(language) {
                         (SELECT Label_Lao FROM Translation_EN_LA WHERE FormName='form_1a2' AND ItemCode=np.Province LIMIT 1) AS 'ແຂວງ',
                         (SELECT Label_Lao FROM Translation_EN_LA WHERE FormName='form_1a2' AND ItemCode=np.District LIMIT 1) AS 'ເມືອງ',
                         (SELECT Label_Lao FROM Translation_EN_LA WHERE FormName='form_1a2' AND ItemCode=np.Village LIMIT 1) AS 'ບ້ານ',
-                        np.Subactivity AS 'ກິດຈະກຳຍ່ອຍ',
+                        (SELECT Label_Lao FROM Translation_EN_LA WHERE FormName='form_1a2' AND ItemCode=np.Subactivity LIMIT 1) AS 'ກິດຈະກຳຍ່ອຍ',
                         np.Act_conduct_date1 AS 'ວັນເລີ່ມ',
                         np.Act_conduct_date2 AS 'ວັນສຳເລັດ',
                         (SELECT Label_Lao FROM Translation_EN_LA WHERE FormName='form_1a2' AND ItemCode=np.Conducted_by LIMIT 1) AS 'ຈັດຕັ້ງປະຕິບັດໂດຍ',
@@ -270,7 +270,7 @@ function getForm1A2ParticipantData(language) {
                             (SELECT Label_English FROM Translation_EN_LA WHERE FormName='form_1a2' AND ItemCode=np.Province LIMIT 1) AS 'Province',
                             (SELECT Label_English FROM Translation_EN_LA WHERE FormName='form_1a2' AND ItemCode=np.District LIMIT 1) AS 'District',
                             (SELECT Label_English FROM Translation_EN_LA WHERE FormName='form_1a2' AND ItemCode=np.Village LIMIT 1) AS 'Village',
-                            np.Subactivity AS 'Sub-Activity',
+                            (SELECT Label_English FROM Translation_EN_LA WHERE FormName='form_1a2' AND ItemCode=np.Subactivity LIMIT 1) AS 'Sub-Activity',
                             np.Act_conduct_date1 AS 'Start Date',
                             np.Act_conduct_date2 AS 'End Date',
                             (SELECT Label_English FROM Translation_EN_LA WHERE FormName='form_1a2' AND ItemCode=np.Conducted_by LIMIT 1) AS 'Conducted By',
@@ -378,7 +378,7 @@ function getForm1A2ParticipantDataBySID(SubmissionId, language) {
                         (SELECT Label_Lao FROM Translation_EN_LA WHERE FormName='form_1a2' AND ItemCode=np.Province LIMIT 1) AS 'ແຂວງ',
                         (SELECT Label_Lao FROM Translation_EN_LA WHERE FormName='form_1a2' AND ItemCode=np.District LIMIT 1) AS 'ເມືອງ',
                         (SELECT Label_Lao FROM Translation_EN_LA WHERE FormName='form_1a2' AND ItemCode=np.Village LIMIT 1) AS 'ບ້ານ',
-                        np.Subactivity AS 'ກິດຈະກຳຍ່ອຍ',
+                        (SELECT Label_Lao FROM Translation_EN_LA WHERE FormName='form_1a2' AND ItemCode=np.Subactivity LIMIT 1) AS 'ກິດຈະກຳຍ່ອຍ',
                         
                         (SELECT Label_Lao FROM Translation_EN_LA WHERE FormName='form_1a2' AND ItemCode=np.Conducted_by LIMIT 1) AS 'ຈັດຕັ້ງປະຕິບັດໂດຍ',
 
@@ -464,7 +464,7 @@ function getForm1A2ParticipantDataBySID(SubmissionId, language) {
                             (SELECT Label_English FROM Translation_EN_LA WHERE FormName='form_1a2' AND ItemCode=np.Province LIMIT 1) AS 'Province',
                             (SELECT Label_English FROM Translation_EN_LA WHERE FormName='form_1a2' AND ItemCode=np.District LIMIT 1) AS 'District',
                             (SELECT Label_English FROM Translation_EN_LA WHERE FormName='form_1a2' AND ItemCode=np.Village LIMIT 1) AS 'Village',
-                            np.Subactivity AS 'Sub-Activity',
+                            (SELECT Label_English FROM Translation_EN_LA WHERE FormName='form_1a2' AND ItemCode=np.Subactivity LIMIT 1) AS 'Sub-Activity',
                             
                             (SELECT Label_English FROM Translation_EN_LA WHERE FormName='form_1a2' AND ItemCode=np.Conducted_by LIMIT 1) AS 'Conducted By',
 

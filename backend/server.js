@@ -16,6 +16,9 @@ import { fileURLToPath } from 'url';
 //Import statistics data for chart
 import { getCBForStaffStatics, getCBForVillagersStatics, getForm1A1Statics, getForm1A2Statics, getForm1A3aStatics, getForm1A3bStatics } from './main_dashboard_controller.js';
 
+//Import outreach report functions
+import { get1A1OutreachData, get1A4OutreachData, get1BAct6OutreachData, get1BAct8OutreachData, get2Act1OutreachData, get2Act2OutreachData, get2Act3OutreachData, get3Act2OutreachData } from './outreach_controller.js';
+
 
 //Import CB for staff functions
 import {
@@ -221,7 +224,7 @@ import {
     deleteOnlyForm3Act2ParticipantInDB,
     deleteOnlyForm3Act2SubmissionInKobo
  } from './3Act2_controller.js';
-import { get1A1OutreachData } from './outreach_controller.js';
+
 
 
 //##########################################################################
@@ -264,6 +267,127 @@ app.get('/api/form1A1/getOutreachData', async (req, res) => {
         res.status(500).json({ success: false, message: 'Internal Server Error',error: err.message  });
     }
 });
+
+app.get('/api/form1A4/getOutreachData', async (req, res) => {
+    
+    const { reportingPeriod, reportYear } = req.query;
+    if (!reportingPeriod || !reportYear) {
+        return res.status(400).json({ error: 'Missing ReportYear or ReportingPeriod' });
+    }
+
+    try {
+        const data = await get1A4OutreachData(reportingPeriod, reportYear);
+        res.json({ success: true, data }); // send result data and status code 200 to frontend
+
+    } catch (err) {
+        console.err('error getting 1A4 Outreach data', err);
+        res.status(500).json({ success: false, message: 'Internal Server Error',error: err.message  });
+    }
+});
+
+app.get('/api/form1BAct6/getOutreachData', async (req, res) => {
+    
+    const { reportingPeriod, reportYear } = req.query;
+    if (!reportingPeriod || !reportYear) {
+        return res.status(400).json({ error: 'Missing ReportYear or ReportingPeriod' });
+    }
+
+    try {
+        const data = await get1BAct6OutreachData(reportingPeriod, reportYear);
+        res.json({ success: true, data }); // send result data and status code 200 to frontend
+
+    } catch (err) {
+        console.err('error getting 1BAct6 Outreach data', err);
+        res.status(500).json({ success: false, message: 'Internal Server Error',error: err.message  });
+    }
+});
+
+app.get('/api/form1BAct8/getOutreachData', async (req, res) => {
+    
+    const { reportingPeriod, reportYear } = req.query;
+    if (!reportingPeriod || !reportYear) {
+        return res.status(400).json({ error: 'Missing ReportYear or ReportingPeriod' });
+    }
+
+    try {
+        const data = await get1BAct8OutreachData(reportingPeriod, reportYear);
+        res.json({ success: true, data }); // send result data and status code 200 to frontend
+
+    } catch (err) {
+        console.err('error getting 1BAct8 Outreach data', err);
+        res.status(500).json({ success: false, message: 'Internal Server Error',error: err.message  });
+    }
+});
+
+app.get('/api/form2Act1/getOutreachData', async (req, res) => {
+    
+    const { reportingPeriod, reportYear } = req.query;
+    if (!reportingPeriod || !reportYear) {
+        return res.status(400).json({ error: 'Missing ReportYear or ReportingPeriod' });
+    }
+
+    try {
+        const data = await get2Act1OutreachData(reportingPeriod, reportYear);
+        res.json({ success: true, data }); // send result data and status code 200 to frontend
+
+    } catch (err) {
+        console.err('error getting 2Act1 Outreach data', err);
+        res.status(500).json({ success: false, message: 'Internal Server Error',error: err.message  });
+    }
+});
+
+app.get('/api/form2Act2/getOutreachData', async (req, res) => {
+    
+    const { reportingPeriod, reportYear } = req.query;
+    if (!reportingPeriod || !reportYear) {
+        return res.status(400).json({ error: 'Missing ReportYear or ReportingPeriod' });
+    }
+
+    try {
+        const data = await get2Act2OutreachData(reportingPeriod, reportYear);
+        res.json({ success: true, data }); // send result data and status code 200 to frontend
+
+    } catch (err) {
+        console.err('error getting 2Act2 Outreach data', err);
+        res.status(500).json({ success: false, message: 'Internal Server Error',error: err.message  });
+    }
+});
+
+app.get('/api/form2Act3/getOutreachData', async (req, res) => {
+    
+    const { reportingPeriod, reportYear } = req.query;
+    if (!reportingPeriod || !reportYear) {
+        return res.status(400).json({ error: 'Missing ReportYear or ReportingPeriod' });
+    }
+
+    try {
+        const data = await get2Act3OutreachData(reportingPeriod, reportYear);
+        res.json({ success: true, data }); // send result data and status code 200 to frontend
+
+    } catch (err) {
+        console.err('error getting 2Act3 Outreach data', err);
+        res.status(500).json({ success: false, message: 'Internal Server Error',error: err.message  });
+    }
+});
+
+app.get('/api/form3Act2/getOutreachData', async (req, res) => {
+    
+    const { reportingPeriod, reportYear } = req.query;
+    if (!reportingPeriod || !reportYear) {
+        return res.status(400).json({ error: 'Missing ReportYear or ReportingPeriod' });
+    }
+
+    try {
+        const data = await get3Act2OutreachData(reportingPeriod, reportYear);
+        res.json({ success: true, data }); // send result data and status code 200 to frontend
+
+    } catch (err) {
+        console.err('error getting 3Act2 Outreach data', err);
+        res.status(500).json({ success: false, message: 'Internal Server Error',error: err.message  });
+    }
+});
+
+//##################### End Function to handle all Outreach Report data #####################
 
 
 

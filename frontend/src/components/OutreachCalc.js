@@ -6,13 +6,12 @@ import 'bootstrap/dist/css/bootstrap.min.css';
 import '../App.css'; // Import custom CSS for sticky header
 import '../OutreachReport.css'; // optional CSS for coloring
 
+//Import constants
+import { AVERAGE_HOUSEHOLD_SIZE, PDR_TARGET_HH_REACHED, PDR_TARGET_HH_ESTIMATED, TARGET_OUTREACH_1, ACTIVITY_OVERLAPS } from '../constants/outreachConstants';
+
 
 
 export default function OutreachCalc() {
-    const [reportingPeriod, setReportingPeriod] = useState('Whole Year');
-    const [reportYear, setReportYear] = useState('2025');
-    const [reportData, setReportData] = useState([]);
-    const [summary, setSummary] = useState([121, '', 347, 118, '7,080,000']);
 
     // define reporting periods and years
     const reportingPeriods = ['Whole Year', '6-Months', 'Q1', 'Q2', 'Q3', 'Q4'];
@@ -24,6 +23,22 @@ export default function OutreachCalc() {
         { length: endYear - startYear + 1 },
         (_, i) => (startYear + i).toString()
     );
+
+    //define states variables
+    const [reportingPeriod, setReportingPeriod] = useState('Whole Year');
+    const [reportYear, setReportYear] = useState(currentYear.toString());
+    const [reportData1A1, setReportData1A1] = useState([]);
+    const [reportData1A4, setReportData1A4] = useState([]);
+    const [reportData1BAct6, setReportData1BAct6] = useState([]);
+    const [reportData1BAct8, setReportData1BAct8] = useState([]);
+    const [reportData2Act1, setReportData2Act1] = useState([]);
+    const [reportData2Act2, setReportData2Act2] = useState([]);
+    const [reportData2Act3, setReportData2Act3] = useState([]);
+    const [reportData3Act2, setReportData3Act2] = useState([]);
+    const [summary, setSummary] = useState([0, '', 0, 0, 0]);
+
+
+
 
     //table columns header:
     const tableColumnHeaders = [{
@@ -68,25 +83,150 @@ export default function OutreachCalc() {
     // Fetch data from backend API
     const handleFetch = async () => {
         try {
-            const response = await axios.get('http://localhost:3001/api/form1A1/getOutreachData', {
-                params: {
-                    reportYear,
-                    reportingPeriod
-                }
-            });
-            if (response.data.success) {
-                setReportData(response.data.data);
+            // Execute both requests in parallel
+            const [res1, res2, res3, res4, res5, res6, res7, res8] = await Promise.all([
+                axios.get('http://localhost:3001/api/form1A1/getOutreachData', {
+                    params: { reportYear, reportingPeriod },
+                }),
+                axios.get('http://localhost:3001/api/form1A4/getOutreachData', {
+                    params: { reportYear, reportingPeriod },
+                }),
+                axios.get('http://localhost:3001/api/form1BAct6/getOutreachData', {
+                    params: { reportYear, reportingPeriod },
+                }),
+                axios.get('http://localhost:3001/api/form1BAct8/getOutreachData', {
+                    params: { reportYear, reportingPeriod },
+                }),
+                axios.get('http://localhost:3001/api/form2Act1/getOutreachData', {
+                    params: { reportYear, reportingPeriod },
+                }),
+                axios.get('http://localhost:3001/api/form2Act2/getOutreachData', {
+                    params: { reportYear, reportingPeriod },
+                }),
+                axios.get('http://localhost:3001/api/form2Act3/getOutreachData', {
+                    params: { reportYear, reportingPeriod },
+                }),
+                axios.get('http://localhost:3001/api/form3Act2/getOutreachData', {
+                    params: { reportYear, reportingPeriod },
+                }),
+            ]);
+
+            // Check for success in both responses
+            const success1 = res1.data?.success;
+            const success2 = res2.data?.success;
+            const success3 = res3.data?.success;
+            const success4 = res4.data?.success;
+            const success5 = res5.data?.success;
+            const success6 = res6.data?.success;
+            const success7 = res7.data?.success;
+            const success8 = res8.data?.success;
+
+            if (success1) {
+                setReportData1A1(res1.data.data);
             } else {
-                setReportData([]);
+                setReportData1A1([]);
+                console.warn('form1A1 API responded with success = false');
             }
+
+            if (success2) {
+                setReportData1A4(res2.data.data);
+            } else {
+                setReportData1A4([]);
+                console.warn('form1A4 API responded with success = false');
+            }
+            if (success3) {
+                setReportData1BAct6(res3.data.data);
+            } else {
+                setReportData1BAct6([]);
+                console.warn('form1BAct6 API responded with success = false');
+            }
+            if (success4) {
+                setReportData1BAct8(res4.data.data);
+            } else {
+                setReportData1BAct8([]);
+                console.warn('form1BAct8 API responded with success = false');
+            }
+            if (success5) {
+                setReportData2Act1(res5.data.data);
+            } else {
+                setReportData2Act1([]);
+                console.warn('form2Act1 API responded with success = false');
+            }
+            if (success6) {
+                setReportData2Act2(res6.data.data);
+            } else {
+                setReportData2Act2([]);
+                console.warn('form2Act2 API responded with success = false');
+            }
+            if (success7) {
+                setReportData2Act3(res7.data.data);
+            } else {
+                setReportData2Act3([]);
+                console.warn('form2Act3 API responded with success = false');
+            }
+            if (success8) {
+                setReportData3Act2(res8.data.data);
+            } else {
+                setReportData3Act2([]);
+                console.warn('form3Act2 API responded with success = false');
+            }
+
         } catch (error) {
             console.error('Error fetching outreach data:', error);
-            setReportData([]);
+            setReportData1A1([]);
+            setReportData1A4([]);
+            setReportData1BAct6([]);
+            setReportData1BAct8([]);
+            setReportData2Act1([]);
+            setReportData2Act2([]);
+            setReportData2Act3([]);
+            setReportData3Act2([]);
         }
 
+        // calculate summary after data is fetched
+        setSummary(
+            [
+                (Number(reportData1A1[0]?.Count_1A1_All_Participants || '0') +
+                    Number(reportData1A4[0]?.Count_1A4_All_Participants || '0') +
+                    Number(reportData1BAct6[0]?.Count_1BAct6_All_Participants || '0') +
+                    Number(reportData1BAct8[0]?.Count_1BAct8_All_Participants || '0') +
+                    Number(reportData2Act1[0]?.Count_2Act1_Unique_MSME_Owner || '0') +
+                    Number(reportData2Act2[0]?.Count_2Act2_Unique_MSME_Owner || '0') +
+                    Number(reportData2Act3[0]?.Count_2Act3_All_Participants || '0') +
+                    Number(reportData3Act2[0]?.Count_3Act2_All_Participants || '0')).toLocaleString(),
 
-        setSummary([121, '', 347, 118, 708]);
+                '',
+
+                (Number(reportData1A1[0]?.Count_1A1_All_Participants || '0') +
+                    Number((reportData1A4[0]?.Count_1A4_All_Participants || '0') * 2) +
+                    Number((reportData1BAct6[0]?.Count_1BAct6_All_Participants || '0') * 2) +
+                    Number((reportData1BAct8[0]?.Count_1BAct8_All_Participants || '0') * 2) +
+                    Number((reportData2Act1[0]?.Count_2Act1_Unique_MSME_Owner || '0') * 3) +
+                    Number((reportData2Act2[0]?.Count_2Act2_Unique_MSME_Owner || '0') * 25) +
+                    Number((reportData2Act3[0]?.Count_2Act3_All_Participants || '0') * AVERAGE_HOUSEHOLD_SIZE) +
+                    Number((reportData3Act2[0]?.Count_3Act2_All_Participants || '0') * 2)).toLocaleString(),
+
+                (Number(reportData1A1[0]?.Count_1A1_Unique_HH_ID || '0') +
+                    Number(reportData1A4[0]?.Count_1A4_Unique_HH_ID || '0') +
+                    Number(reportData1BAct6[0]?.Count_1BAct6_Unique_HH_ID || '0') +
+                    Number(reportData1BAct8[0]?.Count_1BAct8_Unique_HH_ID || '0') +
+                    Number(reportData2Act1[0]?.Count_2Act1_Unique_MSME_Owner || '0') +
+                    Number(reportData2Act2[0]?.Count_2Act2_Unique_MSME_Owner || '0') +
+                    Number(reportData2Act3[0]?.Count_2Act3_Unique_HH_ID || '0') +
+                    Number(reportData3Act2[0]?.Count_3Act2_Unique_HH_ID || '0')).toLocaleString(),
+
+                (Number((reportData1A1[0]?.Count_1A1_Unique_HH_ID || '0') * AVERAGE_HOUSEHOLD_SIZE) +
+                    Number((reportData1A4[0]?.Count_1A4_Unique_HH_ID || '0') * AVERAGE_HOUSEHOLD_SIZE) +
+                    Number((reportData1BAct6[0]?.Count_1BAct6_Unique_HH_ID || '0') * AVERAGE_HOUSEHOLD_SIZE) +
+                    Number((reportData1BAct8[0]?.Count_1BAct8_Unique_HH_ID || '0') * AVERAGE_HOUSEHOLD_SIZE) +
+                    Number((reportData2Act1[0]?.Count_2Act1_Unique_MSME_Owner || '0') * AVERAGE_HOUSEHOLD_SIZE) +
+                    Number((reportData2Act2[0]?.Count_2Act2_Unique_MSME_Owner || '0') * AVERAGE_HOUSEHOLD_SIZE) +
+                    Number((reportData2Act3[0]?.Count_2Act3_Unique_HH_ID || '0') * AVERAGE_HOUSEHOLD_SIZE) +
+                    Number((reportData3Act2[0]?.Count_3Act2_Unique_HH_ID || '0') * AVERAGE_HOUSEHOLD_SIZE)).toLocaleString()
+
+            ]);
     };
+
 
 
 
@@ -128,7 +268,7 @@ export default function OutreachCalc() {
                 </div>
             </div>
 
-            <div className="table-responsive">
+            <div>
                 <div className="table-responsive" style={{ overflowX: 'auto', overflowY: 'auto', maxHeight: '780px' }}>
                     <table className="outreach-table table table-sm table-bordered align-middle text-center fs-7 ">
                         {/* Column header */}
@@ -172,14 +312,14 @@ export default function OutreachCalc() {
                             {/* PDR End target */}
                             <tr>
                                 <td className="text-end">{tableRowHeaders[0].rowsHeader2}</td>
-                                <td>168,000 - to be corrected as 75,000</td>
-                                <td>28,000</td>
-                                <td>168,000</td>
+                                <td>{PDR_TARGET_HH_ESTIMATED.toLocaleString()} - to be corrected as {TARGET_OUTREACH_1.toLocaleString()}</td>
+                                <td>{PDR_TARGET_HH_REACHED.toLocaleString()}</td>
+                                <td>{PDR_TARGET_HH_ESTIMATED.toLocaleString()}</td>
                                 <td></td>
                                 <td></td>
-                                <td>75,000</td>
-                                <td>28,000</td>
-                                <td>168,000</td>
+                                <td>{TARGET_OUTREACH_1.toLocaleString()}</td>
+                                <td>{PDR_TARGET_HH_REACHED.toLocaleString()}</td>
+                                <td>{PDR_TARGET_HH_ESTIMATED.toLocaleString()}</td>
                             </tr>
 
                             {/* Outreach Formula */}
@@ -203,7 +343,7 @@ export default function OutreachCalc() {
                                 <td className="text-start">{tableRowHeaders[0].rowsHeader5}</td>
                                 <td></td>
                                 <td></td>
-                                <td>6</td>
+                                <td>{AVERAGE_HOUSEHOLD_SIZE}</td>
                                 <td></td>
                                 <td></td>
                                 <td></td>
@@ -216,12 +356,12 @@ export default function OutreachCalc() {
                                 <td className="text-start">{tableRowHeaders[0].rowsHeader6}</td>
                                 <td>1. Actual number of FNS attendees </td>
                                 <td>Corresponding number of actual HH by HH ID of FNS members</td>
-                                <td>Target households (1.a)×Average HH size  ( 6)</td>
-                                <td className="table-info" title='1A.1: Count all Participant HH-ID + Name'>{(reportData[0]?.Count_1A1_All_Participants || '0').toLocaleString()}</td>
-                                <td>100%</td>
-                                <td className="table-info" title='1A.1: Count all Participant HH-ID + Name'>{(reportData[0]?.Count_1A1_All_Participants || '0').toLocaleString()}</td>
-                                <td className="table-info" title='1A.1: Count unique number of HH-ID'>{(reportData[0]?.Count_1A1_Unique_HH_ID || '0').toLocaleString()}</td>
-                                <td className="table-info" title='1A.1: Count unique number of HH-ID * 6'>{((reportData[0]?.Count_1A1_Unique_HH_ID || '0') * 6).toLocaleString()}</td>
+                                <td>Target households (1.a)×Average HH size  ({AVERAGE_HOUSEHOLD_SIZE})</td>
+                                <td className="table-info" title='1A.1: Count all Participant HH-ID + Name'>{(reportData1A1[0]?.Count_1A1_All_Participants || '0').toLocaleString()}</td>
+                                <td>{ACTIVITY_OVERLAPS.fns}%</td>
+                                <td className="table-info" title='1A.1: Count all Participant HH-ID + Name'>{(reportData1A1[0]?.Count_1A1_All_Participants || '0').toLocaleString()}</td>
+                                <td className="table-info" title='1A.1: Count unique number of HH-ID'>{(reportData1A1[0]?.Count_1A1_Unique_HH_ID || '0').toLocaleString()}</td>
+                                <td className="table-info" title='1A.1: (Count unique number of HH-ID) x 6'>{((reportData1A1[0]?.Count_1A1_Unique_HH_ID || '0') * AVERAGE_HOUSEHOLD_SIZE).toLocaleString()}</td>
                             </tr>
                             {/* Component 1 Activity 2*/}
                             <tr>
@@ -252,12 +392,12 @@ export default function OutreachCalc() {
                                 <td className="text-start">{tableRowHeaders[0].rowsHeader9}</td>
                                 <td className="text-start">2. Number of WFAS Grant recipients (husband and wife i.e. 2 per HH) assuming a 60% overlap with FNS and 60% overlap with APG.</td>
                                 <td>/2</td>
-                                <td>Target households (1.a)×Average HH size   (6)</td>
-                                <td></td>
-                                <td>40%</td>
-                                <td></td>
-                                <td></td>
-                                <td></td>
+                                <td>Target households (1.a)×Average HH size({AVERAGE_HOUSEHOLD_SIZE})</td>
+                                <td className="table-info" title='1A.4: Count all Participant HH-ID + Name'>{(reportData1A4[0]?.Count_1A4_All_Participants || '0').toLocaleString()}</td>
+                                <td>{ACTIVITY_OVERLAPS.wfasGrant}%</td>
+                                <td className="table-info" title='1A.4: (Count all Participant HH-ID + Name)*2'>{((reportData1A4[0]?.Count_1A4_All_Participants || '0') * 2).toLocaleString()}</td>
+                                <td className="table-info" title='1A.4: Count unique number of HH-ID'>{(reportData1A4[0]?.Count_1A4_Unique_HH_ID || '0').toLocaleString()}</td>
+                                <td className="table-info" title='1A.4: (Count unique number of HH-ID) x 6'>{((reportData1A4[0]?.Count_1A4_Unique_HH_ID || '0') * AVERAGE_HOUSEHOLD_SIZE).toLocaleString()}</td>
                             </tr>
                             {/* Component 1 Activity 5*/}
                             <tr>
@@ -289,11 +429,11 @@ export default function OutreachCalc() {
                                 <td className="text-start">3. Actual number of APG members (husband and wife i.e. 2 per HH) estimating a 50% overlap with FNS</td>
                                 <td>/2</td>
                                 <td>In PDR</td>
-                                <td></td>
-                                <td>50%</td>
-                                <td></td>
-                                <td></td>
-                                <td></td>
+                                <td className="table-info" title='1B-Act6: Count all Participant HH-ID + Name'>{(reportData1BAct6[0]?.Count_1BAct6_All_Participants || '0').toLocaleString()}</td>
+                                <td>{ACTIVITY_OVERLAPS.cboAPG}%</td>
+                                <td className="table-info" title='1B-Act6: (Count all Participant HH-ID + Name)*2'>{((reportData1BAct6[0]?.Count_1BAct6_All_Participants || '0') * 2).toLocaleString()}</td>
+                                <td className="table-info" title='1B-Act6: Count unique number of HH-ID'>{(reportData1BAct6[0]?.Count_1BAct6_Unique_HH_ID || '0').toLocaleString()}</td>
+                                <td className="table-info" title='1B-Act6: (Count unique number of HH-ID) x 6'>{((reportData1BAct6[0]?.Count_1BAct6_Unique_HH_ID || '0') * AVERAGE_HOUSEHOLD_SIZE).toLocaleString()}</td>
                             </tr>
                             {/* Component 1 Activity 7*/}
                             <tr>
@@ -313,11 +453,11 @@ export default function OutreachCalc() {
                                 <td className="text-start">4. Actual number of people who are actually working in (and have rights over) the irrigated fields (husband and wife i.e. 2 per HH). Estimated overlap of 60% with APG</td>
                                 <td>/2</td>
                                 <td>100 villages * 20 HHs</td>
-                                <td></td>
-                                <td>40%</td>
-                                <td></td>
-                                <td></td>
-                                <td></td>
+                                <td className="table-info" title='1B-Act8: Count all Participant HH-ID + Name where Sub-activity = "Construction of small scale irrigation system" or "Reconstruction of small scale irrigation system"'>{(reportData1BAct8[0]?.Count_1BAct8_All_Participants || '0').toLocaleString()}</td>
+                                <td>{ACTIVITY_OVERLAPS.climateChange}%</td>
+                                <td className="table-info" title='1B-Act8: (Count all Participant HH-ID + Name where Sub-activity = "Construction of small scale irrigation system" or "Reconstruction of small scale irrigation system)*2'>{((reportData1BAct8[0]?.Count_1BAct8_All_Participants || '0') * 2).toLocaleString()}</td>
+                                <td className="table-info" title='1B-Act8: Count unique number of HH-ID where Sub-activity = "Construction of small scale irrigation system" or "Reconstruction of small scale irrigation system'>{(reportData1BAct8[0]?.Count_1BAct8_Unique_HH_ID || '0').toLocaleString()}</td>
+                                <td className="table-info" title='1B-Act8: (Count unique number of HH-ID where Sub-activity = "Construction of small scale irrigation system" or "Reconstruction of small scale irrigation system) x 6'>{((reportData1BAct8[0]?.Count_1BAct8_Unique_HH_ID || '0') * AVERAGE_HOUSEHOLD_SIZE).toLocaleString()}</td>
                             </tr>
                             {/* Component 2 */}
                             <tr className="table-success">
@@ -329,11 +469,11 @@ export default function OutreachCalc() {
                                 <td className="text-start">5. MSME size (70*3) receiving at least one of the project's services/goods. </td>
                                 <td>Corresponding number of actual HH by HH ID</td>
                                 <td>70 MSME * 3 HHs</td>
-                                <td></td>
-                                <td>100%</td>
-                                <td></td>
-                                <td></td>
-                                <td></td>
+                                <td className="table-info" title='2Act1: Count Unique MSME Owner Name'>{(reportData2Act1[0]?.Count_2Act1_Unique_MSME_Owner || '0').toLocaleString()}</td>
+                                <td>{ACTIVITY_OVERLAPS.msme}%</td>
+                                <td className="table-info" title='2Act1: (Count Unique MSME Owner Name) x 3; The 3 people are assumed to be the permanent staff of this business and also treated as the direct beneficiaties of this activity.'>{((reportData2Act1[0]?.Count_2Act1_Unique_MSME_Owner || '0') * 3).toLocaleString()}</td>
+                                <td className="table-info" title='2Act1: Count Unique MSME Owner Name'>{(reportData2Act1[0]?.Count_2Act1_Unique_MSME_Owner || '0').toLocaleString()}</td>
+                                <td className="table-info" title='2Act1: (Count Unique MSME Owner Name) x 6'>{((reportData2Act1[0]?.Count_2Act1_Unique_MSME_Owner || '0') * AVERAGE_HOUSEHOLD_SIZE).toLocaleString()}</td>
                             </tr>
                             {/* Component 2 Activity 2*/}
                             <tr>
@@ -341,11 +481,11 @@ export default function OutreachCalc() {
                                 <td>employees of this </td>
                                 <td>Corresponding number of actual HH by HH ID <br />(Changed HH-ID to the names of business or the owners)</td>
                                 <td>90 MSP sessions * 25</td>
-                                <td></td>
-                                <td>10%</td>
-                                <td></td>
-                                <td></td>
-                                <td></td>
+                                <td className="table-info" title='2Act2: Count Unique MSME Owner Name'>{(reportData2Act2[0]?.Count_2Act2_Unique_MSME_Owner || '0').toLocaleString()}</td>
+                                <td>{ACTIVITY_OVERLAPS.msp}%</td>
+                                <td className="table-info" title='2Act2: (Count Unique MSME Owner Name) x 25; The 25 people are assumed to be the permanent staff of this business.'>{((reportData2Act2[0]?.Count_2Act2_Unique_MSME_Owner || '0') * 25).toLocaleString()}</td>
+                                <td className="table-info" title='2Act2: Count Unique MSME Owner Name'>{(reportData2Act2[0]?.Count_2Act2_Unique_MSME_Owner || '0').toLocaleString()}</td>
+                                <td className="table-info" title='2Act2: (Count Unique MSME Owner Name) x 6'>{((reportData2Act2[0]?.Count_2Act2_Unique_MSME_Owner || '0') * AVERAGE_HOUSEHOLD_SIZE).toLocaleString()}</td>
                             </tr>
                             {/* Component 2 Activity 3*/}
                             <tr>
@@ -353,11 +493,11 @@ export default function OutreachCalc() {
                                 <td className="text-start">7. All HH members living in the catchment area of AFN II upgraded roads (300km*average number of HH members living along the road), estimating an overall of 40% overlap with beneficiaires from activities above </td>
                                 <td>/6 (average HH size)</td>
                                 <td>100 villages * 80 HHs (only access tracks)</td>
-                                <td></td>
-                                <td>60%</td>
-                                <td></td>
-                                <td></td>
-                                <td></td>
+                                <td className="table-info" title='2Act3: Count all Participant HH-ID + Name where Sub-activity = Access tracks'>{(reportData2Act3[0]?.Count_2Act3_All_Participants || '0').toLocaleString()}</td>
+                                <td>{ACTIVITY_OVERLAPS.marketinfra}%</td>
+                                <td className="table-info" title='2Act3: (Count all Participant HH-ID + Name where Sub-activity = Access tracks) x 6'>{((reportData2Act3[0]?.Count_2Act3_All_Participants || '0') * AVERAGE_HOUSEHOLD_SIZE).toLocaleString()}</td>
+                                <td className="table-info" title='2Act3: Count unique number of HH-ID + Name where Sub-activity = Access tracks'>{(reportData2Act3[0]?.Count_2Act3_Unique_HH_ID || '0').toLocaleString()}</td>
+                                <td className="table-info" title='2Act3: (Count unique number of HH-ID + Name where Sub-activity = Access tracks) x6'>{((reportData2Act3[0]?.Count_2Act3_Unique_HH_ID || '0') * AVERAGE_HOUSEHOLD_SIZE).toLocaleString()}</td>
                             </tr>
                             {/* Component 3 */}
                             <tr className="table-success">
@@ -380,12 +520,12 @@ export default function OutreachCalc() {
                                 <td className="text-start">{tableRowHeaders[0].rowsHeader21}</td>
                                 <td className="text-start">8. 2 HH members (wife and husband)  included in CSO activities (estimated overlap of 70% with other activities)</td>
                                 <td>/2</td>
-                                <td>Target households (1.a)×Average HH size ( 6)</td>
-                                <td></td>
-                                <td>30%</td>
-                                <td></td>
-                                <td></td>
-                                <td></td>
+                                <td>Target households (1.a)×Average HH size ({AVERAGE_HOUSEHOLD_SIZE})</td>
+                                <td className="table-info" title='3Act2: Count all Participant HH-ID + Name'>{(reportData3Act2[0]?.Count_3Act2_All_Participants || '0').toLocaleString()}</td>
+                                <td>{ACTIVITY_OVERLAPS.csos}%</td>
+                                <td className="table-info" title='3Act2: (Count all Participant HH-ID + Name) x 2'>{((reportData3Act2[0]?.Count_3Act2_All_Participants || '0') * 2).toLocaleString()}</td>
+                                <td className="table-info" title='3Act2: Count unique number of HH-ID'>{(reportData3Act2[0]?.Count_3Act2_Unique_HH_ID || '0').toLocaleString()}</td>
+                                <td className="table-info" title='3Act2: (Count unique number of HH-ID) x 6'>{((reportData3Act2[0]?.Count_3Act2_Unique_HH_ID || '0') * AVERAGE_HOUSEHOLD_SIZE).toLocaleString()}</td>
                             </tr>
                             {/* Component 3 Activity 3*/}
                             <tr>
