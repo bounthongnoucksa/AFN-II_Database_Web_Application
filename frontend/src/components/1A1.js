@@ -5,6 +5,7 @@ import axios from 'axios';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import { Modal, Spinner, Button } from 'react-bootstrap'; // Import React Bootstrap components for modal message and buttons
 import '../App.css'; // Import custom CSS for sticky header
+import { APP_API_URL } from '../constants/appURLConstrants';
 
 
 
@@ -36,7 +37,7 @@ export default function Form1A1({ refreshTrigger }) {
     const fetchData = async (lang) => {
         setLoading(true);
         try {
-            const res = await axios.get(`http://localhost:3001/api/form1A1/getParticipantData?lang=${lang}`);
+            const res = await axios.get(APP_API_URL + `/api/form1A1/getParticipantData?lang=${lang}`);
             if (res.data.success) {
                 setData(res.data.data);
             } else {
@@ -54,7 +55,7 @@ export default function Form1A1({ refreshTrigger }) {
     // Fetch modal data for the selected submission
     const fetchModalData = async () => {
         try {
-            const res = await axios.get(`http://localhost:3001/api/form1A1/getParticipantDataBySID?submissionId=${submissionID}&lang=${language}`);
+            const res = await axios.get(APP_API_URL + `/api/form1A1/getParticipantDataBySID?submissionId=${submissionID}&lang=${language}`);
             if (res.data.success) {
                 const modalRows = res.data.data;
                 setModalData(modalRows);
@@ -101,7 +102,7 @@ export default function Form1A1({ refreshTrigger }) {
     //     if (window.confirm(`Are you sure you want to delete submission ID: ${submissionID}? This will remove all associated data.`)) {
     //         try {
     //             setLoadingModalMessage(true);
-    //             const response = await axios.delete(`http://localhost:3001/api/cbForStaff/deleteSubmission?submissionId=${submissionID}`);
+    //             const response = await axios.delete(APP_API_URL + `/api/cbForStaff/deleteSubmission?submissionId=${submissionID}`);
     //             if (response.data.success) {
     //                 setModalMessage('✅ Submission deleted successfully');
     //                 setShowSuccessModalMessage(true);
@@ -134,7 +135,7 @@ export default function Form1A1({ refreshTrigger }) {
         }
 
         try {
-            const response = await axios.get(`http://localhost:3001/api/form1A1/getUUID?submissionId=${submissionID}`);
+            const response = await axios.get(APP_API_URL + `/api/form1A1/getUUID?submissionId=${submissionID}`);
             if (response.data.success) {
                 const uuid = response.data.uuid;
                 setSelectedUUID(uuid);
@@ -182,7 +183,7 @@ export default function Form1A1({ refreshTrigger }) {
     //cb for staff export to Excel
     const handleExcelExport = async () => {
         try {
-            const response = await axios.get(`http://localhost:3001/api/form1A1/exportToExcel?lang=${language}`, {
+            const response = await axios.get(APP_API_URL + `/api/form1A1/exportToExcel?lang=${language}`, {
                 responseType: 'blob',
             });
 
@@ -239,7 +240,7 @@ export default function Form1A1({ refreshTrigger }) {
 
         try {
             // Step 1: get the new submissionId
-            const response = await axios.get(`http://localhost:3001/api/form1A1/getNewSubmissionID?Uuid=${uuid}`);
+            const response = await axios.get(APP_API_URL + `/api/form1A1/getNewSubmissionID?Uuid=${uuid}`);
 
 
             if (response.data.success) {
@@ -249,7 +250,7 @@ export default function Form1A1({ refreshTrigger }) {
 
                 // Step 2: fetch modal data for this new submissionId
                 const res = await axios.get(
-                    `http://localhost:3001/api/form1A1/getParticipantDataBySID?submissionId=${newSubmissionId}&lang=${language}`
+                    APP_API_URL + `/api/form1A1/getParticipantDataBySID?submissionId=${newSubmissionId}&lang=${language}`
                 );
 
                 if (res.data.success) {

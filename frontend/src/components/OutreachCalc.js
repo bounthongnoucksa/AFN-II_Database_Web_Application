@@ -8,6 +8,7 @@ import '../OutreachReport.css'; // optional CSS for coloring
 
 //Import constants
 import { AVERAGE_HOUSEHOLD_SIZE, PDR_TARGET_HH_REACHED, PDR_TARGET_HH_ESTIMATED, TARGET_OUTREACH_1, ACTIVITY_OVERLAPS } from '../constants/outreachConstants';
+import { APP_API_URL } from '../constants/appURLConstrants';
 
 
 
@@ -85,30 +86,33 @@ export default function OutreachCalc() {
         try {
             // Execute both requests in parallel
             const [res1, res2, res3, res4, res5, res6, res7, res8] = await Promise.all([
-                axios.get('http://localhost:3001/api/form1A1/getOutreachData', {
+                axios.get(APP_API_URL +'/api/form1A1/getOutreachData', {
                     params: { reportYear, reportingPeriod },
                 }),
-                axios.get('http://localhost:3001/api/form1A4/getOutreachData', {
+                axios.get(APP_API_URL +'/api/form1A4/getOutreachData', {
                     params: { reportYear, reportingPeriod },
                 }),
-                axios.get('http://localhost:3001/api/form1BAct6/getOutreachData', {
+                axios.get(APP_API_URL +'/api/form1BAct6/getOutreachData', {
                     params: { reportYear, reportingPeriod },
                 }),
-                axios.get('http://localhost:3001/api/form1BAct8/getOutreachData', {
+                axios.get(APP_API_URL +'/api/form1BAct8/getOutreachData', {
                     params: { reportYear, reportingPeriod },
                 }),
-                axios.get('http://localhost:3001/api/form2Act1/getOutreachData', {
+                axios.get(APP_API_URL +'/api/form2Act1/getOutreachData', {
                     params: { reportYear, reportingPeriod },
                 }),
-                axios.get('http://localhost:3001/api/form2Act2/getOutreachData', {
+                axios.get(APP_API_URL +'/api/form2Act2/getOutreachData', {
                     params: { reportYear, reportingPeriod },
                 }),
-                axios.get('http://localhost:3001/api/form2Act3/getOutreachData', {
+                axios.get(APP_API_URL +'/api/form2Act3/getOutreachData', {
                     params: { reportYear, reportingPeriod },
                 }),
-                axios.get('http://localhost:3001/api/form3Act2/getOutreachData', {
+                axios.get(APP_API_URL +'/api/form3Act2/getOutreachData', {
                     params: { reportYear, reportingPeriod },
                 }),
+
+
+
             ]);
 
             // Check for success in both responses
@@ -171,6 +175,66 @@ export default function OutreachCalc() {
                 console.warn('form3Act2 API responded with success = false');
             }
 
+            // calculate summary after data is fetched
+            //declare to get the data from API responses immediately
+            // (to avoid issues with state updates being asynchronous)
+            // and provide default empty object if data array is empty
+            const d1A1 = res1.data.data[0] || {};
+            const d1A4 = res2.data.data[0] || {};
+            const d1B6 = res3.data.data[0] || {};
+            const d1B8 = res4.data.data[0] || {};
+            const d2A1 = res5.data.data[0] || {};
+            const d2A2 = res6.data.data[0] || {};
+            const d2A3 = res7.data.data[0] || {};
+            const d3A2 = res8.data.data[0] || {};
+            setSummary([
+                (
+                    Number(d1A1.Count_1A1_All_Participants || '0') +
+                    Number(d1A4.Count_1A4_All_Participants || '0') +
+                    Number(d1B6.Count_1BAct6_All_Participants || '0') +
+                    Number(d1B8.Count_1BAct8_All_Participants || '0') +
+                    Number(d2A1.Count_2Act1_Unique_MSME_Owner || '0') +
+                    Number(d2A2.Count_2Act2_Unique_MSME_Owner || '0') +
+                    Number(d2A3.Count_2Act3_All_Participants || '0') +
+                    Number(d3A2.Count_3Act2_All_Participants || '0')
+                ).toLocaleString(),
+
+                '',
+
+                (
+                    Number(d1A1.Count_1A1_All_Participants || '0') +
+                    Number((d1A4.Count_1A4_All_Participants || '0') * 2) +
+                    Number((d1B6.Count_1BAct6_All_Participants || '0') * 2) +
+                    Number((d1B8.Count_1BAct8_All_Participants || '0') * 2) +
+                    Number((d2A1.Count_2Act1_Unique_MSME_Owner || '0') * 3) +
+                    Number((d2A2.Count_2Act2_Unique_MSME_Owner || '0') * 25) +
+                    Number((d2A3.Count_2Act3_All_Participants || '0') * AVERAGE_HOUSEHOLD_SIZE) +
+                    Number((d3A2.Count_3Act2_All_Participants || '0') * 2)
+                ).toLocaleString(),
+
+                (
+                    Number(d1A1.Count_1A1_Unique_HH_ID || '0') +
+                    Number(d1A4.Count_1A4_Unique_HH_ID || '0') +
+                    Number(d1B6.Count_1BAct6_Unique_HH_ID || '0') +
+                    Number(d1B8.Count_1BAct8_Unique_HH_ID || '0') +
+                    Number(d2A1.Count_2Act1_Unique_MSME_Owner || '0') +
+                    Number(d2A2.Count_2Act2_Unique_MSME_Owner || '0') +
+                    Number(d2A3.Count_2Act3_Unique_HH_ID || '0') +
+                    Number(d3A2.Count_3Act2_Unique_HH_ID || '0')
+                ).toLocaleString(),
+
+                (
+                    Number((d1A1.Count_1A1_Unique_HH_ID || '0') * AVERAGE_HOUSEHOLD_SIZE) +
+                    Number((d1A4.Count_1A4_Unique_HH_ID || '0') * AVERAGE_HOUSEHOLD_SIZE) +
+                    Number((d1B6.Count_1BAct6_Unique_HH_ID || '0') * AVERAGE_HOUSEHOLD_SIZE) +
+                    Number((d1B8.Count_1BAct8_Unique_HH_ID || '0') * AVERAGE_HOUSEHOLD_SIZE) +
+                    Number((d2A1.Count_2Act1_Unique_MSME_Owner || '0') * AVERAGE_HOUSEHOLD_SIZE) +
+                    Number((d2A2.Count_2Act2_Unique_MSME_Owner || '0') * AVERAGE_HOUSEHOLD_SIZE) +
+                    Number((d2A3.Count_2Act3_Unique_HH_ID || '0') * AVERAGE_HOUSEHOLD_SIZE) +
+                    Number((d3A2.Count_3Act2_Unique_HH_ID || '0') * AVERAGE_HOUSEHOLD_SIZE)
+                ).toLocaleString()
+            ]);
+
         } catch (error) {
             console.error('Error fetching outreach data:', error);
             setReportData1A1([]);
@@ -183,48 +247,7 @@ export default function OutreachCalc() {
             setReportData3Act2([]);
         }
 
-        // calculate summary after data is fetched
-        setSummary(
-            [
-                (Number(reportData1A1[0]?.Count_1A1_All_Participants || '0') +
-                    Number(reportData1A4[0]?.Count_1A4_All_Participants || '0') +
-                    Number(reportData1BAct6[0]?.Count_1BAct6_All_Participants || '0') +
-                    Number(reportData1BAct8[0]?.Count_1BAct8_All_Participants || '0') +
-                    Number(reportData2Act1[0]?.Count_2Act1_Unique_MSME_Owner || '0') +
-                    Number(reportData2Act2[0]?.Count_2Act2_Unique_MSME_Owner || '0') +
-                    Number(reportData2Act3[0]?.Count_2Act3_All_Participants || '0') +
-                    Number(reportData3Act2[0]?.Count_3Act2_All_Participants || '0')).toLocaleString(),
 
-                '',
-
-                (Number(reportData1A1[0]?.Count_1A1_All_Participants || '0') +
-                    Number((reportData1A4[0]?.Count_1A4_All_Participants || '0') * 2) +
-                    Number((reportData1BAct6[0]?.Count_1BAct6_All_Participants || '0') * 2) +
-                    Number((reportData1BAct8[0]?.Count_1BAct8_All_Participants || '0') * 2) +
-                    Number((reportData2Act1[0]?.Count_2Act1_Unique_MSME_Owner || '0') * 3) +
-                    Number((reportData2Act2[0]?.Count_2Act2_Unique_MSME_Owner || '0') * 25) +
-                    Number((reportData2Act3[0]?.Count_2Act3_All_Participants || '0') * AVERAGE_HOUSEHOLD_SIZE) +
-                    Number((reportData3Act2[0]?.Count_3Act2_All_Participants || '0') * 2)).toLocaleString(),
-
-                (Number(reportData1A1[0]?.Count_1A1_Unique_HH_ID || '0') +
-                    Number(reportData1A4[0]?.Count_1A4_Unique_HH_ID || '0') +
-                    Number(reportData1BAct6[0]?.Count_1BAct6_Unique_HH_ID || '0') +
-                    Number(reportData1BAct8[0]?.Count_1BAct8_Unique_HH_ID || '0') +
-                    Number(reportData2Act1[0]?.Count_2Act1_Unique_MSME_Owner || '0') +
-                    Number(reportData2Act2[0]?.Count_2Act2_Unique_MSME_Owner || '0') +
-                    Number(reportData2Act3[0]?.Count_2Act3_Unique_HH_ID || '0') +
-                    Number(reportData3Act2[0]?.Count_3Act2_Unique_HH_ID || '0')).toLocaleString(),
-
-                (Number((reportData1A1[0]?.Count_1A1_Unique_HH_ID || '0') * AVERAGE_HOUSEHOLD_SIZE) +
-                    Number((reportData1A4[0]?.Count_1A4_Unique_HH_ID || '0') * AVERAGE_HOUSEHOLD_SIZE) +
-                    Number((reportData1BAct6[0]?.Count_1BAct6_Unique_HH_ID || '0') * AVERAGE_HOUSEHOLD_SIZE) +
-                    Number((reportData1BAct8[0]?.Count_1BAct8_Unique_HH_ID || '0') * AVERAGE_HOUSEHOLD_SIZE) +
-                    Number((reportData2Act1[0]?.Count_2Act1_Unique_MSME_Owner || '0') * AVERAGE_HOUSEHOLD_SIZE) +
-                    Number((reportData2Act2[0]?.Count_2Act2_Unique_MSME_Owner || '0') * AVERAGE_HOUSEHOLD_SIZE) +
-                    Number((reportData2Act3[0]?.Count_2Act3_Unique_HH_ID || '0') * AVERAGE_HOUSEHOLD_SIZE) +
-                    Number((reportData3Act2[0]?.Count_3Act2_Unique_HH_ID || '0') * AVERAGE_HOUSEHOLD_SIZE)).toLocaleString()
-
-            ]);
     };
 
 

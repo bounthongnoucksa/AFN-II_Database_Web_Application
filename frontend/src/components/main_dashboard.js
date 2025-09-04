@@ -3,6 +3,7 @@ import React, { useState, useEffect, useCallback } from 'react';
 import axios from 'axios';
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, LabelList, ResponsiveContainer } from 'recharts';
 import 'bootstrap/dist/css/bootstrap.min.css';
+import { APP_API_URL } from '../constants/appURLConstrants';
 
 
 export default function MainDashboard({ refreshTrigger }) {
@@ -111,13 +112,13 @@ export default function MainDashboard({ refreshTrigger }) {
     const fetchAllCharts = useCallback(async () => {
         setLoading(true);
         await Promise.all([
-            loadChartData('http://localhost:3001/api/cbForStaff/getDashboardData', setChartDataCBForStaff, formatStaffChartData),
-            loadChartData('http://localhost:3001/api/cbForVillagers/getDashboardData', setChartDataVillagers, formatVillagersChartData),
-            loadChartData('http://localhost:3001/api/form1A1/getDashboardData', setChartDataForm1A1, formatForm1A1ChartData1),
-            loadChartData('http://localhost:3001/api/form1A1/getDashboardData', setChartDataForm1A1_2, formatForm1A1ChartData2),
-            loadChartData('http://localhost:3001/api/form1A2/getDashboardData', setchartDataForm1A2, formatForm1A2ChartData1),
-            loadChartData('http://localhost:3001/api/form1A3a/getDashboardData', setchartDataForm1A3a, formatForm1A3aChartData),
-            loadChartData('http://localhost:3001/api/form1A3b/getDashboardData', setchartDataForm1A3b, formatForm1A3bChartData)
+            loadChartData(APP_API_URL + '/api/cbForStaff/getDashboardData', setChartDataCBForStaff, formatStaffChartData),
+            loadChartData(APP_API_URL + '/api/cbForVillagers/getDashboardData', setChartDataVillagers, formatVillagersChartData),
+            loadChartData(APP_API_URL + '/api/form1A1/getDashboardData', setChartDataForm1A1, formatForm1A1ChartData1),
+            loadChartData(APP_API_URL + '/api/form1A1/getDashboardData', setChartDataForm1A1_2, formatForm1A1ChartData2),
+            loadChartData(APP_API_URL + '/api/form1A2/getDashboardData', setchartDataForm1A2, formatForm1A2ChartData1),
+            loadChartData(APP_API_URL + '/api/form1A3a/getDashboardData', setchartDataForm1A3a, formatForm1A3aChartData),
+            loadChartData(APP_API_URL + '/api/form1A3b/getDashboardData', setchartDataForm1A3b, formatForm1A3bChartData)
         ]);
         setLoading(false);
     }, []);
