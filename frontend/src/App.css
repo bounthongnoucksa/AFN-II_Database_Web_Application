@@ -40,6 +40,7 @@
 
 /* ##################################Custom styles for the application ##################################*/
 /* Custom by Bounthong */
+/* Sticky header for all tables */
 .sticky-header th {
   position: sticky;
   top: 0;
@@ -63,4 +64,107 @@
 
 .custom-context-menu li:hover {
   background-color: #7ebdc2;
+}
+
+
+
+
+
+
+
+
+
+/* #####################3 Logframe frontend table CSS ########################## */
+.sticky-header-log-for-frame tr:nth-child(1) th {
+  position: sticky;
+  top: 0px;
+  background-color: #d4edda; /* Bootstrap table-success color */
+  z-index: 30; /* higher than rows below */
+  background-clip: padding-box;
+  box-shadow: 0 2px 2px -1px rgba(0, 0, 0, 0.1);
+  font-size: 0.95rem;
+}
+
+.sticky-header-log-for-frame tr:nth-child(2) th {
+  position: sticky;
+  top: 30px; /* height of first header row */
+  background-color: #d4edda;
+  z-index: 20;
+  background-clip: padding-box;
+  box-shadow: 0 2px 2px -1px rgba(0, 0, 0, 0.1);
+  font-size: 0.95rem;
+}
+
+.sticky-header-log-for-frame tr:nth-child(3) th {
+  position: sticky;
+  top: 60px; /* height of first + second header rows */
+  z-index: 10;
+  background-clip: padding-box;
+  box-shadow: 0 2px 2px -1px rgba(0, 0, 0, 0.1);
+  font-size: 0.95rem;
+}
+.sticky-header-log-for-frame tr:nth-child(1) th,
+.sticky-header-log-for-frame tr:nth-child(2) th,
+.sticky-header-log-for-frame tr:nth-child(3) th {
+  padding: 6px 3px;          /* reduce vertical and horizontal padding */
+  font-size: 15px;           /* or try 10px if needed */
+  line-height: 1.1;          /* reduce line spacing */
+  white-space: nowrap;       /* prevent wrapping unless intended */
+  text-align: center;
+  vertical-align: middle;
+}
+
+
+/* Freeze row headers for log frame table */
+/* Freeze 1st column */
+.row-header-sticky-col-1 {
+  position: sticky;
+  left: 0;
+  background-color: #fff;
+  z-index: 2;
+  min-width: 120px; /* Adjust as needed */
+  
+}
+
+/* Freeze 2nd column */
+.row-header-sticky-col-2 {
+  position: sticky;
+  left: 125px;
+  background-color: #fff;
+  z-index: 2;
+  min-width: 250px;
+}
+
+/* Freeze 3rd column */
+.row-header-sticky-col-3 {
+  position: sticky;
+  left: 375px;
+  background-color: #fff;
+  z-index: 2;
+  min-width: 80px;
+}
+
+/* Freeze 4th column */
+.row-header-sticky-col-4 {
+  position: sticky;
+  left: 455px;
+  background-color: #fff;
+  z-index: 2;
+  min-width: 80px;
+}
+
+/* Freeze 5th column */
+.row-header-sticky-col-5 {
+  position: sticky;
+  left: 535px;
+  background-color: #fff;
+  z-index: 2;
+  min-width: 80px;
+}
+
+/* Make sure sticky headers stack above all */
+thead th.row-header-sticky-col-1,
+thead th.row-header-sticky-col-2,
+thead th.row-header-sticky-col-3 {
+  z-index: 6;
 }

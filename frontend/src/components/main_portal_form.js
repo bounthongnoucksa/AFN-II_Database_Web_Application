@@ -23,6 +23,7 @@ import Form3Act1a from './3Act1a';
 import Form3Act1b from './3Act1b';
 import Form3Act2 from './3Act2';
 import OutreachCalc from './OutreachCalc';
+import LogFrame from './logFrame';
 
 export default function MainPortalForm() {
     const [activeTab, setActiveTab] = useState('tab3');
@@ -103,7 +104,7 @@ export default function MainPortalForm() {
                 tabComponent = <OutreachCalc />;
                 break;
             case 'tab2':
-                tabComponent = <div>Logframe Update Content</div>;
+                tabComponent = <LogFrame />;
                 break;
             case 'tab3':
                 tabComponent = <MainDashboard />;

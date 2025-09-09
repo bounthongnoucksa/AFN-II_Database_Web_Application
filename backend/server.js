@@ -19,6 +19,8 @@ import { getCBForStaffStatics, getCBForVillagersStatics, getForm1A1Statics, getF
 //Import outreach report functions
 import { get1A1OutreachData, get1A4OutreachData, get1BAct6OutreachData, get1BAct8OutreachData, get2Act1OutreachData, get2Act2OutreachData, get2Act3OutreachData, get3Act2OutreachData } from './outreach_controller.js';
 
+//Import logframe functions
+ import { getIndicatorData } from './logframe_controller.js';
 
 //Import CB for staff functions
 import {
@@ -227,6 +229,9 @@ import {
 
 
 
+
+
+
 //##########################################################################
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -388,6 +393,48 @@ app.get('/api/form3Act2/getOutreachData', async (req, res) => {
 });
 
 //##################### End Function to handle all Outreach Report data #####################
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+//##################### Function to handle all Logframe Report data #########################
+app.get('/api/all/getLogframeData', getIndicatorData); //testing
+
+// app.get('/api/all/getLogframeData', async (req, res) => {
+    
+
+//     try {
+//         const data = await fetchIndicatorData();
+//         res.json({ success: true, data }); // send result data and status code 200 to frontend
+
+//     } catch (err) {
+//         console.error('error getting Logframe report data', err);
+//         res.status(500).json({ success: false, message: 'Internal Server Error',error: err.message  });
+//     }
+// });
+
+
+
+
+//##################### End Function to handle all Logframe Report data #####################
+
+
+
+
 
 
 
