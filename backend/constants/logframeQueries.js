@@ -708,6 +708,112 @@ export const indicatorQueryMap = {
 
 
     //Part2: 1.1.8  Households provided with targeted support to improve their nutrition
-    
+    "1A1_Total_Persons": {
+        query: `
+        --1A1
+            SELECT 
+            COUNT(DISTINCT P.HHId || '_' || P.NameAndSurname) AS count
+            --,COUNT(DISTINCT P.HHId) AS Count_1A1_Unique_HH_ID
+            FROM tb_Form_1A1_Participant P
+            JOIN tb_Form_1A1_Submission S ON P.SubmissionId = S.Id
+            WHERE date(S.ReportingPeriod) BETWEEN date(?) AND date(?)
+    `,
+        getParams: ({ startDate, endDate }) => [startDate, endDate],
+
+    },
+    "1A1_Males": {
+        query: `
+        --1A1
+            SELECT 
+            COUNT(DISTINCT P.HHId || '_' || P.NameAndSurname) AS count
+            --,COUNT(DISTINCT P.HHId) AS Count_1A1_Unique_HH_ID
+            FROM tb_Form_1A1_Participant P
+            JOIN tb_Form_1A1_Submission S ON P.SubmissionId = S.Id
+            WHERE P.Gender = ? AND date(S.ReportingPeriod) BETWEEN date(?) AND date(?)
+    `,
+        getParams: ({ gender, startDate, endDate }) => [gender, startDate, endDate],
+
+    },
+    "1A1_Females": {
+        query: `
+        --1A1
+            SELECT 
+            COUNT(DISTINCT P.HHId || '_' || P.NameAndSurname) AS count
+            --,COUNT(DISTINCT P.HHId) AS Count_1A1_Unique_HH_ID
+            FROM tb_Form_1A1_Participant P
+            JOIN tb_Form_1A1_Submission S ON P.SubmissionId = S.Id
+            WHERE P.Gender = ? AND date(S.ReportingPeriod) BETWEEN date(?) AND date(?)
+    `,
+        getParams: ({ gender, startDate, endDate }) => [gender, startDate, endDate],
+
+    },
+    "1A1_Households": {
+        query: `
+        --1A1
+            SELECT 
+            --COUNT(DISTINCT P.HHId || '_' || P.NameAndSurname) AS count
+            COUNT(DISTINCT P.HHId) AS count
+            FROM tb_Form_1A1_Participant P
+            JOIN tb_Form_1A1_Submission S ON P.SubmissionId = S.Id
+            WHERE date(S.ReportingPeriod) BETWEEN date(?) AND date(?)
+    `,
+        getParams: ({ startDate, endDate }) => [startDate, endDate],
+
+    },
+    "1A1_persons_received_services": {
+        query: `
+        --1A1 (1A1_Households result x 6)
+            SELECT 
+            --COUNT(DISTINCT P.HHId || '_' || P.NameAndSurname) AS count
+            COUNT(DISTINCT P.HHId) * 6 AS count
+            FROM tb_Form_1A1_Participant P
+            JOIN tb_Form_1A1_Submission S ON P.SubmissionId = S.Id
+            WHERE date(S.ReportingPeriod) BETWEEN date(?) AND date(?)
+    `,
+        getParams: ({ startDate, endDate }) => [startDate, endDate],
+
+    },
+    "1A1_Indigenous_people": {
+        query: `
+        --1A1
+            SELECT 
+            COUNT(DISTINCT P.HHId || '_' || P.NameAndSurname) AS count
+            --,COUNT(DISTINCT P.HHId) AS count
+            FROM tb_Form_1A1_Participant P
+            JOIN tb_Form_1A1_Submission S ON P.SubmissionId = S.Id
+            WHERE P.Ethnicity NOT IN (${'??'}) AND date(S.ReportingPeriod) BETWEEN date(?) AND date(?)
+    `,
+        getParams: ({ ethnic, startDate, endDate }) => [startDate, endDate],
+
+    },
+    "1A1_Young_people": {
+        query: `
+        --1A1
+            SELECT 
+            COUNT(DISTINCT P.HHId || '_' || P.NameAndSurname) AS count
+            --,COUNT(DISTINCT P.HHId) AS Count_1A1_Unique_HH_ID
+            FROM tb_Form_1A1_Participant P
+            JOIN tb_Form_1A1_Submission S ON P.SubmissionId = S.Id
+            WHERE P.Age BETWEEN ? AND ? AND date(S.ReportingPeriod) BETWEEN date(?) AND date(?)
+    `,
+        getParams: ({ minAge, maxAge, startDate, endDate }) => [minAge, maxAge, startDate, endDate],
+
+    },
+    "1A1_Women_headed_households": {
+        query: `
+        --1A1
+            SELECT 
+            --COUNT(DISTINCT P.HHId || '_' || P.NameAndSurname) AS count
+            COUNT(DISTINCT P.HHId) * 6 AS count
+            FROM tb_Form_1A1_Participant P
+            JOIN tb_Form_1A1_Submission S ON P.SubmissionId = S.Id
+            WHERE P.WomanHead = 'h_yes' AND date(S.ReportingPeriod) BETWEEN date(?) AND date(?)
+    `,
+        getParams: ({ startDate, endDate }) => [startDate, endDate],
+
+    },
+
+
+
     // Extend with more as needed...
 };

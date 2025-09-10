@@ -26,9 +26,7 @@
     "indicator": "Young people",
     "midTerm": 16800,
     "endTarget": 42000
-  }
-
-  ,
+  },
   "Outreach_Indigenous_people": {
     "hierarchy": "Outreach",
     "indicatorGroup": "1 Persons receiving services promoted or supported by the project",
@@ -70,7 +68,7 @@
     "indicator": "Total number of households members",
     "midTerm": 67200,
     "endTarget": 168000
-  }
+  },
 
 
 
@@ -78,8 +76,14 @@
 
 
 
-
-  ,
+  "1A1_Total_Persons": {
+    "hierarchy": "18,000 households provided with targeted support to improve their nutrition",
+    "indicatorGroup": "1.1.8 Households provided with targeted support to improve their nutrition",
+    "baseline": 0,
+    "indicator": "Total persons participating",
+    "midTerm": 43200,
+    "endTarget": 108000
+  },
   "1A1_Males": {
     "hierarchy": "18,000 households provided with targeted support to improve their nutrition",
     "indicatorGroup": "1.1.8 Households provided with targeted support to improve their nutrition",
@@ -88,5 +92,58 @@
     "indicator": "Males",
     "midTerm": 21600,
     "endTarget": 54000
+  },
+  "1A1_Females": {
+    "hierarchy": "18,000 households provided with targeted support to improve their nutrition",
+    "indicatorGroup": "1.1.8 Households provided with targeted support to improve their nutrition",
+    "gender": "Female",
+    "baseline": 0,
+    "indicator": "Females",
+    "midTerm": 21600,
+    "endTarget": 54000
+  },
+  "1A1_Households": {
+    "hierarchy": "18,000 households provided with targeted support to improve their nutrition",
+    "indicatorGroup": "1.1.8 Households provided with targeted support to improve their nutrition",
+    "baseline": 0,
+    "indicator": "Households",
+    "midTerm": 7200,
+    "endTarget": 18000
+  },
+"1A1_persons_received_services": {
+    "hierarchy": "18,000 households provided with targeted support to improve their nutrition",
+    "indicatorGroup": "1.1.8 Households provided with targeted support to improve their nutrition",
+    "baseline": 0,
+    "indicator": "Total number Household members benefitted",
+    "midTerm": 43200,
+    "endTarget": 108000
+  },
+"1A1_Indigenous_people": {
+    "hierarchy": "18,000 households provided with targeted support to improve their nutrition",
+    "indicatorGroup": "1.1.8 Households provided with targeted support to improve their nutrition",
+    "ethnic": "'_e01', '_e02', '_e03', '_e04', '_e05', '_e06', '_e07', '_e08'",
+    "baseline": 0,
+    "indicator": "Indigenous people",
+    "midTerm": 30240,
+    "endTarget": 75600
+  },
+"1A1_Young_people": {
+    "hierarchy": "18,000 households provided with targeted support to improve their nutrition",
+    "indicatorGroup": "1.1.8 Households provided with targeted support to improve their nutrition",
+    "minAge": "15",
+    "maxAge": "35",
+    "baseline": 0,
+    "indicator": "Young people",
+    "midTerm": 10800,
+    "endTarget": 27000
+  },
+"1A1_Women_headed_households": {
+    "hierarchy": "18,000 households provided with targeted support to improve their nutrition",
+    "indicatorGroup": "1.1.8 Households provided with targeted support to improve their nutrition",
+    "gender": "Female",
+    "baseline": 0,
+    "indicator": "Women-headed households - Households",
+    "midTerm": 144,
+    "endTarget": 360
   }
 }

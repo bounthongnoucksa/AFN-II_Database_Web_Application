@@ -194,7 +194,7 @@ async function fetchIndicatorData() {
         if (queryObj) {
           let { query, getParams } = queryObj;
 
-          if (indicatorKey === 'Outreach_Indigenous_people') {
+          if (indicatorKey === 'Outreach_Indigenous_people' || indicatorKey === '1A1_Indigenous_people') {
             const ethnicCodes = meta.ethnic;  // e.g. "'_e01','_e02',..."
             //console.log('Ethnic Codes:', ethnicCodes);
             query = query.replace(/\?\?/g, ethnicCodes);

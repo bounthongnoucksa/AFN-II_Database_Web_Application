@@ -36,8 +36,38 @@
 
 
 
+
+  
+  "1A1_Total_Persons": {
+    "2023": 393,
+    "2024-Current": 9812
+  },
   "1A1_Males": {
     "2023": 120,
     "2024-Current": 4564
+  },
+  "1A1_Females": {
+    "2023": 273,
+    "2024-Current": 5248
+  },
+  "1A1_Households": {
+    "2023": 393,
+    "2024-Current": 3010
+  },
+  "1A1_persons_received_services": {
+    "2023": 2358,
+    "2024-Current": 18060
+  },
+  "1A1_Indigenous_people": {
+    "2023": 393,
+    "2024-Current": 8778
+  },
+  "1A1_Young_people": {
+    "2023": 204,
+    "2024-Current": 5039
+  },
+  "1A1_Women_headed_households": {
+    "2023": 0,
+    "2024-Current": 0
   }
 }

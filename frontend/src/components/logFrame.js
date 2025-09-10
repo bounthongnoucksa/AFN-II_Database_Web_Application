@@ -63,7 +63,7 @@ export default function LogFrame() {
 
             <div>
                 <div style={{ overflowX: 'auto', overflowY: 'auto', maxHeight: '820px' }}>
-                    <table bordered hover className=" align-middle table table-sm table-bordered fs-7">
+                    <table bordered hover className=" align-middle table table-sm table-bordered table-hover fs-7">
                         <thead className=" sticky-header-log-for-frame text-center align-middle">
                             <tr className='table-success'>
                                 <th rowSpan="3" className='row-header-sticky-col-1'>Results Hierarchy</th>
@@ -122,7 +122,7 @@ export default function LogFrame() {
                             {Object.entries(groupedData).map(([groupTitle, rows], groupIndex) => (
                                 <React.Fragment key={`group-${groupIndex}`}>
                                     <tr className="table-secondary fw-bold text-start">
-                                        <td colSpan={totalColumns}>Output: {groupTitle}</td>
+                                        <td colSpan={totalColumns}>Output: &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; {groupTitle}</td>
                                         {/* <td colSpan= '1'>Output</td> */}
                                         {/* <td colSpan= '10'>Output: {groupTitle}</td> */}
                                     </tr>
