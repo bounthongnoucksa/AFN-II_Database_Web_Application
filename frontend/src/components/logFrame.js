@@ -122,22 +122,28 @@ export default function LogFrame() {
                             {Object.entries(groupedData).map(([groupTitle, rows], groupIndex) => (
                                 <React.Fragment key={`group-${groupIndex}`}>
                                     <tr className="table-secondary fw-bold text-start">
-                                        <td colSpan={totalColumns}>{groupTitle}</td>
+                                        <td colSpan={totalColumns}>Output: {groupTitle}</td>
+                                        {/* <td colSpan= '1'>Output</td> */}
+                                        {/* <td colSpan= '10'>Output: {groupTitle}</td> */}
                                     </tr>
 
                                     {rows.map((row, rowIndex) => (
+                                        
                                         <tr key={`row-${groupIndex}-${rowIndex}`}>
+                                            
                                             {/* Render the 'hierarchy' cell only for the first row in the group */}
-                                            {rowIndex === 0 && (<td rowSpan={rows.length} className='row-header-sticky-col-1'>{row.hierarchy}</td>)}
+                                            {rowIndex === 0 && (<td rowSpan={rows.length} className='row-header-sticky-col-1'>{row.hierarchy}</td>)} 
+                                                                                       
                                             <td className='row-header-sticky-col-2 text-start'>{row.indicator}</td>
                                             <td className='row-header-sticky-col-3'>{row.baseline}</td>
                                             <td className='row-header-sticky-col-4'>{row.midTerm.toLocaleString()}</td>
                                             <td className='row-header-sticky-col-5'>{row.endTarget.toLocaleString()}</td>
+                                            
                                             {years.map((year) => (
                                                 <React.Fragment key={`data-${rowIndex}-${year}`}>
-                                                    <td>{(row.yearlyData[year]?.target.toLocaleString() ?? '-')}</td>
-                                                    <td>{row.yearlyData[year]?.result.toLocaleString() ?? '-'}</td>
-                                                    <td>{row.yearlyData[year]?.cumulative.toLocaleString() ?? '-'}</td>
+                                                    <td className="table-info">{(row.yearlyData[year]?.target.toLocaleString() ?? '-')}</td>
+                                                    <td className="table-danger">{row.yearlyData[year]?.result.toLocaleString() ?? '-'}</td>
+                                                    <td className="table-warning">{row.yearlyData[year]?.cumulative.toLocaleString() ?? '-'}</td>
                                                 </React.Fragment>
                                             ))}
                                         </tr>

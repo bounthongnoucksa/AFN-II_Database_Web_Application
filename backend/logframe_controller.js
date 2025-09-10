@@ -194,7 +194,7 @@ async function fetchIndicatorData() {
         if (queryObj) {
           let { query, getParams } = queryObj;
 
-          if (indicatorKey === '1A1_Indigenous_people') {
+          if (indicatorKey === 'Outreach_Indigenous_people') {
             const ethnicCodes = meta.ethnic;  // e.g. "'_e01','_e02',..."
             //console.log('Ethnic Codes:', ethnicCodes);
             query = query.replace(/\?\?/g, ethnicCodes);
@@ -210,11 +210,11 @@ async function fetchIndicatorData() {
             });
           });
 
-          console.log(`\n--- indicator: ${indicatorKey} | year: ${yearStr} ---`);
-          console.log('Query:', query);
-          console.log('Params:', params);
+          // console.log(`\n--- indicator: ${indicatorKey} | year: ${yearStr} ---`);
+          // console.log('Query:', query);
+          // console.log('Params:', params);
 
-          console.log(`Result for ${indicatorKey} in ${yearStr}:`, resultRow);
+          // console.log(`Result for ${indicatorKey} in ${yearStr}:`, resultRow);
 
           result = resultRow?.count || 0;
         } else {

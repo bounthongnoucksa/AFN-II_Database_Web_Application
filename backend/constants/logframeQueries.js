@@ -1,7 +1,9 @@
 // logframeQueries.js
 
 export const indicatorQueryMap = {
-    "1A1_Males": {
+
+    // Part 1: Outreach Indicators
+    "Outreach_Males": {
         query: `
       SELECT sum(count) AS count FROM (
             --1A1
@@ -13,9 +15,9 @@ export const indicatorQueryMap = {
             WHERE P.Gender = ? AND date(S.ReportingPeriod) BETWEEN date(?) AND date(?)
                     
             UNION ALL
-            --1A4
+            --1A4 (result x 2)
             SELECT 
-            COUNT(DISTINCT P.HHId || '_' || P.NameAndSurname) AS Count_1A4_All_Participants
+            COUNT(DISTINCT P.HHId || '_' || P.NameAndSurname) * 2 AS Count_1A4_All_Participants
             --,COUNT(DISTINCT P.HHId) AS Count_1A4_Unique_HH_ID
             FROM tb_Form_1A4_Participant P
             JOIN tb_Form_1A4_Submission S ON P.SubmissionId = S.Id
@@ -23,18 +25,18 @@ export const indicatorQueryMap = {
 
             UNION ALL
 
-            --1BAct6
+            --1BAct6 (result x 2)
             SELECT 
-            COUNT(DISTINCT P.HHId || '_' || P.NameAndSurname) AS Count_1BAct6_All_Participants
+            COUNT(DISTINCT P.HHId || '_' || P.NameAndSurname) * 2 AS Count_1BAct6_All_Participants
             --,COUNT(DISTINCT P.HHId) AS Count_1BAct6_Unique_HH_ID
             FROM tb_Form_1BAct6_Participant P
             JOIN tb_Form_1BAct6_Submission S ON P.SubmissionId = S.Id
             WHERE P.Gender = ? AND date(S.Reporting_period) BETWEEN date(?) AND date(?)
 
             UNION ALL
-            --1BAct8
+            --1BAct8 (result x 2)
             SELECT 
-            COUNT(DISTINCT P.HHId || '_' || P.NameAndSurname) AS Count_1BAct8_All_Participants
+            COUNT(DISTINCT P.HHId || '_' || P.NameAndSurname) * 2 AS Count_1BAct8_All_Participants
             --,COUNT(DISTINCT P.HHId) AS Count_1BAct8_Unique_HH_ID
             FROM tb_Form_1BAct8_Participant P
             JOIN tb_Form_1BAct8_Submission S ON P.SubmissionId = S.Id
@@ -43,27 +45,27 @@ export const indicatorQueryMap = {
 
             UNION ALL
 
-            --2Act1
+            --2Act1 (result x 3)
             SELECT 
-            COUNT(DISTINCT P.NameOfMSME_Owner) AS Count_2Act1_Unique_MSME_Owner
+            COUNT(DISTINCT P.NameOfMSME_Owner) * 3 AS Count_2Act1_Unique_MSME_Owner
             FROM tb_Form_2Act1_Participant P
             JOIN tb_Form_2Act1_Submission S ON P.SubmissionId = S.Id
             WHERE P.Gender = ? AND date(S.Reporting_Period) BETWEEN date(?) AND date(?)
 
             UNION ALL
 
-            --2Act2
+            --2Act2 (result x 25)
             SELECT 
-            COUNT(DISTINCT P.NameAndSurname) AS Count_2Act2_Unique_MSME_Owner
+            COUNT(DISTINCT P.NameAndSurname) * 25 AS Count_2Act2_Unique_MSME_Owner
             FROM tb_Form_2Act2_Participant P
             JOIN tb_Form_2Act2_Submission S ON P.SubmissionId = S.Id
             WHERE P.Gender = ? AND date(S.Reporting_Period) BETWEEN date(?) AND date(?)
                 
             UNION ALL
                 
-            --2Act3
+            --2Act3 (result x 6)
             SELECT 
-            COUNT(DISTINCT P.HHId || '_' || P.NameAndSurname) AS Count_2Act3_All_Participants
+            COUNT(DISTINCT P.HHId || '_' || P.NameAndSurname) * 6 AS Count_2Act3_All_Participants
             --,COUNT(DISTINCT P.HHId) AS Count_2Act3_Unique_HH_ID
             FROM tb_Form_2Act3_Participant P
             JOIN tb_Form_2Act3_Submission S ON P.SubmissionId = S.Id
@@ -71,9 +73,9 @@ export const indicatorQueryMap = {
             AND date(S.Reporting_Period) BETWEEN date(?) AND date(?)
                     
             UNION ALL	
-            --3Act2
+            --3Act2 (result x 2)
             SELECT 
-            COUNT(DISTINCT P.HHId || '_' || P.NameOfAPG) AS Count_3Act2_All_Participants
+            COUNT(DISTINCT P.HHId || '_' || P.NameOfAPG) * 2 AS Count_3Act2_All_Participants
             --,COUNT(DISTINCT P.HHId) AS Count_3Act2_Unique_HH_ID
             FROM tb_Form_3Act2_Participant P
             JOIN tb_Form_3Act2_Submission S ON P.Submission_id = S.Id
@@ -91,7 +93,7 @@ export const indicatorQueryMap = {
         }
     },
 
-    "1A1_Females": {
+    "Outreach_Females": {
         query: `
       SELECT sum(count) AS count FROM (
             --1A1
@@ -103,9 +105,9 @@ export const indicatorQueryMap = {
             WHERE P.Gender = ? AND date(S.ReportingPeriod) BETWEEN date(?) AND date(?)
                     
             UNION ALL
-            --1A4
+            --1A4 (result x 2)
             SELECT 
-            COUNT(DISTINCT P.HHId || '_' || P.NameAndSurname) AS Count_1A4_All_Participants
+            COUNT(DISTINCT P.HHId || '_' || P.NameAndSurname) * 2 AS Count_1A4_All_Participants
             --,COUNT(DISTINCT P.HHId) AS Count_1A4_Unique_HH_ID
             FROM tb_Form_1A4_Participant P
             JOIN tb_Form_1A4_Submission S ON P.SubmissionId = S.Id
@@ -113,18 +115,18 @@ export const indicatorQueryMap = {
 
             UNION ALL
 
-            --1BAct6
+            --1BAct6 (result x 2)
             SELECT 
-            COUNT(DISTINCT P.HHId || '_' || P.NameAndSurname) AS Count_1BAct6_All_Participants
+            COUNT(DISTINCT P.HHId || '_' || P.NameAndSurname) * 2 AS Count_1BAct6_All_Participants
             --,COUNT(DISTINCT P.HHId) AS Count_1BAct6_Unique_HH_ID
             FROM tb_Form_1BAct6_Participant P
             JOIN tb_Form_1BAct6_Submission S ON P.SubmissionId = S.Id
             WHERE P.Gender = ? AND date(S.Reporting_period) BETWEEN date(?) AND date(?)
 
             UNION ALL
-            --1BAct8
+            --1BAct8 (result x 2)
             SELECT 
-            COUNT(DISTINCT P.HHId || '_' || P.NameAndSurname) AS Count_1BAct8_All_Participants
+            COUNT(DISTINCT P.HHId || '_' || P.NameAndSurname) * 2 AS Count_1BAct8_All_Participants
             --,COUNT(DISTINCT P.HHId) AS Count_1BAct8_Unique_HH_ID
             FROM tb_Form_1BAct8_Participant P
             JOIN tb_Form_1BAct8_Submission S ON P.SubmissionId = S.Id
@@ -133,27 +135,27 @@ export const indicatorQueryMap = {
 
             UNION ALL
 
-            --2Act1
+            --2Act1 (result x 3)
             SELECT 
-            COUNT(DISTINCT P.NameOfMSME_Owner) AS Count_2Act1_Unique_MSME_Owner
+            COUNT(DISTINCT P.NameOfMSME_Owner) * 3 AS Count_2Act1_Unique_MSME_Owner
             FROM tb_Form_2Act1_Participant P
             JOIN tb_Form_2Act1_Submission S ON P.SubmissionId = S.Id
             WHERE P.Gender = ? AND date(S.Reporting_Period) BETWEEN date(?) AND date(?)
 
             UNION ALL
 
-            --2Act2
+            --2Act2 (result x 25)
             SELECT 
-            COUNT(DISTINCT P.NameAndSurname) AS Count_2Act2_Unique_MSME_Owner
+            COUNT(DISTINCT P.NameAndSurname) * 25 AS Count_2Act2_Unique_MSME_Owner
             FROM tb_Form_2Act2_Participant P
             JOIN tb_Form_2Act2_Submission S ON P.SubmissionId = S.Id
             WHERE P.Gender = ? AND date(S.Reporting_Period) BETWEEN date(?) AND date(?)
                 
             UNION ALL
                 
-            --2Act3
+            --2Act3 (result x 6)
             SELECT 
-            COUNT(DISTINCT P.HHId || '_' || P.NameAndSurname) AS Count_2Act3_All_Participants
+            COUNT(DISTINCT P.HHId || '_' || P.NameAndSurname) * 6 AS Count_2Act3_All_Participants
             --,COUNT(DISTINCT P.HHId) AS Count_2Act3_Unique_HH_ID
             FROM tb_Form_2Act3_Participant P
             JOIN tb_Form_2Act3_Submission S ON P.SubmissionId = S.Id
@@ -161,9 +163,9 @@ export const indicatorQueryMap = {
             AND date(S.Reporting_Period) BETWEEN date(?) AND date(?)
                     
             UNION ALL	
-            --3Act2
+            --3Act2 (result x 2)
             SELECT 
-            COUNT(DISTINCT P.HHId || '_' || P.NameOfAPG) AS Count_3Act2_All_Participants
+            COUNT(DISTINCT P.HHId || '_' || P.NameOfAPG) * 2 AS Count_3Act2_All_Participants
             --,COUNT(DISTINCT P.HHId) AS Count_3Act2_Unique_HH_ID
             FROM tb_Form_3Act2_Participant P
             JOIN tb_Form_3Act2_Submission S ON P.Submission_id = S.Id
@@ -181,7 +183,7 @@ export const indicatorQueryMap = {
         }
     },
 
-    "1A1_Young_people": {
+    "Outreach_Young_people": {
         query: `
       SELECT sum(count) AS count FROM (
             --1A1
@@ -193,9 +195,9 @@ export const indicatorQueryMap = {
             WHERE P.Age BETWEEN ? AND ? AND date(S.ReportingPeriod) BETWEEN date(?) AND date(?)
                     
             UNION ALL
-            --1A4
+            --1A4 (result x 2)
             SELECT 
-            COUNT(DISTINCT P.HHId || '_' || P.NameAndSurname) AS Count_1A4_All_Participants
+            COUNT(DISTINCT P.HHId || '_' || P.NameAndSurname) * 2 AS Count_1A4_All_Participants
             --,COUNT(DISTINCT P.HHId) AS Count_1A4_Unique_HH_ID
             FROM tb_Form_1A4_Participant P
             JOIN tb_Form_1A4_Submission S ON P.SubmissionId = S.Id
@@ -203,18 +205,18 @@ export const indicatorQueryMap = {
 
             UNION ALL
 
-            --1BAct6
+            --1BAct6 (result x 2)
             SELECT 
-            COUNT(DISTINCT P.HHId || '_' || P.NameAndSurname) AS Count_1BAct6_All_Participants
+            COUNT(DISTINCT P.HHId || '_' || P.NameAndSurname) * 2 AS Count_1BAct6_All_Participants
             --,COUNT(DISTINCT P.HHId) AS Count_1BAct6_Unique_HH_ID
             FROM tb_Form_1BAct6_Participant P
             JOIN tb_Form_1BAct6_Submission S ON P.SubmissionId = S.Id
             WHERE P.Age BETWEEN ? AND ? AND date(S.Reporting_period) BETWEEN date(?) AND date(?)
 
             UNION ALL
-            --1BAct8
+            --1BAct8 (result x 2)
             SELECT 
-            COUNT(DISTINCT P.HHId || '_' || P.NameAndSurname) AS Count_1BAct8_All_Participants
+            COUNT(DISTINCT P.HHId || '_' || P.NameAndSurname) * 2 AS Count_1BAct8_All_Participants
             --,COUNT(DISTINCT P.HHId) AS Count_1BAct8_Unique_HH_ID
             FROM tb_Form_1BAct8_Participant P
             JOIN tb_Form_1BAct8_Submission S ON P.SubmissionId = S.Id
@@ -223,27 +225,27 @@ export const indicatorQueryMap = {
 
             UNION ALL
 
-            --2Act1
+            --2Act1 (result x 3)
             SELECT 
-            COUNT(DISTINCT P.NameOfMSME_Owner) AS Count_2Act1_Unique_MSME_Owner
+            COUNT(DISTINCT P.NameOfMSME_Owner) * 3 AS Count_2Act1_Unique_MSME_Owner
             FROM tb_Form_2Act1_Participant P
             JOIN tb_Form_2Act1_Submission S ON P.SubmissionId = S.Id
             WHERE P.Age BETWEEN ? AND ? AND date(S.Reporting_Period) BETWEEN date(?) AND date(?)
 
             UNION ALL
 
-            --2Act2
+            --2Act2 (result x 25)
             SELECT 
-            COUNT(DISTINCT P.NameAndSurname) AS Count_2Act2_Unique_MSME_Owner
+            COUNT(DISTINCT P.NameAndSurname) * 25 AS Count_2Act2_Unique_MSME_Owner
             FROM tb_Form_2Act2_Participant P
             JOIN tb_Form_2Act2_Submission S ON P.SubmissionId = S.Id
             WHERE P.Age BETWEEN ? AND ? AND date(S.Reporting_Period) BETWEEN date(?) AND date(?)
                 
             UNION ALL
                 
-            --2Act3
+            --2Act3 (result x 6)
             SELECT 
-            COUNT(DISTINCT P.HHId || '_' || P.NameAndSurname) AS Count_2Act3_All_Participants
+            COUNT(DISTINCT P.HHId || '_' || P.NameAndSurname) * 6 AS Count_2Act3_All_Participants
             --,COUNT(DISTINCT P.HHId) AS Count_2Act3_Unique_HH_ID
             FROM tb_Form_2Act3_Participant P
             JOIN tb_Form_2Act3_Submission S ON P.SubmissionId = S.Id
@@ -251,9 +253,9 @@ export const indicatorQueryMap = {
             AND date(S.Reporting_Period) BETWEEN date(?) AND date(?)
                     
             UNION ALL	
-            --3Act2
+            --3Act2 (result x 2)
             SELECT 
-            COUNT(DISTINCT P.HHId || '_' || P.NameOfAPG) AS Count_3Act2_All_Participants
+            COUNT(DISTINCT P.HHId || '_' || P.NameOfAPG) * 2 AS Count_3Act2_All_Participants
             --,COUNT(DISTINCT P.HHId) AS Count_3Act2_Unique_HH_ID
             FROM tb_Form_3Act2_Participant P
             JOIN tb_Form_3Act2_Submission S ON P.Submission_id = S.Id
@@ -270,7 +272,7 @@ export const indicatorQueryMap = {
         }
     },
 
-    "1A1_Indigenous_people": {
+    "Outreach_Indigenous_people": {
         query: `
       SELECT sum(count) AS count FROM (
             --1A1
@@ -282,9 +284,9 @@ export const indicatorQueryMap = {
             WHERE P.Ethnicity NOT IN (${'??'}) AND date(S.ReportingPeriod) BETWEEN date(?) AND date(?)
                     
             UNION ALL
-            --1A4
+            --1A4 (result x 2)
             SELECT 
-            COUNT(DISTINCT P.HHId || '_' || P.NameAndSurname) AS Count_1A4_All_Participants
+            COUNT(DISTINCT P.HHId || '_' || P.NameAndSurname) * 2 AS Count_1A4_All_Participants
             --,COUNT(DISTINCT P.HHId) AS Count_1A4_Unique_HH_ID
             FROM tb_Form_1A4_Participant P
             JOIN tb_Form_1A4_Submission S ON P.SubmissionId = S.Id
@@ -292,18 +294,18 @@ export const indicatorQueryMap = {
 
             UNION ALL
 
-            --1BAct6
+            --1BAct6 (result x 2)
             SELECT 
-            COUNT(DISTINCT P.HHId || '_' || P.NameAndSurname) AS Count_1BAct6_All_Participants
+            COUNT(DISTINCT P.HHId || '_' || P.NameAndSurname) * 2 AS Count_1BAct6_All_Participants
             --,COUNT(DISTINCT P.HHId) AS Count_1BAct6_Unique_HH_ID
             FROM tb_Form_1BAct6_Participant P
             JOIN tb_Form_1BAct6_Submission S ON P.SubmissionId = S.Id
             WHERE P.Ethnicity NOT IN (${'??'}) AND date(S.Reporting_period) BETWEEN date(?) AND date(?)
 
             UNION ALL
-            --1BAct8
+            --1BAct8 (result x 2)
             SELECT 
-            COUNT(DISTINCT P.HHId || '_' || P.NameAndSurname) AS Count_1BAct8_All_Participants
+            COUNT(DISTINCT P.HHId || '_' || P.NameAndSurname) * 2 AS Count_1BAct8_All_Participants
             --,COUNT(DISTINCT P.HHId) AS Count_1BAct8_Unique_HH_ID
             FROM tb_Form_1BAct8_Participant P
             JOIN tb_Form_1BAct8_Submission S ON P.SubmissionId = S.Id
@@ -312,27 +314,27 @@ export const indicatorQueryMap = {
 
             UNION ALL
 
-            --2Act1
+            --2Act1 (result x 3)
             SELECT 
-            COUNT(DISTINCT P.NameOfMSME_Owner) AS Count_2Act1_Unique_MSME_Owner
+            COUNT(DISTINCT P.NameOfMSME_Owner) * 3 AS Count_2Act1_Unique_MSME_Owner
             FROM tb_Form_2Act1_Participant P
             JOIN tb_Form_2Act1_Submission S ON P.SubmissionId = S.Id
             WHERE P.Ethnicity NOT IN (${'??'}) AND date(S.Reporting_Period) BETWEEN date(?) AND date(?)
 
             UNION ALL
 
-            --2Act2
+            --2Act2 (result x 25)
             SELECT 
-            COUNT(DISTINCT P.NameAndSurname) AS Count_2Act2_Unique_MSME_Owner
+            COUNT(DISTINCT P.NameAndSurname) * 25 AS Count_2Act2_Unique_MSME_Owner
             FROM tb_Form_2Act2_Participant P
             JOIN tb_Form_2Act2_Submission S ON P.SubmissionId = S.Id
             WHERE P.Ethnicity NOT IN (${'??'}) AND date(S.Reporting_Period) BETWEEN date(?) AND date(?)
                 
             UNION ALL
                 
-            --2Act3
+            --2Act3 (result x 6)
             SELECT 
-            COUNT(DISTINCT P.HHId || '_' || P.NameAndSurname) AS Count_2Act3_All_Participants
+            COUNT(DISTINCT P.HHId || '_' || P.NameAndSurname) * 6 AS Count_2Act3_All_Participants
             --,COUNT(DISTINCT P.HHId) AS Count_2Act3_Unique_HH_ID
             FROM tb_Form_2Act3_Participant P
             JOIN tb_Form_2Act3_Submission S ON P.SubmissionId = S.Id
@@ -340,9 +342,9 @@ export const indicatorQueryMap = {
             AND date(S.Reporting_Period) BETWEEN date(?) AND date(?)
                     
             UNION ALL	
-            --3Act2
+            --3Act2 (result x 2)
             SELECT 
-            COUNT(DISTINCT P.HHId || '_' || P.NameOfAPG) AS Count_3Act2_All_Participants
+            COUNT(DISTINCT P.HHId || '_' || P.NameOfAPG) * 2 AS Count_3Act2_All_Participants
             --,COUNT(DISTINCT P.HHId) AS Count_3Act2_Unique_HH_ID
             FROM tb_Form_3Act2_Participant P
             JOIN tb_Form_3Act2_Submission S ON P.Submission_id = S.Id
@@ -358,7 +360,7 @@ export const indicatorQueryMap = {
             return params;
         }
     },
-    "1A1_persons_received_services": {
+    "Outreach_persons_received_services": {
         query: `
       SELECT sum(count) AS count FROM (
             --1A1
@@ -370,9 +372,9 @@ export const indicatorQueryMap = {
             WHERE date(S.ReportingPeriod) BETWEEN date(?) AND date(?)
                     
             UNION ALL
-            --1A4
+            --1A4 (result x 2)
             SELECT 
-            COUNT(DISTINCT P.HHId || '_' || P.NameAndSurname) AS Count_1A4_All_Participants
+            COUNT(DISTINCT P.HHId || '_' || P.NameAndSurname) *2 AS Count_1A4_All_Participants
             --,COUNT(DISTINCT P.HHId) AS Count_1A4_Unique_HH_ID
             FROM tb_Form_1A4_Participant P
             JOIN tb_Form_1A4_Submission S ON P.SubmissionId = S.Id
@@ -380,18 +382,18 @@ export const indicatorQueryMap = {
 
             UNION ALL
 
-            --1BAct6
+            --1BAct6 (result x 2)
             SELECT 
-            COUNT(DISTINCT P.HHId || '_' || P.NameAndSurname) AS Count_1BAct6_All_Participants
+            COUNT(DISTINCT P.HHId || '_' || P.NameAndSurname) * 2 AS Count_1BAct6_All_Participants
             --,COUNT(DISTINCT P.HHId) AS Count_1BAct6_Unique_HH_ID
             FROM tb_Form_1BAct6_Participant P
             JOIN tb_Form_1BAct6_Submission S ON P.SubmissionId = S.Id
             WHERE date(S.Reporting_period) BETWEEN date(?) AND date(?)
 
             UNION ALL
-            --1BAct8
+            --1BAct8 (result x 2)
             SELECT 
-            COUNT(DISTINCT P.HHId || '_' || P.NameAndSurname) AS Count_1BAct8_All_Participants
+            COUNT(DISTINCT P.HHId || '_' || P.NameAndSurname) * 2 AS Count_1BAct8_All_Participants
             --,COUNT(DISTINCT P.HHId) AS Count_1BAct8_Unique_HH_ID
             FROM tb_Form_1BAct8_Participant P
             JOIN tb_Form_1BAct8_Submission S ON P.SubmissionId = S.Id
@@ -400,27 +402,27 @@ export const indicatorQueryMap = {
 
             UNION ALL
 
-            --2Act1
+            --2Act1 (result x 3)
             SELECT 
-            COUNT(DISTINCT P.NameOfMSME_Owner) AS Count_2Act1_Unique_MSME_Owner
+            COUNT(DISTINCT P.NameOfMSME_Owner) * 3 AS Count_2Act1_Unique_MSME_Owner
             FROM tb_Form_2Act1_Participant P
             JOIN tb_Form_2Act1_Submission S ON P.SubmissionId = S.Id
             WHERE date(S.Reporting_Period) BETWEEN date(?) AND date(?)
 
             UNION ALL
 
-            --2Act2
+            --2Act2 (result x 25)
             SELECT 
-            COUNT(DISTINCT P.NameAndSurname) AS Count_2Act2_Unique_MSME_Owner
+            COUNT(DISTINCT P.NameAndSurname) * 25 AS Count_2Act2_Unique_MSME_Owner
             FROM tb_Form_2Act2_Participant P
             JOIN tb_Form_2Act2_Submission S ON P.SubmissionId = S.Id
             WHERE date(S.Reporting_Period) BETWEEN date(?) AND date(?)
                 
             UNION ALL
                 
-            --2Act3
+            --2Act3 (result x 6)
             SELECT 
-            COUNT(DISTINCT P.HHId || '_' || P.NameAndSurname) AS Count_2Act3_All_Participants
+            COUNT(DISTINCT P.HHId || '_' || P.NameAndSurname) * 6 AS Count_2Act3_All_Participants
             --,COUNT(DISTINCT P.HHId) AS Count_2Act3_Unique_HH_ID
             FROM tb_Form_2Act3_Participant P
             JOIN tb_Form_2Act3_Submission S ON P.SubmissionId = S.Id
@@ -428,9 +430,9 @@ export const indicatorQueryMap = {
             AND date(S.Reporting_Period) BETWEEN date(?) AND date(?)
                     
             UNION ALL	
-            --3Act2
+            --3Act2 (result x 2)
             SELECT 
-            COUNT(DISTINCT P.HHId || '_' || P.NameOfAPG) AS Count_3Act2_All_Participants
+            COUNT(DISTINCT P.HHId || '_' || P.NameOfAPG) * 2 AS Count_3Act2_All_Participants
             --,COUNT(DISTINCT P.HHId) AS Count_3Act2_Unique_HH_ID
             FROM tb_Form_3Act2_Participant P
             JOIN tb_Form_3Act2_Submission S ON P.Submission_id = S.Id
@@ -447,8 +449,9 @@ export const indicatorQueryMap = {
         }
     },
 
-    "1A1_pwd_number": {
+    "Outreach_pwd_number": {
         query: `
+      -- Agree to not multyply results for PWD
       SELECT sum(count) AS count FROM (
             --1A1
             SELECT 
@@ -524,8 +527,9 @@ export const indicatorQueryMap = {
     },
 
 
-    "1A1_Households": {
+    "Outreach_Households": {
         query: `
+        -- Count Unique HH-ID across all relevant forms
       SELECT sum(count) AS count FROM (
             --1A1
             SELECT 
@@ -612,9 +616,10 @@ export const indicatorQueryMap = {
             return params;
         }
     },
-    "1A1_Household_members": {
+    "Outreach_Household_members": {
         query: `
-      SELECT sum(count) AS count FROM (
+        -- Overall result x Average Household Size (6)
+      SELECT sum(count) * 6 AS count FROM (
             --1A1
             SELECT 
             --COUNT(DISTINCT P.HHId || '_' || P.NameAndSurname) AS count
@@ -701,5 +706,8 @@ export const indicatorQueryMap = {
         }
     },
 
+
+    //Part2: 1.1.8  Households provided with targeted support to improve their nutrition
+    
     // Extend with more as needed...
 };

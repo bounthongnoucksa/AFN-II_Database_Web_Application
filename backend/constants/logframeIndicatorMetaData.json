@@ -1,5 +1,5 @@
 {
-  "1A1_Males": {
+  "Outreach_Males": {
     "hierarchy": "Outreach",
     "indicatorGroup": "1 Persons receiving services promoted or supported by the project",
     "gender": "Male",
@@ -7,9 +7,8 @@
     "indicator": "Males",
     "midTerm": 33600,
     "endTarget": 84000
-
   },
-  "1A1_Females": {
+  "Outreach_Females": {
     "hierarchy": "Outreach",
     "indicatorGroup": "1 Persons receiving services promoted or supported by the project",
     "gender": "Female",
@@ -18,7 +17,7 @@
     "midTerm": 33600,
     "endTarget": 84000
   },
-  "1A1_Young_people": {
+  "Outreach_Young_people": {
     "hierarchy": "Outreach",
     "indicatorGroup": "1 Persons receiving services promoted or supported by the project",
     "minAge": "15",
@@ -30,7 +29,7 @@
   }
 
   ,
-  "1A1_Indigenous_people": {
+  "Outreach_Indigenous_people": {
     "hierarchy": "Outreach",
     "indicatorGroup": "1 Persons receiving services promoted or supported by the project",
     "ethnic": "'_e01', '_e02', '_e03', '_e04', '_e05', '_e06', '_e07', '_e08'",
@@ -39,7 +38,7 @@
     "midTerm": 47040,
     "endTarget": 117600
   },
-  "1A1_persons_received_services": {
+  "Outreach_persons_received_services": {
     "hierarchy": "Outreach",
     "indicatorGroup": "1 Persons receiving services promoted or supported by the project",
     "baseline": 0,
@@ -47,7 +46,7 @@
     "midTerm": 67200,
     "endTarget": 168000
   },
-  "1A1_pwd_number": {
+  "Outreach_pwd_number": {
     "hierarchy": "Outreach",
     "indicatorGroup": "1 Persons receiving services promoted or supported by the project",
     "pwd": "yes",
@@ -56,7 +55,7 @@
     "midTerm": 1344,
     "endTarget": 3360
   },
-  "1A1_Households": {
+  "Outreach_Households": {
     "hierarchy": "Outreach",
     "indicatorGroup": "1 Persons receiving services promoted or supported by the project",
     "baseline": 0,
@@ -64,12 +63,30 @@
     "midTerm": 11200,
     "endTarget": 28000
   },
-  "1A1_Household_members": {
+  "Outreach_Household_members": {
     "hierarchy": "Outreach",
     "indicatorGroup": "1 Persons receiving services promoted or supported by the project",
     "baseline": 0,
     "indicator": "Total number of households members",
     "midTerm": 67200,
     "endTarget": 168000
+  }
+
+
+
+
+
+
+
+
+  ,
+  "1A1_Males": {
+    "hierarchy": "18,000 households provided with targeted support to improve their nutrition",
+    "indicatorGroup": "1.1.8 Households provided with targeted support to improve their nutrition",
+    "gender": "Male",
+    "baseline": 0,
+    "indicator": "Males",
+    "midTerm": 21600,
+    "endTarget": 54000
   }
 }
