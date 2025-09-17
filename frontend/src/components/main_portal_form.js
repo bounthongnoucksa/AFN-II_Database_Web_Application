@@ -183,9 +183,9 @@ export default function MainPortalForm() {
                 color: theme.headerColor,
                 minHeight: '140px'
             }}>
-                <img src="/AFN2.png" alt="AFN-II Logo" width="220" height="138" style={{ position: 'absolute', left: '20px', top: '50%', transform: 'translateY(-50%)' }}></img>
+                <img src="AFN2.png" alt="AFN-II Logo" width="220" height="138" style={{ position: 'absolute', left: '20px', top: '50%', transform: 'translateY(-50%)' }}></img>
                 <br />
-                <div style={{ textAlign: 'center', margin: '0 auto', maxWidth: '1000px', fontSize: "30px" }}>ຖານຂໍ້ມູນການຕິດຕາມ ແລະ ປະເມີນຜົນ ໂຄງການກະສິກຳເພື່ອໂພຊະນາການໄລຍະ 2</div>
+                <div style={{ textAlign: 'center', margin: '0 auto', maxWidth: '1000px', fontSize: "28px" }}>ຖານຂໍ້ມູນການຕິດຕາມ ແລະ ປະເມີນຜົນ ໂຄງການກະສິກຳເພື່ອໂພຊະນາການໄລຍະ 2</div>
                 <div style={{ textAlign: 'center', margin: '0 auto', maxWidth: '1000px', fontFamily: "'Times New Roman', sans-serif", fontSize: "25px" }}>M & E Database</div>
             </div>
 

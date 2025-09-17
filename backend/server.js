@@ -1,6 +1,6 @@
 // backend/server.js
 //to created database automatically if not exist
-import './database.js';
+import './database/database.js'; // Ensure database is initialized
 
 // This is the main server file for the backend of the AFN-II Database Web Application
 import express from 'express';

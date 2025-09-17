@@ -1,5 +1,5 @@
 import sqlite3 from 'sqlite3';
-const db = new sqlite3.Database('ME_Database.db');
+const db = new sqlite3.Database('database/ME_Database.db');
 
 db.serialize(() => {
     db.run(`
@@ -861,6 +861,73 @@ db.serialize(() => {
             `);
             db.run(`
                 CREATE INDEX IF NOT EXISTS idx_Translation_EN_LA_FormName_ItemCode ON Translation_EN_LA(FormName, ItemCode);
+            `);
+            db.run(`
+                CREATE INDEX IF NOT EXISTS "idx_tb_CB_Staff_Participant_SubmissionId" ON "tb_CB_Staff_Participant" (
+                    "SubmissionId"
+                );
+
+                CREATE INDEX IF NOT EXISTS "idx_tb_CB_for_Villagers_Participant_SubmissionId" ON "tb_CB_for_Villagers_Participant" (
+                    "SubmissionId"
+                );
+
+                CREATE INDEX IF NOT EXISTS "idx_tb_Form_1A1_Participant_SubmissionId" ON "tb_Form_1A1_Participant" (
+                    "SubmissionId"
+                );
+
+                CREATE INDEX IF NOT EXISTS "idx_tb_Form_1A2_Participant_SubmissionId" ON "tb_Form_1A2_Participant" (
+                    "SubmissionId"
+                );
+
+                CREATE INDEX IF NOT EXISTS "idx_tb_Form_1A3a_Participant_SubmissionId" ON "tb_Form_1A3a_Participant" (
+                    "SubmissionId"
+                );
+
+                CREATE INDEX IF NOT EXISTS "idx_tb_Form_1A3b_Participant_SubmissionId" ON "tb_Form_1A3b_Participant" (
+                    "SubmissionId"
+                );
+
+                CREATE INDEX IF NOT EXISTS "idx_tb_Form_1A5a_Participant_SubmissionId" ON "tb_Form_1A5a_Participant" (
+                    "SubmissionId"
+                );
+
+                CREATE INDEX IF NOT EXISTS "idx_tb_Form_1A5b_Participant_SubmissionId" ON "tb_Form_1A5b_Participant" (
+                    "SubmissionId"
+                );
+
+
+                CREATE INDEX IF NOT EXISTS "idx_tb_Form_1BAct7_Participant_SubmissionId" ON "tb_Form_1BAct7_Participant" (
+                    "SubmissionId"
+                );
+
+                CREATE INDEX IF NOT EXISTS "idx_tb_Form_1BAct8_Participant_SubmissionId" ON "tb_Form_1BAct8_Participant" (
+                    "SubmissionId"
+                );
+
+                CREATE INDEX IF NOT EXISTS "idx_tb_Form_2Act1_Participant_SubmissionId" ON "tb_Form_2Act1_Participant" (
+                    "SubmissionId"
+                );
+
+                CREATE INDEX IF NOT EXISTS "idx_tb_Form_2Act2_Participant_SubmissionId" ON "tb_Form_2Act2_Participant" (
+                    "SubmissionId"
+                );
+
+                CREATE INDEX IF NOT EXISTS "idx_tb_Form_2Act3_Participant_SubmissionId" ON "tb_Form_2Act3_Participant" (
+                    "SubmissionId"
+                );
+
+                CREATE INDEX IF NOT EXISTS "idx_tb_Form_3Act1a_Participant_SubmissionId" ON "tb_Form_3Act1a_Participant" (
+                    "SubmissionId"
+                );
+
+                CREATE INDEX IF NOT EXISTS "idx_tb_Form_3Act1b_Participant_SubmissionId" ON "tb_Form_3Act1b_Participant" (
+                    "SubmissionId"
+                );
+
+                CREATE INDEX IF NOT EXISTS "idx_tb_Form_3Act2_Participant_SubmissionId" ON "tb_Form_3Act2_Participant" (
+                    "SubmissionId"
+                );
+
             `);
 });
 

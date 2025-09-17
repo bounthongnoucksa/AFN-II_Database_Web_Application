@@ -1,0 +1,2 @@
+Start-Process -FilePath ".\M&E Database for AFN-II.exe" -RedirectStandardOutput "log_running.txt"
+Start-Process -FilePath '.\M&E Database for AFN-II.exe' -RedirectStandardError "log_error.txt"

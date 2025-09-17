@@ -573,7 +573,7 @@ export default function Form1BAct7({ refreshTrigger }) {
 
                                             const isDateField = idx >= 3 && idx <= 5;
                                             //const isEditableText = (idx >= 11 && idx <= 7) || (idx >= 13 && idx <= 18);
-                                            const isEditableText = (idx === 9);
+                                            const isEditableText = (idx === 40);
                                             const isNumericField = (idx >= 21 && idx <= 25) || (idx === 13);
 
                                             return (

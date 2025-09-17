@@ -1,0 +1,64 @@
+{
+  "name": "m-and-e-database-electron",
+  "version": "1.0.0",
+  "description": "M&E Database for AFN-II - Electron Wrapper",
+  "main": "main.js",
+  "scripts": {
+    "start": "concurrently \"npm:serve-frontend\" \"npm:run-electron\"",
+    "serve-frontend": "cd ../frontend && npm start",
+    "run-backend": "cd ../backend && node server.js",
+    "run-electron": "wait-on http://localhost:3000 && electron .",
+    "build-frontend": "cd ../frontend && npm run build",
+    "build": "npm run build-frontend && electron-builder",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "build": {
+    "appId": "com.afn.mande.database",
+    "productName": "M&E Database for AFN-II",
+    "directories": {
+      "buildResources": "assets",
+      "output": "dist"
+    },
+    "files": [
+      "main.js",
+      "package.json",
+      {
+        "from": "../frontend/build",
+        "to": "frontend/build",
+        "filter": [
+          "**/*"
+        ]
+      }
+    ],
+    "extraResources": [
+      {
+        "from": "../backend",
+        "to": "backend"
+      },
+      {
+        "from": "../backend/node_modules",
+        "to": "backend/node_modules"
+      },
+      {
+        "from": "../frontend/public/AFN2.png",
+        "to": "AFN2.png"
+      }
+    ],
+    "icon": "assets/icon.ico",
+    "win": {
+      "target": "nsis"
+    }
+  },
+  "keywords": [],
+  "author": "Bounthong Noucksa",
+  "license": "ISC",
+  "dependencies": {
+    "electron-context-menu": "^4.1.1",
+    "wait-on": "^8.0.4"
+  },
+  "devDependencies": {
+    "concurrently": "^9.2.1",
+    "electron": "^38.1.0",
+    "electron-builder": "^26.0.12"
+  }
+}

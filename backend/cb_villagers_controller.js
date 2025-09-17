@@ -80,7 +80,7 @@ async function downloadCBVillagersSubmissionDataFromKoboToolbox() {
                     el["group_actconductdate_sa1oe86/date_up9xu24"] || null,
                     el["text_otherlocation_xi6ak40"] || null,
                     el["_select_one_conductedby_01"] || null,
-                    el["_14_3_activitycode"] || null,
+                    el["_activitycode"] || null,
                     parseInt(el["group_wz1ah68/_IFAD_"] || 0),
                     parseInt(el["group_wz1ah68/_MAF_"] || 0),
                     parseInt(el["group_wz1ah68/_WFP_"] || 0),
