@@ -92,41 +92,41 @@ export default function CBForVillagers({ refreshTrigger }) {
         setLanguage((prev) => (prev === 'LA' ? 'EN' : 'LA'));
     };
 
-    // // Handle delete submission from KoboToolbox
-    // const handleDeleteSubmission = async () => {
-    //     if (!submissionID) {
-    //         alert('Please select a submission to delete.');
-    //         return;
-    //     }
+    // Handle delete submission from KoboToolbox
+    const handleDeleteSubmission = async () => {
+        if (!submissionID) {
+            alert('Please select a submission to delete.');
+            return;
+        }
 
-    //     if (window.confirm(`Are you sure you want to delete submission ID: ${submissionID}? This will remove all associated data.`)) {
-    //         try {
-    //             setLoadingModalMessage(true);
-    //             const response = await axios.delete(APP_API_URL + `/api/cbForStaff/deleteSubmission?submissionId=${submissionID}`);
-    //             if (response.data.success) {
-    //                 setModalMessage('✅ Submission deleted successfully');
-    //                 setShowSuccessModalMessage(true);
-    //                 fetchData(language); // Refresh data after deletion
-    //                 closeModal(); // Close the modal after deletion completed
-    //             } else {
-    //                 setModalMessage('❌ Failed to delete submission');
-    //                 setShowSuccessModalMessage(true);
-    //             }
-    //         } catch (error) {
-    //             console.error('Error deleting submission:', error);
-    //             // ✅ extract meaningful message from KoboToolbox error response
-    //             const errorMsg =
-    //                 error.response?.data?.error || // from backend
-    //                 error.response?.data?.message || // fallback from backend
-    //                 error.message || // network error
-    //                 'Unknown error';
-    //             setModalMessage(`❌ Error deleting submission: ${errorMsg}`);
-    //             setShowSuccessModalMessage(true);
-    //         } finally {
-    //             setLoadingModalMessage(false);
-    //         }
-    //     }
-    // }
+        if (window.confirm(`Are you sure you want to delete submission ID: ${submissionID}? This will remove all associated data.`)) {
+            try {
+                setLoadingModalMessage(true);
+                const response = await axios.delete(APP_API_URL + `/api/cbForVillagers/deleteSubmission?submissionId=${submissionID}`);
+                if (response.data.success) {
+                    setModalMessage('✅ Submission deleted successfully');
+                    setShowSuccessModalMessage(true);
+                    fetchData(language); // Refresh data after deletion
+                    closeModal(); // Close the modal after deletion completed
+                } else {
+                    setModalMessage('❌ Failed to delete submission');
+                    setShowSuccessModalMessage(true);
+                }
+            } catch (error) {
+                console.error('Error deleting submission:', error);
+                // ✅ extract meaningful message from KoboToolbox error response
+                const errorMsg =
+                    error.response?.data?.error || // from backend
+                    error.response?.data?.message || // fallback from backend
+                    error.message || // network error
+                    'Unknown error';
+                setModalMessage(`❌ Error deleting submission: ${errorMsg}`);
+                setShowSuccessModalMessage(true);
+            } finally {
+                setLoadingModalMessage(false);
+            }
+        }
+    }
 
     const handleSubmissionUUID = async () => {
         if (!submissionID) {
@@ -286,132 +286,132 @@ export default function CBForVillagers({ refreshTrigger }) {
     };
 
 
-    // // Handle delete a participant and update the submission in KoboToolbox
-    // // Add a small delay to allow React to re-render before refreshing the modal
-    // // This is necessary because the modal might still be showing the old submission ID when the deletion is completed
-    // //const delay = ms => new Promise(resolve => setTimeout(resolve, ms));
-    // const handleDeleteParticipant = async (participantId, submissionId) => {
-    //     if (!participantId || !submissionId) {
-    //         alert('Please select a participant and submission to delete.');
-    //         return;
-    //     }
+    // Handle delete a participant and update the submission in KoboToolbox
+    // Add a small delay to allow React to re-render before refreshing the modal
+    // This is necessary because the modal might still be showing the old submission ID when the deletion is completed
+    //const delay = ms => new Promise(resolve => setTimeout(resolve, ms));
+    const handleDeleteParticipant = async (participantId, submissionId) => {
+        if (!participantId || !submissionId) {
+            alert('Please select a participant and submission to delete.');
+            return;
+        }
 
-    //     const confirmDelete = window.confirm(
-    //         `Are you sure you want to delete participant ID: ${participantId} from submission ID: ${submissionId}?`
-    //     );
+        const confirmDelete = window.confirm(
+            `Are you sure you want to delete participant ID: ${participantId} from submission ID: ${submissionId}?`
+        );
 
-    //     if (!confirmDelete) return;
+        if (!confirmDelete) return;
 
-    //     // ✅ Get updated UUID before refreshing the modal before the current submissionID got deleted
-    //     const uuid = await handleSubmissionUUID(); // This should return the UUID now
+        // ✅ Get updated UUID before refreshing the modal before the current submissionID got deleted
+        const uuid = await handleSubmissionUUID(); // This should return the UUID now
 
-    //     try {
-    //         setLoadingModalMessage(true);
+        try {
+            setLoadingModalMessage(true);
 
-    //         const response = await axios.post('http://localhost:3001/api/cbForStaff/deleteParticipant', { participantId, submissionId });
+            const response = await axios.post('http://localhost:3001/api/cbForVillagers/deleteParticipant', { participantId, submissionId });
 
-    //         if (response.data.success) {
-    //             setModalMessage('✅ Participant deleted successfully');
-    //             setShowSuccessModalMessage(true);
+            if (response.data.success) {
+                setModalMessage('✅ Participant deleted successfully');
+                setShowSuccessModalMessage(true);
 
-    //             // 🔄 Reload main data and refresh main table
-    //             await handleDownloadCBStaffDataFromKobo();
-    //             await fetchData(language);
+                // 🔄 Reload main data and refresh main table
+                await handleDownloadCBSVillagersDataFromKobo();
+                await fetchData(language);
 
-    //             // 🔄 Refresh modal with new submission ID
+                // 🔄 Refresh modal with new submission ID
 
-    //             if (uuid) {
-    //                 //alert(`UUID: ${uuid} is available, refreshing modal...`);
-    //                 // <-- Add a small delay here before returning
-    //                 //await delay(2000);  // 100ms delay to let React re-render;
+                if (uuid) {
+                    //alert(`UUID: ${uuid} is available, refreshing modal...`);
+                    // <-- Add a small delay here before returning
+                    //await delay(2000);  // 100ms delay to let React re-render;
 
-    //                 const refreshed = await refreshModalWithNewSubmission(uuid, language);
-    //                 if (!refreshed) {
-    //                     console.warn("⚠️ Modal refresh failed after deletion.");
-    //                 } else {
-    //                     console.warn("⚠️ UUID not available, skipping modal refresh.");
-    //                 }
+                    const refreshed = await refreshModalWithNewSubmission(uuid, language);
+                    if (!refreshed) {
+                        console.warn("⚠️ Modal refresh failed after deletion.");
+                    } else {
+                        console.warn("⚠️ UUID not available, skipping modal refresh.");
+                    }
 
-    //             } else {
-    //                 console.warn("⚠️ Could not refresh modal: UUID not available.");
-    //             }
+                } else {
+                    console.warn("⚠️ Could not refresh modal: UUID not available.");
+                }
 
-    //         } else {
-    //             setModalMessage('❌ Failed to delete participant');
-    //             setShowSuccessModalMessage(true);
-    //         }
-    //     } catch (error) {
-    //         console.error('Error deleting participant:', error);
+            } else {
+                setModalMessage('❌ Failed to delete participant');
+                setShowSuccessModalMessage(true);
+            }
+        } catch (error) {
+            console.error('Error deleting participant:', error);
 
-    //         const errorMsg =
-    //             error.response?.data?.error ||
-    //             error.response?.data?.message ||
-    //             error.message ||
-    //             'Unknown error';
+            const errorMsg =
+                error.response?.data?.error ||
+                error.response?.data?.message ||
+                error.message ||
+                'Unknown error';
 
-    //         setModalMessage(`❌ Error deleting participant: ${errorMsg}`);
-    //         setShowSuccessModalMessage(true);
-    //     } finally {
-    //         setLoadingModalMessage(false);
-    //     }
-    // }
+            setModalMessage(`❌ Error deleting participant: ${errorMsg}`);
+            setShowSuccessModalMessage(true);
+        } finally {
+            setLoadingModalMessage(false);
+        }
+    }
 
-    // // Edit submission and participant data in local database and KoboToolbox
-    // const handleEditSubmissionAndParticipants = async () => {
-    //     //console.log("Selected row to update:", selectedRow);
-    //     const confirmEdit = window.confirm(`Are you sure you want to edit the selected participant?`);
+    // Edit submission and participant data in local database and KoboToolbox
+    const handleEditSubmissionAndParticipants = async () => {
+        //console.log("Selected row to update:", selectedRow);
+        const confirmEdit = window.confirm(`Are you sure you want to edit the selected participant?`);
 
-    //     if (!confirmEdit) return;
-    //     // ✅ Get updated UUID before refreshing the modal before the current submissionID got deleted from KoboToolbox
-    //     const uuid = await handleSubmissionUUID(); // This should return the UUID now
-
-
-    //     try {
-    //         //for modal loading pop state
-    //         setLoadingModalMessage(true); 
-
-    //         const response = await axios.post('http://localhost:3001/api/cbForStaff/updateParticipantAndSubmissionData', selectedRow); // Send the edited data object
-
-    //         if (response.data.success) {
-    //             //alert('✅ Record updated successfully');
-    //             setModalMessage('✅ Participant data updated successfully');
-    //             setShowSuccessModalMessage(true);
-
-    //             // 🔄 Reload main data and refresh main table
-    //             await handleDownloadCBStaffDataFromKobo();
-    //             await fetchData(language);
-
-    //             if (uuid) {
-    //                 //alert(`UUID: ${uuid} is available, refreshing modal...`);
-    //                 // <-- Add a small delay here before returning
-    //                 //await delay(5000);  // 100ms delay to let React re-render;
-
-    //                 const refreshed = await refreshModalWithNewSubmission(uuid, language);
-    //                 if (!refreshed) {
-    //                     console.warn("⚠️ Modal refresh failed after deletion.");
-    //                 } else {
-    //                     console.warn("⚠️ UUID not available, skipping modal refresh.");
-    //                 }
-
-    //             } else {
-    //                 console.warn("⚠️ Could not refresh modal: UUID not available.");
-    //             }
-
-    //             // Refresh table and modal if needed
-    //             fetchData(language);
-    //             await refreshModalWithNewSubmission(selectedUUID, language);
-    //         } else {
-    //             alert('❌ Failed to update record');
-    //         }
-    //     } catch (err) {
-    //         console.error('Error updating record:', err);
-    //         alert('❌ Error occurred while updating');
-    //     } finally{
-    //         setLoadingModalMessage(false); //for modal loading pop state
-    //     }
+        if (!confirmEdit) return;
+        // ✅ Get updated UUID before refreshing the modal before the current submissionID got deleted from KoboToolbox
+        const uuid = await handleSubmissionUUID(); // This should return the UUID now
 
 
-    // }
+        try {
+            //for modal loading pop state
+            setLoadingModalMessage(true); 
+
+            const response = await axios.post('http://localhost:3001/api/cbForVillagers/updateParticipantAndSubmissionData', selectedRow); // Send the edited data object
+
+            if (response.data.success) {
+                //alert('✅ Record updated successfully');
+                setModalMessage('✅ Participant data updated successfully');
+                setShowSuccessModalMessage(true);
+
+                // 🔄 Reload main data and refresh main table
+                await handleDownloadCBSVillagersDataFromKobo();
+                await fetchData(language);
+
+                if (uuid) {
+                    //alert(`UUID: ${uuid} is available, refreshing modal...`);
+                    // <-- Add a small delay here before returning
+                    //await delay(5000);  // 100ms delay to let React re-render;
+
+                    const refreshed = await refreshModalWithNewSubmission(uuid, language);
+                    if (!refreshed) {
+                        console.warn("⚠️ Modal refresh failed after deletion.");
+                    } else {
+                        console.warn("⚠️ UUID not available, skipping modal refresh.");
+                    }
+
+                } else {
+                    console.warn("⚠️ Could not refresh modal: UUID not available.");
+                }
+
+                // Refresh table and modal if needed
+                fetchData(language);
+                await refreshModalWithNewSubmission(selectedUUID, language);
+            } else {
+                alert('❌ Failed to update record');
+            }
+        } catch (err) {
+            console.error('Error updating record:', err);
+            alert('❌ Error occurred while updating');
+        } finally{
+            setLoadingModalMessage(false); //for modal loading pop state
+        }
+
+
+    }
 
     //function to validate datetime to a valid ISO date string like "2025-08-20"
     function isValidDate(dateString) {
@@ -639,9 +639,9 @@ export default function CBForVillagers({ refreshTrigger }) {
                                             {/* Modal action buttons */}
             
                                             <div className="modal-footer d-flex justify-content-start ">
-                                                <button className="btn btn-warning" style={{ width: '160px' }}  title="To edit the selected record of data">Edit Record</button>
-                                                <button className="btn btn-danger" style={{ width: '160px' }}  title="To delete only the selected record of data">Delete Participant</button>
-                                                <button className="btn btn-danger" style={{ width: '160px' }}  title="To delete all records of data for this submission">Delete Submission</button>
+                                                <button className="btn btn-warning" style={{ width: '160px' }} onClick={handleEditSubmissionAndParticipants}  title="To edit the selected record of data">Edit Record</button>
+                                                <button className="btn btn-danger" style={{ width: '160px' }} onClick={() => handleDeleteParticipant(selectedRow.PID, selectedRow.SubmissionID)}  title="To delete only the selected record of data">Delete Participant</button>
+                                                <button className="btn btn-danger" style={{ width: '160px' }} onClick={handleDeleteSubmission}  title="To delete all records of data for this submission">Delete Submission</button>
                                                 <button className="btn btn-secondary" style={{ width: '160px' }} onClick={closeModal} >Close</button>
                                             </div>
             
