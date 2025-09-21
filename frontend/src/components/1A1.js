@@ -510,7 +510,7 @@ export default function Form1A1({ refreshTrigger }) {
                                 >
                                     {Object.entries(row).map(([col, value], colIdx) => (
                                         <td key={col}>
-                                            {(colIdx >= 22 && colIdx <= 27 && !isNaN(value))
+                                            {(colIdx >= 23 && colIdx <= 28 && !isNaN(value))
                                                 ? Number(value).toLocaleString()
                                                 : value}
                                         </td>

@@ -82,6 +82,11 @@ import {
     getForm1A2NewSubmissionIdByUUID,
     deleteOnlyForm1A2ParticipantInDB,
     deleteOnlyForm1A2SubmissionInKobo,
+    deleteForm1A2SubmissionInKoboAndDatabase,
+    getRawForm1A2SubmissionAndParticipantsData,
+    buildForm1A2SubmissionXML,
+    submitNewForm1A2SubmissionToKobo,
+    editForm1A2SubmissionAndParticipants,
 } from './1A2_controller.js'
 
 //Import Form 1A3a functions
@@ -1465,23 +1470,23 @@ app.get('/api/form1A2/exportToExcel', async (req, res) => {
 });
 
 
-// // // app.delete('/api/cbForStaff/deleteSubmission', async (req, res) => {
-// // //     try {
-// // //         const submissionId = req.query.submissionId;
-// // //         if (!submissionId) {
-// // //             return res.status(400).json({ success: false, message: 'Submission ID is required' });
-// // //         }
+app.delete('/api/form1A2/deleteSubmission', async (req, res) => {
+    try {
+        const submissionId = req.query.submissionId;
+        if (!submissionId) {
+            return res.status(400).json({ success: false, message: 'Submission ID is required' });
+        }
 
-// // //         // Call the function to delete the submission
-// // //         await deleteSubmissionInKoboAndDatabase(submissionId);
-// // //         res.json({ success: true, message: 'Submission deleted successfully' });
-// // //     } catch (error) {
+        // Call the function to delete the submission
+        await deleteForm1A2SubmissionInKoboAndDatabase(submissionId);
+        res.json({ success: true, message: 'Submission deleted successfully' });
+    } catch (error) {
 
-// // //         console.error('Error deleting submission:', error);
-// // //         res.status(500).json({ success: false, message: 'Failed to delete submission hahaha', error: error.message });
+        console.error('Error deleting submission:', error);
+        res.status(500).json({ success: false, message: 'Failed to delete submission hahaha', error: error.message });
 
-// // //     }
-// // // });
+    }
+});
 
 // API endpoint to get UUID of a submission the UUID is important to get new submission ID from KoboToolbox when a previous submission is deleted
 app.get('/api/form1A2/getUUID', async (req, res) => {
@@ -1528,52 +1533,53 @@ app.get('/api/form1A2/getNewSubmissionID', async (req, res) => {
 })
 
 
-// // // //delete a participant and update the submission in KoboToolbox
-// // // app.post('/api/cbForStaff/deleteParticipant', async (req, res) => {
-// // //     const { participantId, submissionId } = req.body;
-// // //     try {
-// // //         await deleteOnlyParticipantInDB(participantId);
-// // //         await deleteOnlySubmissionInKobo(submissionId);
+//delete a participant and update the submission in KoboToolbox
+app.post('/api/form1A2/deleteParticipant', async (req, res) => {
+    const { participantId, submissionId } = req.body;
+    try {
+        await deleteOnlyForm1A2ParticipantInDB(participantId);
+        await deleteOnlyForm1A2SubmissionInKobo(submissionId);
 
-// // //         const { submission, participants } = await getRawSubmissionAndParticipantsData(submissionId);
-// // //         const xmlData = buildSubmissionXML(submission, participants);
-// // //         await submitNewSubmissionToKobo(xmlData); //submit the updated submission to KoboToolbox
-// // //         res.json({ success: true });
-// // //     } catch (err) {
-// // //         console.error(err);
-// // //         res.status(500).json({ success: false, error: err.message });
-// // //     }
+        const { submission, participants } = await getRawForm1A2SubmissionAndParticipantsData(submissionId);
+        const xmlData = buildForm1A2SubmissionXML(submission, participants);
+        await submitNewForm1A2SubmissionToKobo(xmlData); //submit the updated submission to KoboToolbox
+        res.json({ success: true });
+    } catch (err) {
+        console.error(err);
+        res.status(500).json({ success: false, error: err.message });
+    }
 
-// // // });
-
-// // // // Function to update participant data and submission in local database and KoboToolbox
-// // // app.post('/api/cbForStaff/updateParticipantAndSubmissionData', async (req, res) => {
-// // //     const data = req.body;
-// // //     if (!data.PID || !data.SubmissionID) {
-// // //         return res.status(400).json({ success: false, message: 'Participant ID and Submission ID are required' });
-
-// // //     }
-// // //     try {
-// // //         //update new data to local database
-// // //         await editSubmissionAndParticipants(data);
+});
 
 
-// // //         //delete submission data in Kobo
-// // //         await deleteOnlySubmissionInKobo(data.SubmissionID);
+// Function to update participant data and submission in local database and KoboToolbox
+app.post('/api/form1A2/updateParticipantAndSubmissionData', async (req, res) => {
+    const data = req.body;
+    if (!data.PID || !data.SubmissionID) {
+        return res.status(400).json({ success: false, message: 'Participant ID and Submission ID are required' });
 
-// // //         //Submit new submission data from local database to Kobo
-// // //         const { submission, participants } = await getRawSubmissionAndParticipantsData(data.SubmissionID);
-// // //         const xmlData = buildSubmissionXML(submission, participants);
-// // //         await submitNewSubmissionToKobo(xmlData); //submit the updated submission to KoboToolbox
-// // //         res.json({ success: true, message: 'Participant and submission data updated successfully' });
+    }
+    try {
+        //update new data to local database
+        await editForm1A2SubmissionAndParticipants(data);
+
+
+        //delete submission data in Kobo
+        await deleteOnlyForm1A2SubmissionInKobo(data.SubmissionID);
+
+        //Submit new submission data from local database to Kobo
+        const { submission, participants } = await getRawForm1A2SubmissionAndParticipantsData(data.SubmissionID);
+        const xmlData = buildForm1A2SubmissionXML(submission, participants);
+        await submitNewForm1A2SubmissionToKobo(xmlData); //submit the updated submission to KoboToolbox
+        res.json({ success: true, message: 'Participant and submission data updated successfully' });
 
 
 
-// // //     } catch (error) {
-// // //         console.error('Error updating participant and submission data at backend:', error.message);
-// // //         res.status(500).json({ success: false, message: 'Failed to update participant and submission data', error: error.message });
-// // //     }
-// // // });
+    } catch (error) {
+        console.error('Error updating participant and submission data at backend:', error.message);
+        res.status(500).json({ success: false, message: 'Failed to update participant and submission data', error: error.message });
+    }
+});
 
 
 // // //###################### End Function to handle Form 1A2 ################################
