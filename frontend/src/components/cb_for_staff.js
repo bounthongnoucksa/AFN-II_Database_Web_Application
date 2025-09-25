@@ -13,6 +13,7 @@ export default function CBForStaff({ refreshTrigger }) {
     const [data, setData] = useState([]);
     const [language, setLanguage] = useState('LA'); // default language
     const [loading, setLoading] = useState(false);
+    const [defaultFilterResultLimit, setDefaultFilterResultLimit] = useState(1000); // limit the result to 1000 records by default. if want to change this value then need to change on refresh button below as well.
 
 
 
@@ -33,10 +34,11 @@ export default function CBForStaff({ refreshTrigger }) {
     const [showSuccessModalMessage, setShowSuccessModalMessage] = useState(false);
 
     // Fetch main table data
-    const fetchData = async (lang) => {
+    //const fetchData = async (lang) => {
+    const fetchData = async (lang, limit = defaultFilterResultLimit) => {
         setLoading(true);
         try {
-            const res = await axios.get(APP_API_URL + `/api/cbForStaff/getParticipantData?lang=${lang}`);
+            const res = await axios.get(APP_API_URL + `/api/cbForStaff/getParticipantData?lang=${lang}&limit=${limit}`);
             if (res.data.success) {
                 setData(res.data.data);
             } else {
@@ -82,9 +84,12 @@ export default function CBForStaff({ refreshTrigger }) {
 
 
     // Load data on mount and when language changes
+    // useEffect(() => {
+    //     fetchData(language);
+    // }, [language, refreshTrigger]);
     useEffect(() => {
-        fetchData(language);
-    }, [language, refreshTrigger]);
+        fetchData(language, defaultFilterResultLimit);
+    }, [language, refreshTrigger, defaultFilterResultLimit]);
 
     //Langauge toggle function
     const toggleLanguage = () => {
@@ -150,7 +155,7 @@ export default function CBForStaff({ refreshTrigger }) {
         }
 
     }
-    
+
 
     // Cell click/right-click handlers for data table
     const handleCellClick = (row) => {
@@ -367,7 +372,7 @@ export default function CBForStaff({ refreshTrigger }) {
 
         try {
             //for modal loading pop state
-            setLoadingModalMessage(true); 
+            setLoadingModalMessage(true);
 
             const response = await axios.post('http://localhost:3001/api/cbForStaff/updateParticipantAndSubmissionData', selectedRow); // Send the edited data object
 
@@ -405,7 +410,7 @@ export default function CBForStaff({ refreshTrigger }) {
         } catch (err) {
             console.error('Error updating record:', err);
             alert('❌ Error occurred while updating');
-        } finally{
+        } finally {
             setLoadingModalMessage(false); //for modal loading pop state
         }
 
@@ -445,7 +450,9 @@ export default function CBForStaff({ refreshTrigger }) {
             {/* Buttons */}
             <div className="d-flex justify-content-between mb-2">
                 <div>
-                    <button className='btn btn-primary btn-sm me-2 ' style={{ width: '120px' }} onClick={() => fetchData(language)} title='To reload data from application database'>Refresh</button>
+                    {/*<button className='btn btn-primary btn-sm me-2 ' style={{ width: '120px' }} onClick={() => fetchData(language)} title='To reload data from application database'>Refresh</button>*/}
+                    <button className='btn btn-primary btn-sm me-2 ' style={{ width: '120px' }} onClick={() => {setDefaultFilterResultLimit(1000);}} title='To reload data from application database'>Refresh</button>
+                    <button className='btn btn-primary btn-sm me-2' style={{ width: '120px' }} onClick={() => {setDefaultFilterResultLimit(''); }} title='Show all records of existing data for this activity (can be slow)'> Show all data</button>
                     <button className='btn btn-primary btn-sm me-2' style={{ width: '120px' }} onClick={handleDownloadCBStaffDataFromKobo} title='To cleanup application database and reload new data from KoboToolbox online database'>Load new data</button>
                     <button className='btn btn-primary btn-sm' style={{ width: '120px' }} title='To export the data to Excel template file' onClick={handleExcelExport}>Export</button>
                 </div>
@@ -527,7 +534,7 @@ export default function CBForStaff({ refreshTrigger }) {
             )}
 
 
-            
+
 
             {/* Context Menu */}
             {showContextMenu && (
@@ -562,7 +569,7 @@ export default function CBForStaff({ refreshTrigger }) {
                             </div>
                             <div className="modal-body" >
 
-                               
+
                                 {/* Modal Textboxes for data edit with textbox size customized and make new line starting from textbox index 14*/}
                                 {selectedRow && Object.keys(selectedRow).length > 0 && (
                                     <div className="row">
@@ -650,7 +657,7 @@ export default function CBForStaff({ refreshTrigger }) {
                                 </div>
 
                                 {/* Modal Table */}
-                                <div className="table-responsive mb-3" style={{ maxHeight: '475px', overflowY: 'auto' }}>
+                                <div className="table-responsive mb-3" style={{ maxHeight: '430px', overflowY: 'auto' }}>
                                     <table className="table table-bordered table-hover table-sm text-nowrap">
                                         <thead className="table-info">
                                             {modalData.length > 0 && (

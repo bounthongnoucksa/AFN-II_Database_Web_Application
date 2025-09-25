@@ -13,6 +13,8 @@ export default function CBForVillagers({ refreshTrigger }) {
     const [data, setData] = useState([]);
     const [language, setLanguage] = useState('LA'); // default language
     const [loading, setLoading] = useState(false);
+    const [defaultFilterResultLimit, setDefaultFilterResultLimit] = useState(1000); // limit the result to 1000 records by default. if want to change this value then need to change on refresh button below as well.
+
 
 
 
@@ -34,10 +36,11 @@ export default function CBForVillagers({ refreshTrigger }) {
 
 
     // Fetch main table data
-    const fetchData = async (lang) => {
+    //const fetchData = async (lang) => {
+    const fetchData = async (lang, limit = defaultFilterResultLimit) => {
         setLoading(true);
         try {
-            const res = await axios.get(APP_API_URL + `/api/cbForVillagers/getParticipantData?lang=${lang}`);
+            const res = await axios.get(APP_API_URL + `/api/cbForVillagers/getParticipantData?lang=${lang}&limit=${limit}`);
             if (res.data.success) {
                 setData(res.data.data);
             } else {
@@ -83,9 +86,12 @@ export default function CBForVillagers({ refreshTrigger }) {
 
 
     // Load data on mount and when language changes
+    // useEffect(() => {
+    //     fetchData(language);
+    // }, [language, refreshTrigger]);
     useEffect(() => {
-        fetchData(language);
-    }, [language, refreshTrigger]);
+        fetchData(language, defaultFilterResultLimit);
+    }, [language, refreshTrigger, defaultFilterResultLimit]);
 
     //Langauge toggle function
     const toggleLanguage = () => {
@@ -368,7 +374,7 @@ export default function CBForVillagers({ refreshTrigger }) {
 
         try {
             //for modal loading pop state
-            setLoadingModalMessage(true); 
+            setLoadingModalMessage(true);
 
             const response = await axios.post('http://localhost:3001/api/cbForVillagers/updateParticipantAndSubmissionData', selectedRow); // Send the edited data object
 
@@ -406,7 +412,7 @@ export default function CBForVillagers({ refreshTrigger }) {
         } catch (err) {
             console.error('Error updating record:', err);
             alert('❌ Error occurred while updating');
-        } finally{
+        } finally {
             setLoadingModalMessage(false); //for modal loading pop state
         }
 
@@ -444,7 +450,9 @@ export default function CBForVillagers({ refreshTrigger }) {
             {/* Buttons */}
             <div className="d-flex justify-content-between mb-2">
                 <div>
-                    <button className='btn btn-primary btn-sm me-2 ' style={{ width: '120px' }} onClick={() => fetchData(language)} title='To reload data from application database'>Refresh</button>
+                    {/*<button className='btn btn-primary btn-sm me-2 ' style={{ width: '120px' }} onClick={() => fetchData(language)} title='To reload data from application database'>Refresh</button>*/}
+                    <button className='btn btn-primary btn-sm me-2 ' style={{ width: '120px' }} onClick={() => {setDefaultFilterResultLimit(1000);}} title='To reload data from application database'>Refresh</button>
+                    <button className='btn btn-primary btn-sm me-2' style={{ width: '120px' }} onClick={() => {setDefaultFilterResultLimit(''); }} title='Show all records of existing data for this activity (can be slow)'> Show all data</button>
                     <button className='btn btn-primary btn-sm me-2' style={{ width: '120px' }} onClick={handleDownloadCBSVillagersDataFromKobo} title='To cleanup application database and reload new data from KoboToolbox online database'>Load new data</button>
                     <button className='btn btn-primary btn-sm' style={{ width: '120px' }} onClick={handleExcelExport} title='To export the data to Excel template file' >Export</button>
                 </div>
@@ -458,31 +466,31 @@ export default function CBForVillagers({ refreshTrigger }) {
 
 
             {/* Modal Message for loading wait progresss with spinner*/}
-                        <Modal show={loadingModalMessage} centered backdrop="static">
-                            <Modal.Body className="text-center">
-                                <Spinner animation="border" role="status" className="mb-2">
-                                    <span className="visually-hidden">Loading...</span>
-                                </Spinner>
-                                <div>Loading new data from KoboToolbox...</div>
-                            </Modal.Body>
-                        </Modal>
-                        {/* Modal Message for loading Success*/}
-                        <Modal show={showSuccessModalMessage} onHide={() => setShowSuccessModalMessage(false)} centered>
-                            <Modal.Header closeButton>
-                                <Modal.Title>Transaction status:</Modal.Title>
-                            </Modal.Header>
-                            <Modal.Body>{modalMessage}</Modal.Body>
-                            <Modal.Footer>
-                                <Button variant="primary" onClick={() => setShowSuccessModalMessage(false)}>
-                                    OK
-                                </Button>
-                            </Modal.Footer>
-                        </Modal>
+            <Modal show={loadingModalMessage} centered backdrop="static">
+                <Modal.Body className="text-center">
+                    <Spinner animation="border" role="status" className="mb-2">
+                        <span className="visually-hidden">Loading...</span>
+                    </Spinner>
+                    <div>Loading new data from KoboToolbox...</div>
+                </Modal.Body>
+            </Modal>
+            {/* Modal Message for loading Success*/}
+            <Modal show={showSuccessModalMessage} onHide={() => setShowSuccessModalMessage(false)} centered>
+                <Modal.Header closeButton>
+                    <Modal.Title>Transaction status:</Modal.Title>
+                </Modal.Header>
+                <Modal.Body>{modalMessage}</Modal.Body>
+                <Modal.Footer>
+                    <Button variant="primary" onClick={() => setShowSuccessModalMessage(false)}>
+                        OK
+                    </Button>
+                </Modal.Footer>
+            </Modal>
 
 
 
 
-                        {/* Main Table */}
+            {/* Main Table */}
             {loading ? (
                 <div>Loading...</div>
             ) : (
@@ -525,164 +533,164 @@ export default function CBForVillagers({ refreshTrigger }) {
 
 
             {/* Context Menu */}
-                        {showContextMenu && (
-                            <ul
-                                className="custom-context-menu"
-                                style={{
-                                    top: contextMenuPos.y,
-                                    left: contextMenuPos.x,
-                                    position: 'absolute',
-                                    zIndex: 1000,
-                                    backgroundColor: '#fff',
-                                    border: '1px solid #ccc',
-                                    padding: '5px',
-                                    listStyle: 'none'
-                                }}
-                                onMouseLeave={() => setShowContextMenu(false)}
-                            >
-                                <li style={{ cursor: 'pointer' }} onClick={handleExamine}>Examine</li>
-                            </ul>
-                        )}
-            
-            
-            
-                        {/* Main Modal for data edition popup*/}
-                        {showModal && (
-                            <div className="modal d-block" tabIndex="-1" style={{ backgroundColor: 'rgba(0, 0, 0, 0.3)' }}>
-                                <div className="mmodal-dialog modal-dialog-scrollable modal-dialog-centered">
-                                    <div className="modal-content">
-                                        <div className="modal-header" style={{ backgroundColor: '#7de2d1' }}>
-                                            <h5 className="modal-title">Submission ID: {submissionID}</h5>
-                                            <button type="button" className="btn-close" onClick={closeModal}></button>
-                                        </div>
-                                        <div className="modal-body" >
-            
-                                           
-                                            {/* Modal Textboxes for data edit with textbox size customized and make new line starting from textbox index 14*/}
-                                            {selectedRow && Object.keys(selectedRow).length > 0 && (
-                                                <div className="row">
-                                                    {Object.entries(selectedRow).map(([key, value], idx) => {
-                                                        let colClass = 'col-lg-2'; // default column size
-            
-                                                        if ((idx >= 0 && idx <= 7) || idx === 9 || idx === 14 || (idx >= 16 && idx <= 23)) {
-                                                            colClass = 'col-lg-1';
-                                                        } //else if ( idx === 13) {
-                                                            //colClass = 'col-lg-3';
-                                                        //}
-            
-                                                        const needsNewLine = idx === 14;
-            
-                                                        const isDateField = idx >= 3 && idx <= 5;
-                                                        //const isEditableText = (idx >= 11 && idx <= 7) || (idx >= 13 && idx <= 18);
-                                                        const isEditableText = (idx === 11) || (idx === 13 || idx === 16 );
-                                                        const isNumericField = (idx >= 24 && idx <= 27) || (idx === 16);
-            
-                                                        return (
-                                                            <React.Fragment key={idx}>
-                                                                {needsNewLine && <div className="w-100"></div>}
-            
-                                                                <div className={`${colClass} mb-3`}>
-                                                                    <label className="form-label text-start w-100 fw-bold fs-6" style={{ color: '#001d3d' }}> {key + ":"}</label>
-            
-                                                                    {isDateField ? (
-                                                                        <input
-                                                                            type="date"
-                                                                            className="form-control form-control-sm"
-                                                                            value={isValidDate(value) ? value.slice(0, 10) : ''}
-                                                                            onChange={(e) =>
-                                                                                setSelectedRow((prev) => ({
-                                                                                    ...prev,
-                                                                                    [key]: e.target.value,
-                                                                                }))
-                                                                            }
-                                                                        />
-                                                                    ) : isNumericField ? (
-                                                                        <input
-                                                                            type="number"
-                                                                            className="form-control form-control-sm"
-                                                                            value={value ?? ''}
-                                                                            onChange={(e) =>
-                                                                                setSelectedRow((prev) => ({
-                                                                                    ...prev,
-                                                                                    [key]: e.target.value,
-                                                                                }))
-                                                                            }
-                                                                        />
-                                                                    ) : isEditableText ? (
-                                                                        <input
-                                                                            type="text"
-                                                                            className="form-control form-control-sm"
-                                                                            value={value ?? ''}
-                                                                            onChange={(e) =>
-                                                                                setSelectedRow((prev) => ({
-                                                                                    ...prev,
-                                                                                    [key]: e.target.value,
-                                                                                }))
-                                                                            }
-                                                                        />
-                                                                    ) : (
-                                                                        <input
-                                                                            type="text"
-                                                                            className="form-control form-control-sm"
-                                                                            value={value ?? ''}
-                                                                            readOnly
-                                                                        />
-                                                                    )}
-                                                                </div>
-                                                            </React.Fragment>
-                                                        );
-                                                    })}
-                                                </div>
-                                            )}
-            
-            
-                                            {/* Modal action buttons */}
-            
-                                            <div className="modal-footer d-flex justify-content-start ">
-                                                <button className="btn btn-warning" style={{ width: '160px' }} onClick={handleEditSubmissionAndParticipants}  title="To edit the selected record of data">Edit Record</button>
-                                                <button className="btn btn-danger" style={{ width: '160px' }} onClick={() => handleDeleteParticipant(selectedRow.PID, selectedRow.SubmissionID)}  title="To delete only the selected record of data">Delete Participant</button>
-                                                <button className="btn btn-danger" style={{ width: '160px' }} onClick={handleDeleteSubmission}  title="To delete all records of data for this submission">Delete Submission</button>
-                                                <button className="btn btn-secondary" style={{ width: '160px' }} onClick={closeModal} >Close</button>
-                                            </div>
-            
-                                            {/* Modal Table */}
-                                            <div className="table-responsive mb-3" style={{ maxHeight: '475px', overflowY: 'auto' }}>
-                                                <table className="table table-bordered table-hover table-sm text-nowrap">
-                                                    <thead className="table-info">
-                                                        {modalData.length > 0 && (
-                                                            <tr>
-                                                                {Object.keys(modalData[0]).map((col) => (
-                                                                    <th key={col}>{col}</th>
-                                                                ))}
-                                                            </tr>
+            {showContextMenu && (
+                <ul
+                    className="custom-context-menu"
+                    style={{
+                        top: contextMenuPos.y,
+                        left: contextMenuPos.x,
+                        position: 'absolute',
+                        zIndex: 1000,
+                        backgroundColor: '#fff',
+                        border: '1px solid #ccc',
+                        padding: '5px',
+                        listStyle: 'none'
+                    }}
+                    onMouseLeave={() => setShowContextMenu(false)}
+                >
+                    <li style={{ cursor: 'pointer' }} onClick={handleExamine}>Examine</li>
+                </ul>
+            )}
+
+
+
+            {/* Main Modal for data edition popup*/}
+            {showModal && (
+                <div className="modal d-block" tabIndex="-1" style={{ backgroundColor: 'rgba(0, 0, 0, 0.3)' }}>
+                    <div className="mmodal-dialog modal-dialog-scrollable modal-dialog-centered">
+                        <div className="modal-content">
+                            <div className="modal-header" style={{ backgroundColor: '#7de2d1' }}>
+                                <h5 className="modal-title">Submission ID: {submissionID}</h5>
+                                <button type="button" className="btn-close" onClick={closeModal}></button>
+                            </div>
+                            <div className="modal-body" >
+
+
+                                {/* Modal Textboxes for data edit with textbox size customized and make new line starting from textbox index 14*/}
+                                {selectedRow && Object.keys(selectedRow).length > 0 && (
+                                    <div className="row">
+                                        {Object.entries(selectedRow).map(([key, value], idx) => {
+                                            let colClass = 'col-lg-2'; // default column size
+
+                                            if ((idx >= 0 && idx <= 7) || idx === 9 || idx === 14 || (idx >= 16 && idx <= 23)) {
+                                                colClass = 'col-lg-1';
+                                            } //else if ( idx === 13) {
+                                            //colClass = 'col-lg-3';
+                                            //}
+
+                                            const needsNewLine = idx === 14;
+
+                                            const isDateField = idx >= 3 && idx <= 5;
+                                            //const isEditableText = (idx >= 11 && idx <= 7) || (idx >= 13 && idx <= 18);
+                                            const isEditableText = (idx === 11) || (idx === 13 || idx === 16);
+                                            const isNumericField = (idx >= 24 && idx <= 27) || (idx === 16);
+
+                                            return (
+                                                <React.Fragment key={idx}>
+                                                    {needsNewLine && <div className="w-100"></div>}
+
+                                                    <div className={`${colClass} mb-3`}>
+                                                        <label className="form-label text-start w-100 fw-bold fs-6" style={{ color: '#001d3d' }}> {key + ":"}</label>
+
+                                                        {isDateField ? (
+                                                            <input
+                                                                type="date"
+                                                                className="form-control form-control-sm"
+                                                                value={isValidDate(value) ? value.slice(0, 10) : ''}
+                                                                onChange={(e) =>
+                                                                    setSelectedRow((prev) => ({
+                                                                        ...prev,
+                                                                        [key]: e.target.value,
+                                                                    }))
+                                                                }
+                                                            />
+                                                        ) : isNumericField ? (
+                                                            <input
+                                                                type="number"
+                                                                className="form-control form-control-sm"
+                                                                value={value ?? ''}
+                                                                onChange={(e) =>
+                                                                    setSelectedRow((prev) => ({
+                                                                        ...prev,
+                                                                        [key]: e.target.value,
+                                                                    }))
+                                                                }
+                                                            />
+                                                        ) : isEditableText ? (
+                                                            <input
+                                                                type="text"
+                                                                className="form-control form-control-sm"
+                                                                value={value ?? ''}
+                                                                onChange={(e) =>
+                                                                    setSelectedRow((prev) => ({
+                                                                        ...prev,
+                                                                        [key]: e.target.value,
+                                                                    }))
+                                                                }
+                                                            />
+                                                        ) : (
+                                                            <input
+                                                                type="text"
+                                                                className="form-control form-control-sm"
+                                                                value={value ?? ''}
+                                                                readOnly
+                                                            />
                                                         )}
-                                                    </thead>
-                                                    <tbody>
-                                                        {modalData.map((row, idx) => (
-                                                            <tr
-                                                                key={idx}
-                                                                onClick={() => setSelectedRow(row)}
-                                                                className={row === selectedRow ? 'table-warning' : ''}
-                                                                style={{ cursor: 'pointer' }}
-                                                            >
-                                                                {Object.entries(row).map(([col, value], colIdx) => (
-                                                                    <td key={col}>
-                                                                        {(colIdx >= 24 && colIdx <= 27 && !isNaN(value))
-                                                                            ? Number(value).toLocaleString()
-                                                                            : value}
-                                                                    </td>
-                                                                ))}
-                                                            </tr>
-                                                        ))}
-                                                    </tbody>
-                                                </table>
-                                            </div>
-                                        </div>
+                                                    </div>
+                                                </React.Fragment>
+                                            );
+                                        })}
                                     </div>
+                                )}
+
+
+                                {/* Modal action buttons */}
+
+                                <div className="modal-footer d-flex justify-content-start ">
+                                    <button className="btn btn-warning" style={{ width: '160px' }} onClick={handleEditSubmissionAndParticipants} title="To edit the selected record of data">Edit Record</button>
+                                    <button className="btn btn-danger" style={{ width: '160px' }} onClick={() => handleDeleteParticipant(selectedRow.PID, selectedRow.SubmissionID)} title="To delete only the selected record of data">Delete Participant</button>
+                                    <button className="btn btn-danger" style={{ width: '160px' }} onClick={handleDeleteSubmission} title="To delete all records of data for this submission">Delete Submission</button>
+                                    <button className="btn btn-secondary" style={{ width: '160px' }} onClick={closeModal} >Close</button>
+                                </div>
+
+                                {/* Modal Table */}
+                                <div className="table-responsive mb-3" style={{ maxHeight: '430px', overflowY: 'auto' }}>
+                                    <table className="table table-bordered table-hover table-sm text-nowrap">
+                                        <thead className="table-info">
+                                            {modalData.length > 0 && (
+                                                <tr>
+                                                    {Object.keys(modalData[0]).map((col) => (
+                                                        <th key={col}>{col}</th>
+                                                    ))}
+                                                </tr>
+                                            )}
+                                        </thead>
+                                        <tbody>
+                                            {modalData.map((row, idx) => (
+                                                <tr
+                                                    key={idx}
+                                                    onClick={() => setSelectedRow(row)}
+                                                    className={row === selectedRow ? 'table-warning' : ''}
+                                                    style={{ cursor: 'pointer' }}
+                                                >
+                                                    {Object.entries(row).map(([col, value], colIdx) => (
+                                                        <td key={col}>
+                                                            {(colIdx >= 24 && colIdx <= 27 && !isNaN(value))
+                                                                ? Number(value).toLocaleString()
+                                                                : value}
+                                                        </td>
+                                                    ))}
+                                                </tr>
+                                            ))}
+                                        </tbody>
+                                    </table>
                                 </div>
                             </div>
-                        )}
-                        {/* End of Modal */}
+                        </div>
+                    </div>
+                </div>
+            )}
+            {/* End of Modal */}
 
 
 

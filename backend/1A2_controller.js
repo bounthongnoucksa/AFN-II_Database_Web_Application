@@ -132,11 +132,15 @@ function runQuery(db, sql, params = []) {
 
 
 // ############################ Function to get Form 1A2 participant data ############################
-function getForm1A2ParticipantData(language) {
+function getForm1A2ParticipantData(language, limit) {
     return new Promise((resolve, reject) => {
 
         const db = getDBConnection(); // Get the database connection
 
+
+        const queryParams = [];
+
+        // Construct the base query based on language
         let query = '';
         if (language === 'LA') {
             query = `
@@ -217,7 +221,7 @@ function getForm1A2ParticipantData(language) {
                         np.Ben AS 'Ben',
                         np.OtherFund AS 'Other Fund'
                     FROM NumberedParticipants np
-                    ORDER BY np.Id DESC, np.rn;
+                    ORDER BY np.Id DESC, np.rn
             `;
         } else if (language === 'EN') {
             // EN version
@@ -297,11 +301,19 @@ function getForm1A2ParticipantData(language) {
                             np.Ben AS 'Ben',
                             np.OtherFund AS 'Other Fund'
                         FROM NumberedParticipants np
-                        ORDER BY np.Id DESC, np.rn;
+                        ORDER BY np.Id DESC, np.rn
             `;
         }
 
-        db.all(query, [], (err, rows) => {
+        // If limit is provided and valid, append LIMIT clause
+        let finalQuery = query;
+        if (limit && !isNaN(limit)) {
+            finalQuery += `LIMIT ?`;
+            queryParams.push(Number(limit))
+        }
+
+        //db.all(query, [], (err, rows) => {
+        db.all(finalQuery, queryParams, (err, rows) => {
             db.close();
             if (err) {
 
@@ -819,8 +831,8 @@ const normalizeKeys = (data) => {
         SubmissionID: data.SubmissionID || data.SubmissionId,
 
         ReportingPeriod: data["Reporting Period"] || data["ໄລຍະເວລາລາຍງານ"] || null,
-        ConductDateStart:  data["Start Date"] || data["ວັນເລີ່ມ"] || null,
-        ConductDateEnd:  data["End Date"] || data["ວັນສຳເລັດ"] || null,
+        ConductDateStart: data["Start Date"] || data["ວັນເລີ່ມ"] || null,
+        ConductDateEnd: data["End Date"] || data["ວັນສຳເລັດ"] || null,
 
         // // Basic identity
         // HHId: data["HHId"] || data["ລະຫັດຄົວເຮືອນ"],
@@ -885,7 +897,7 @@ async function editForm1A2SubmissionAndParticipants(data) {
             d.Ben,
             d.OtherFund,
             d.PID
-            
+
         ]);
 
         // ✅ Update Submission Record

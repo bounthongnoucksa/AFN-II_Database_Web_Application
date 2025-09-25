@@ -50,7 +50,7 @@ async function downloadForm3Act2SubmissionDataFromKoboToolbox() {
                     ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
                     [
                         submissionId,
-                        el["formhub/uuid"] || el["_uuid"] || null,
+                        el["_uuid"] || el["formhub/uuid"] || null,
                         el["start"] || null,
                         el["end"] || null,
                         el["_reportingperiod"] || null,

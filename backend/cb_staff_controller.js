@@ -21,11 +21,14 @@ const KOBO_DOWNLOAD_SUBMISSION_API = `${process.env.KOBO_API_URL}/${KOBO_CB_FOR_
 
 
 // ############################Function to get CB Staff participant data############################
-function getCBStaffParticipantData(language) {
+function getCBStaffParticipantData(language, limit) {
     return new Promise((resolve, reject) => {
 
         const db = getDBConnection(); // Get the database connection
 
+        const queryParams = [];
+
+        // Construct the base query based on language
         let query = '';
         if (language === 'LA') {
             query = `WITH NumberedParticipants AS (
@@ -78,7 +81,7 @@ function getCBStaffParticipantData(language) {
             LEFT JOIN Translation_EN_LA genderT ON genderT.FormName='cb_for_staff' AND genderT.ItemCode=np.Gender
             LEFT JOIN Translation_EN_LA categoryT ON categoryT.FormName='cb_for_staff' AND categoryT.ItemCode=np.Category
             LEFT JOIN Translation_EN_LA topicT ON topicT.FormName='cb_for_staff' AND topicT.ItemCode=np.Topic AND topicT.Choice_Filter=np.Category
-            ORDER BY np.SubmissionId DESC, np.rn;
+            ORDER BY np.SubmissionId DESC, np.rn
             `;
         } else if (language === 'EN') {
             // EN version
@@ -134,7 +137,7 @@ function getCBStaffParticipantData(language) {
             LEFT JOIN Translation_EN_LA genderT ON genderT.FormName='cb_for_staff' AND genderT.ItemCode=np.Gender
             LEFT JOIN Translation_EN_LA categoryT ON categoryT.FormName='cb_for_staff' AND categoryT.ItemCode=np.Category
             LEFT JOIN Translation_EN_LA topicT ON topicT.FormName='cb_for_staff' AND topicT.ItemCode=np.Topic AND topicT.Choice_Filter=np.Category
-            ORDER BY np.SubmissionId DESC, np.rn;
+            ORDER BY np.SubmissionId DESC, np.rn
             `;
         } else if (language === 'statistic') {
             //Raw data for statistics counts
@@ -192,12 +195,19 @@ function getCBStaffParticipantData(language) {
                                 COUNT(DISTINCT CASE WHEN Category <> '6_meeting' AND Gender = '_female' THEN Name END) AS WomenStaffParticipants,
                                 COUNT(DISTINCT CASE WHEN Category <> '6_meeting' THEN Name END) AS TotalStaffTrained,
                                 COUNT(DISTINCT CASE WHEN Category <> '6_meeting' THEN Topic END) AS TotalSubjectsTrained
-                            FROM FinalResult;
+                            FROM FinalResult
             
             `;
         }
+        // If limit is provided and valid, append LIMIT clause
+        let finalQuery = query;
+        if (limit && !isNaN(limit)) {
+            finalQuery += `LIMIT ?`;
+            queryParams.push(Number(limit))
+        }
 
-        db.all(query, [], (err, rows) => {
+        //db.all(query, [], (err, rows) => {
+        db.all(finalQuery, queryParams, (err, rows) => {
             db.close();
             if (err) {
 

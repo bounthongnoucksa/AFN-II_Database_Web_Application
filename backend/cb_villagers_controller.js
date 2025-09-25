@@ -144,11 +144,14 @@ function runQuery(db, sql, params = []) {
 
 
 // ############################ Function to get CB Villagers participant data ############################
-function getCBVillagerParticipantData(language) {
+function getCBVillagerParticipantData(language, limit) {
     return new Promise((resolve, reject) => {
 
         const db = getDBConnection(); // Get the database connection
 
+        const queryParams = [];
+
+        // Construct the base query based on language
         let query = '';
         if (language === 'LA') {
             query = `
@@ -218,7 +221,7 @@ function getCBVillagerParticipantData(language) {
                         CASE WHEN np.rn = 1 THEN np.WFP ELSE NULL END AS WFP,
                         CASE WHEN np.rn = 1 THEN np.GoL ELSE NULL END AS GoL
                     FROM NumberedParticipants np
-                    ORDER BY np.Id DESC, np.rn;
+                    ORDER BY np.Id DESC, np.rn
             `;
         } else if (language === 'EN') {
             // EN version
@@ -289,11 +292,18 @@ function getCBVillagerParticipantData(language) {
                             CASE WHEN np.rn = 1 THEN np.WFP ELSE NULL END AS WFP,
                             CASE WHEN np.rn = 1 THEN np.GoL ELSE NULL END AS GoL
                         FROM NumberedParticipants np
-                        ORDER BY np.Id DESC, np.rn;
+                        ORDER BY np.Id DESC, np.rn
             `;
         }
+        // If limit is provided and valid, append LIMIT clause
+        let finalQuery = query;
+        if (limit && !isNaN(limit)) {
+            finalQuery += `LIMIT ?`;
+            queryParams.push(Number(limit))
+        }
 
-        db.all(query, [], (err, rows) => {
+        //db.all(query, [], (err, rows) => {
+        db.all(finalQuery, queryParams, (err, rows) => {
             db.close();
             if (err) {
 
@@ -818,8 +828,8 @@ async function editCBVillagerSubmissionAndParticipants(data) {
                 
             WHERE Id = ?;
         `, [
-            
-            d.Age,     
+
+            d.Age,
             d.PID
         ]);
 
@@ -872,7 +882,7 @@ export {
     getCBForVillagerNewSubmissionIdByUUID,
     deleteOnlyCBForVillagersParticipantInDB,
     deleteOnlyCBForVillagersSubmissionInKobo
-,   deleteCBVillagerSubmissionInKoboAndDatabase,
+    , deleteCBVillagerSubmissionInKoboAndDatabase,
     getRawCBVillagerSubmissionAndParticipantsData,
     buildCBVillagerSubmissionXML,
     submitNewCBVillagerSubmissionToKobo,

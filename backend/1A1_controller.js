@@ -152,11 +152,14 @@ function runQuery(db, sql, params = []) {
 
 
 // ############################ Function to get Form 1A1 participant data ############################
-function getForm1A1ParticipantData(language) {
+function getForm1A1ParticipantData(language, limit) {
     return new Promise((resolve, reject) => {
 
         const db = getDBConnection(); // Get the database connection
 
+        const queryParams = [];
+
+        // Construct the base query based on language
         let query = '';
         if (language === 'LA') {
             query = `
@@ -233,7 +236,7 @@ function getForm1A1ParticipantData(language) {
                         CASE WHEN np.rn = 1 THEN np.Ben ELSE NULL END AS Ben,
                         CASE WHEN np.rn = 1 THEN np.OtherFund ELSE NULL END AS OtherFund
                     FROM NumberedParticipants np
-                    ORDER BY np.Id DESC, np.rn;
+                    ORDER BY np.Id DESC, np.rn
             `;
         } else if (language === 'EN') {
             // EN version
@@ -311,11 +314,19 @@ function getForm1A1ParticipantData(language) {
                             CASE WHEN np.rn = 1 THEN np.Ben ELSE NULL END AS Ben,
                             CASE WHEN np.rn = 1 THEN np.OtherFund ELSE NULL END AS Other
                         FROM NumberedParticipants np
-                        ORDER BY np.Id DESC, np.rn;
+                        ORDER BY np.Id DESC, np.rn
             `;
         }
 
-        db.all(query, [], (err, rows) => {
+        // If limit is provided and valid, append LIMIT clause
+        let finalQuery = query;
+        if (limit && !isNaN(limit)) {
+            finalQuery += `LIMIT ?`;
+            queryParams.push(Number(limit))
+        }
+
+        //db.all(query, [], (err, rows) => {
+        db.all(finalQuery, queryParams, (err, rows) => {
             db.close();
             if (err) {
 
@@ -728,7 +739,7 @@ function escapeXML(str) {
 
 
 
-// //############################ XML Builder function: ############################
+//############################ XML Builder function: ############################
 function buildForm1A1SubmissionXML(submission, participants) {
     const now = formatLocalISOWithOffset();
     const end = formatLocalISOWithOffset(new Date(Date.now() + 10 * 60000));
@@ -854,7 +865,7 @@ const normalizeKeys = (data) => {
         WFP: parseInt(data.WFP || 0),
         GoL: parseInt(data.GoL || 0),
         Ben: parseInt(data.Ben || 0),
-        OtherFund: parseInt(data.OtherFund || data.Other || 0),
+        OtherFund: parseInt(data.OtherFund || data.Other | data["Other Fund"] || 0),
     };
 };
 
@@ -932,7 +943,7 @@ export {
     getForm1A1NewSubmissionIdByUUID,
     deleteOnlyForm1A1ParticipantInDB,
     deleteOnlyForm1A1SubmissionInKobo,
-    
+
     deleteForm1A1SubmissionInKoboAndDatabase,
     getRawForm1A1SubmissionAndParticipantsData,
     buildForm1A1SubmissionXML,

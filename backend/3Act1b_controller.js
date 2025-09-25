@@ -117,10 +117,12 @@ function runQuery(db, sql, params = []) {
 
 
 // ############################ Function to get Form 1BAct8 participant data ############################
-function getForm3Act1bParticipantData(language) {
+function getForm3Act1bParticipantData(language, limit) {
     return new Promise((resolve, reject) => {
 
         const db = getDBConnection(); // Get the database connection
+
+        const queryParams = [];
 
         let query = '';
         if (language === 'LA') {
@@ -198,7 +200,7 @@ function getForm3Act1bParticipantData(language) {
                     CASE WHEN np.rn = 1 THEN np.Ben ELSE NULL END AS 'Ben',
                     CASE WHEN np.rn = 1 THEN np.OtherFund ELSE NULL END AS 'Other Fund'
                 FROM NumberedParticipants np
-                ORDER BY np.Id DESC, np.rn;
+                ORDER BY np.Id DESC, np.rn
             `;
         } else if (language === 'EN') {
             // EN version
@@ -278,11 +280,18 @@ function getForm3Act1bParticipantData(language) {
                     CASE WHEN np.rn = 1 THEN np.Ben ELSE NULL END AS 'Ben',
                     CASE WHEN np.rn = 1 THEN np.OtherFund ELSE NULL END AS 'Other Fund'
                 FROM NumberedParticipants np
-                ORDER BY np.Id DESC, np.rn;
+                ORDER BY np.Id DESC, np.rn
             `;
         }
+        // If limit is provided and valid, append LIMIT clause
+        let finalQuery = query;
+        if (limit && !isNaN(limit)) {
+            finalQuery += `LIMIT ?`;
+            queryParams.push(Number(limit))
+        }
 
-        db.all(query, [], (err, rows) => {
+        //db.all(query, [], (err, rows) => {
+        db.all(finalQuery, queryParams, (err, rows) => {
             db.close();
             if (err) {
 
@@ -498,7 +507,7 @@ function getForm3Act1bParticipantDataBySID(SubmissionId, language) {
 
 
 // ############################ Function to delete Form 3Act1b submission data from both local database and KoboToolbox Online ############################
-async function deleteSubmissionInKoboAndDatabase(submissionId) {
+async function deleteForm3Act1bSubmissionInKoboAndDatabase(submissionId) {
     try {
         // Delete the whole submission from Kobo
         // this function will not handle data refresh to local database
@@ -521,7 +530,7 @@ async function deleteSubmissionInKoboAndDatabase(submissionId) {
         const db = getDBConnection();
         await new Promise((resolve, reject) => {
             // Delete participants first
-            db.run("DELETE FROM tb_Form_3Act1b_Participant WHERE SubmissionId = ?", [submissionId], function (err) {
+            db.run("DELETE FROM tb_Form_3Act1b_Participant WHERE Submission_id = ?", [submissionId], function (err) {
                 if (err) return reject(err);
 
                 // Then delete the submission itself
@@ -635,11 +644,11 @@ function runAll(db, sql, params = []) {
     });
 }
 //Get raw participant data from database by SubmissionId
-async function getRawSubmissionAndParticipantsData(submissionId) {
+async function getRawForm3Act1bSubmissionAndParticipantsData(submissionId) {
     const db = getDBConnection();
 
     const submission = await runGet(db, "SELECT * FROM tb_Form_3Act1b_Submission WHERE Id = ?", [submissionId]);
-    const participants = await runAll(db, "SELECT * FROM tb_Form_3Act1b_Participant WHERE SubmissionId = ?", [submissionId]);
+    const participants = await runAll(db, "SELECT * FROM tb_Form_3Act1b_Participant WHERE Submission_id = ?", [submissionId]);
 
     db.close();
     return { submission, participants };
@@ -679,8 +688,15 @@ function formatLocalISOWithOffset(date = new Date()) {
 
 // Function to escape XML special characters
 function escapeXML(str) {
-    if (!str) return '';
-    return str.replace(/&/g, '&amp;')
+    //if (!str) return '';
+    if (str === null || str === undefined) return '';
+    // return str.replace(/&/g, '&amp;')
+    //     .replace(/</g, '&lt;')
+    //     .replace(/>/g, '&gt;')
+    //     .replace(/'/g, '&apos;')
+    //     .replace(/"/g, '&quot;');
+    return String(str)
+        .replace(/&/g, '&amp;')
         .replace(/</g, '&lt;')
         .replace(/>/g, '&gt;')
         .replace(/'/g, '&apos;')
@@ -689,152 +705,184 @@ function escapeXML(str) {
 
 
 
-// // //############################ XML Builder function: ############################
-// // function buildSubmissionXML(submission, participants) {
-// //     const now = formatLocalISOWithOffset();
-// //     const end = formatLocalISOWithOffset(new Date(Date.now() + 10 * 60000));
+//############################ XML Builder function: ############################
+function buildForm3Act1bSubmissionXML(submission, participants) {
+    const now = formatLocalISOWithOffset();
+    const end = formatLocalISOWithOffset(new Date(Date.now() + 10 * 60000)); // 10 mins later
 
-// //     // console.log("Participants from DB:", participants);
-// //     // console.log("Type of participants:", typeof participants);
-// //     // console.log("IsArray?", Array.isArray(participants));
+    const xml = [];
+    xml.push(`<?xml version='1.0' encoding='UTF-8' ?>`);
+    xml.push(`<data id='${KOBO_FORM_3Act1bFORM_ID}'>`);
 
-// //     const xml = [];
-// //     xml.push(`<?xml version='1.0' encoding='UTF-8' ?>`);
-// //     xml.push(`<data id='${KOBO_CB_FOR_STAFF_FORM_ID}'>`);
-// //     xml.push(`  <start>${now}</start>`);
-// //     xml.push(`  <end>${end}</end>`);
-// //     xml.push(`  <date_lv6zg63>${escapeXML(submission.ReportingPeriodDate)}</date_lv6zg63>`);
+    // Metadata timestamps
+    xml.push(`  <start>${now}</start>`);
+    xml.push(`  <end>${end}</end>`);
+    xml.push(`  <_reportingperiod>${escapeXML(submission.Reporting_period)}</_reportingperiod>`);
 
-// //     xml.push(`  <group_of5oy77>`);
-// //     xml.push(`    <date_mg3ho62>${escapeXML(submission.ActivityStartDate)}</date_mg3ho62>`);
-// //     xml.push(`    <date_pg0bf05>${escapeXML(submission.ActivityEndDate)}</date_pg0bf05>`);
-// //     xml.push(`  </group_of5oy77>`);
+    // Location and activity info
+    xml.push(`  <select_one_province>${escapeXML(submission.Province)}</select_one_province>`);
+    xml.push(`  <select_one_district>${escapeXML(submission.District)}</select_one_district>`);
+    xml.push(`  <_subactivity>${escapeXML(submission.Activity)}</_subactivity>`);
 
-// //     xml.push(`  <select_one_category>${escapeXML(submission.Category)}</select_one_category>`);
-// //     xml.push(`  <select_one_topic>${escapeXML(submission.Topic)}</select_one_topic>`);
-// //     xml.push(`  <_act_location>${escapeXML(submission.ActivityLocation)}</_act_location>`);
+    // Conduct dates
+    xml.push(`  <group_actconductdate_sa1oe86>`);
+    xml.push(`    <date_ha2jz81>${escapeXML(submission.Conduct_date_1)}</date_ha2jz81>`);
+    xml.push(`    <date_up9xu24>${escapeXML(submission.Conduct_date_2)}</date_up9xu24>`);
+    xml.push(`  </group_actconductdate_sa1oe86>`);
 
-// //     participants.forEach(p => {
-// //         xml.push(`  <group_ap1ti89>`);
-// //         xml.push(`    <_participation_name>${escapeXML(p.Name)}</_participation_name>`);
-// //         xml.push(`    <_reponsibility>${escapeXML(p.Responsibility)}</_reponsibility>`);
-// //         xml.push(`    <_office>${escapeXML(p.Office)}</_office>`);
-// //         xml.push(`    <_type_of_staff>${escapeXML(p.StaffType)}</_type_of_staff>`);
-// //         xml.push(`    <_gender>${escapeXML(p.Gender)}</_gender>`);
-// //         xml.push(`  </group_ap1ti89>`);
-// //     });
+    // Other information
+    xml.push(`  <_1_2_3>${escapeXML(submission.MeetingNo)}</_1_2_3>`);
+    xml.push(`  <_VDP_>${escapeXML(submission.VDPApprovalNumber)}</_VDP_>`);
+    xml.push(`  <select_one_tb1ji94>${escapeXML(submission.DNCPApproval)}</select_one_tb1ji94>`);
+    xml.push(`  <_DNCP_item>${escapeXML(submission.DNCP_Item)}</_DNCP_item>`);
+    xml.push(`  <_Yes_No_>${escapeXML(submission.EquiptSupported)}</_Yes_No_>`);
 
-// //     xml.push(`  <group_kw0iz30>`);
-// //     xml.push(`    <_IFAD_>${submission.IFAD || ''}</_IFAD_>`);
-// //     xml.push(`    <_MAF_>${submission.MAF || ''}</_MAF_>`);
-// //     xml.push(`    <_WFP_>${submission.WFP || ''}</_WFP_>`);
-// //     xml.push(`    <_GoL_>${submission.GoL || ''}</_GoL_>`);
-// //     xml.push(`    <_Ben_>${submission.Ben || ''}</_Ben_>`);
-// //     xml.push(`  </group_kw0iz30>`);
+    // Participants
+    participants.forEach(p => {
+        xml.push(`  <group_participantdetail_hp48r4>`);
+        xml.push(`    <text_xh9tx30>${escapeXML(p.Full_name)}</text_xh9tx30>`);
+        xml.push(`    <_selectone_office>${escapeXML(p.Office)}</_selectone_office>`);
+        xml.push(`    <_mainAge>${p.Age || 0}</_mainAge>`);
+        xml.push(`    <_mainGender>${escapeXML(p.Gender)}</_mainGender>`);
+        xml.push(`  </group_participantdetail_hp48r4>`);
+    });
 
-// //     xml.push(`  <meta>`);
-// //     xml.push(`    <instanceID>uuid:${submission.Uuid}</instanceID>`);
-// //     xml.push(`  </meta>`);
-// //     xml.push(`</data>`);
+    // Contributions
+    xml.push(`  <group_wz1ah68>`);
+    xml.push(`    <_IFAD_>${submission.IFAD || 0}</_IFAD_>`);
+    xml.push(`    <_MAF_>${submission.MAF || 0}</_MAF_>`);
+    xml.push(`    <_WFP_>${submission.WFP || 0}</_WFP_>`);
+    xml.push(`    <_GoL_>${submission.GoL || 0}</_GoL_>`);
+    xml.push(`    <_Ben_>${submission.Ben || 0}</_Ben_>`);
+    xml.push(`    <integer_oz4sh88>${submission.OtherFund || 0}</integer_oz4sh88>`);
+    xml.push(`  </group_wz1ah68>`);
 
-// //     return xml.join('\n');
-// // }
+    // Meta
+    xml.push(`  <meta>`);
+    xml.push(`    <instanceID>uuid:${escapeXML(submission.Uuid)}</instanceID>`);
+    xml.push(`  </meta>`);
 
+    xml.push(`</data>`);
 
-// // //############################ Function to submit new submission to KoboToolbox Online ############################
-// // async function submitNewSubmissionToKobo(xmlData) {
-// //     const form = new FormData();
-// //     form.append('xml_submission_file', xmlData, { filename: 'submission.xml' });
-
-// //     await axios.post(KOBO_NEW_SUBMISSION_API, form, {
-// //         headers: {
-// //             ...form.getHeaders(),
-// //             Authorization: `Token ${KOBO_API_KEY}`
-// //         }
-// //     });
-// // }
-
-// // //Due to the issue of database column return from frontend has 2 langues switch so the column is is dynamic
-// // //so we need to normalized it before running SQL command
-// // // Map localized keys to English DB column names
-// // const normalizeKeys = (data) => {
-// //     return {
-// //         PID: data.PID || data.ParticipantId,
-// //         SubmissionID: data.SubmissionID || data.SubmissionId,
-// //         Name: data["Name"] || data["ຊື່ ແລະ ນາມສະກຸນ ຜູ້ເຂົ້າຮ່ວມ"],
-// //         Responsibility: data["Responsibility"] || data["ໜ້າທີ່ຮັບຜິດຊອບ"],
-// //         Office: data["Office"] || data["ມາຈາກຫ້ອງການ"],
-// //         StaffType: data["StaffType"] || data["ເປັນພະນັກງານຂອງ"],
-// //         Gender: data["Gender"] || data["ເພດ"],
-// //         Category: data["Category"] || data["ຮູບແບບການຝຶກ"],
-// //         Topic: data["Topic"] || data["ຫົວຂໍ້ສະເພາະດ້ານໃດ"],
-// //         ActivityLocation: data["ActivityLocation"] || data["ສະຖານທີ ຈັດປະຊຸມ ຫຼື ຝຶກອົບຮົມ"],
-// //         ReportingPeriod: data["ReportingPeriod"] || data["ໄລຍະເວລາລາຍງານ"],
-// //         StartDate: data["StartDate"] || data["ວັນເລີ່ມ"],
-// //         EndDate: data["EndDate"] || data["ວັນສຳເລັດ"],
-// //         IFAD: parseInt(data.IFAD) || 0,
-// //         MAF: parseInt(data.MAF) || 0,
-// //         WFP: parseInt(data.WFP) || 0,
-// //         GoL: parseInt(data.GoL) || 0,
-// //         Ben: parseInt(data.Ben) || 0,
-// //     };
-// // };
+    return xml.join('\n');
+}
 
 
 
-// // // ############################ Edit Submission and participation data ############################
-// // async function editSubmissionAndParticipants(data) {
+//############################ Function to submit new submission to KoboToolbox Online ############################
+async function submitNewForm3Act1bSubmissionToKobo(xmlData) {
+    const form = new FormData();
+    form.append('xml_submission_file', xmlData, { filename: 'submission.xml' });
+
+    await axios.post(KOBO_NEW_SUBMISSION_API, form, {
+        headers: {
+            ...form.getHeaders(),
+            Authorization: `Token ${KOBO_API_KEY}`
+        }
+    });
+}
+
+//Due to the issue of database column return from frontend has 2 langues switch so the column is is dynamic
+//so we need to normalized it before running SQL command
+// Map localized keys to English DB column names
+const normalizeKeys = (data) => {
+    return {
+        PID: data.PID || data.ParticipantId,
+        SubmissionID: data.SubmissionID || data.SubmissionId || data.Submission_id,
+
+        // Participant fields
+        Full_name: data.Full_name || data["Participants to DNC Meeting"] || data["ຊື່ ແລະ ນາມສະກຸນ"] || null,
+        Office: data.Office || data["Representation of line agencies"] || data["ມາຈາກຫ້ອງການ"] || null,
+        Age: parseInt(data.Age || data["Age"] || data["ອາຍຸ"] || 0),
+        Gender: data.Gender || data["Gender"] || data["ເພດ"] || null,
+
+        // Submission fields
+        Reporting_period: data.Reporting_period || data["Reporting Period"] || data["ໄລຍະເວລາລາຍງານ"] || null,
+        Province: data.Province || data["Province"] || data["ແຂວງ"] || null,
+        District: data.District || data["District"] || data["ເມືອງ"] || null,
+        Activity: data.Activity || data["Sub-Activity"] || data["ກິດຈະກຳຍ່ອຍທີ່ເຂົ້າຮ່ວມ"] || null,
+        Conduct_date_1: data.Conduct_date_1 || data["Start"] || data["ວັນເລີ່ມ"] || null,
+        Conduct_date_2: data.Conduct_date_2 || data["Completed"] || data["ວັນສຳເລັດ"] || null,
+        MeetingNo: data.MeetingNo || data["Meeting No."] || data["ກອງປະຊຸມຄັ້ງທີ"] || null,
+        VDPApprovalNumber: data.VDPApprovalNumber || data["VDP Approval No."] || data["ຈ/ນ VDP ຮັບຮອງ"] || null,
+        DNCPApproval: data.DNCPApproval || data["DNCP Approval"] || null,
+        DNCP_Item: data.DNCP_Item || data["DNCP Investment Activities"] || data["ບັນດາກິດຈະກໍາການລົງທຶນ ລວມຢູ່ໃນແຜນ DNCP"] || null,
+        EquiptSupported: data.EquiptSupported || data["Equip. Supported"] || data["ວັດຖຸ/ປັດໃຈໄດ້ຮັບຈາກໂຄງການ"] || null,
+
+        // Contribution values
+        IFAD: parseFloat(data.IFAD || data["IFAD"] || 0),
+        MAF: parseFloat(data.MAF || data["MAF"] || 0),
+        WFP: parseFloat(data.WFP || data["WFP"] || 0),
+        GoL: parseFloat(data.GoL || data["GoL"] || 0),
+        Ben: parseFloat(data.Ben || data["Ben"] || 0),
+        OtherFund: parseFloat(data.OtherFund || data["Other Fund"] || 0)
+    };
+};
 
 
-// //     const db = getDBConnection();
-// //     const d = normalizeKeys(data);
 
-// //     console.log("Data received:", data);
-// //     console.log("NormalizedKeys", d);
-// //     try {
-// //         // Update participant
-// //         await runQuery(db, `
-// //         UPDATE tb_CB_Staff_Participant
-// //         SET
-// //         Name = ?,
-// //         Responsibility = ?
-// //         WHERE Id = ?; `
-// //             , [d.Name, d.Responsibility, d.PID]);
+// ############################ Edit Submission and participation data ############################
+async function editForm3Act1bSubmissionAndParticipants(data) {
+    const db = getDBConnection();
+    const d = normalizeKeys(data);
 
-// //         // Update submission
-// //         await runQuery(db, `
-// //         UPDATE tb_CB_Staff_Submission
-// //         SET
-// //         ReportingPeriodDate = ?,
-// //         ActivityStartDate = ?,
-// //         ActivityEndDate = ?,
-// //         ActivityLocation = ?,
-// //         IFAD = ?,
-// //         MAF = ?,
-// //         WFP = ?,
-// //         GoL = ?,
-// //         Ben = ?
-// //         WHERE Id = ?;`,
-// //             [d.ReportingPeriod,
-// //             d.StartDate,
-// //             d.EndDate,
-// //             d.ActivityLocation,
-// //             d.IFAD,
-// //             d.MAF,
-// //             d.WFP,
-// //             d.GoL,
-// //             d.Ben,
-// //             d.SubmissionID]);
+    console.log("🔁 Received Data:", data);
+    console.log("📦 Normalized Data:", d);
 
-// //         console.log("Update cb staff data to database success.");
+    try {
+        // ✅ Update Participant Record
+        await runQuery(db, `
+            UPDATE tb_Form_3Act1b_Participant
+            SET               
+                Age = ?
+            WHERE Id = ?;
+        `, [
+            d.Age,
+            d.PID
+        ]);
 
-// //     } catch (error) {
-// //         console.error("Error updating data to database from backend", error.message);
-// //     } finally {
-// //         if (db) db.close();
-// //     }
+        // ✅ Update Submission Record
+        await runQuery(db, `
+            UPDATE tb_Form_3Act1b_Submission
+            SET
+                Reporting_period = ?,
+                Activity = ?,
+                Conduct_date_1 = ?,
+                Conduct_date_2 = ?,
+                MeetingNo = ?,
+                VDPApprovalNumber = ?,
+                IFAD = ?,
+                MAF = ?,
+                WFP = ?,
+                GoL = ?,
+                Ben = ?,
+                OtherFund = ?
+            WHERE Id = ?;
+        `, [
+            d.Reporting_period,
+            d.Activity,
+            d.Conduct_date_1,
+            d.Conduct_date_2,
+            d.MeetingNo,
+            d.VDPApprovalNumber,
+            d.IFAD,
+            d.MAF,
+            d.WFP,
+            d.GoL,
+            d.Ben,
+            d.OtherFund,
+            d.SubmissionID
+        ]);
 
-// // }
+        console.log("✅ Form 3Act1b data updated successfully.");
+    } catch (err) {
+        console.error("❌ Failed to update Form 3Act1b data:", err.message);
+        throw err;
+    } finally {
+        if (db) await db.close();
+    }
+}
+
 
 
 
@@ -847,6 +895,12 @@ export {
     getForm3Act1bSubmissionUUIDBySubmissionId,
     getForm3Act1bNewSubmissionIdByUUID,
     deleteOnlyForm3Act1bParticipantInDB,
-    deleteOnlyForm3Act1bSubmissionInKobo
+    deleteOnlyForm3Act1bSubmissionInKobo,
+
+    deleteForm3Act1bSubmissionInKoboAndDatabase,
+    getRawForm3Act1bSubmissionAndParticipantsData,
+    buildForm3Act1bSubmissionXML,
+    submitNewForm3Act1bSubmissionToKobo,
+    editForm3Act1bSubmissionAndParticipants
 
 }

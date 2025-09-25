@@ -13,6 +13,7 @@ export default function Form1A1({ refreshTrigger }) {
     const [data, setData] = useState([]);
     const [language, setLanguage] = useState('LA'); // default language
     const [loading, setLoading] = useState(false);
+    const [defaultFilterResultLimit, setDefaultFilterResultLimit] = useState(1000); // limit the result to 1000 records by default. if want to change this value then need to change on refresh button below as well.
 
 
 
@@ -34,10 +35,11 @@ export default function Form1A1({ refreshTrigger }) {
 
 
     // Fetch main table data
-    const fetchData = async (lang) => {
+    //const fetchData = async (lang) => {
+    const fetchData = async (lang, limit = defaultFilterResultLimit) => {
         setLoading(true);
         try {
-            const res = await axios.get(APP_API_URL + `/api/form1A1/getParticipantData?lang=${lang}`);
+            const res = await axios.get(APP_API_URL + `/api/form1A1/getParticipantData?lang=${lang}&limit=${limit}`);
             if (res.data.success) {
                 setData(res.data.data);
             } else {
@@ -83,9 +85,12 @@ export default function Form1A1({ refreshTrigger }) {
 
 
     // Load data on mount and when language changes
+    // useEffect(() => {
+    //     fetchData(language);
+    // }, [language, refreshTrigger]);
     useEffect(() => {
-        fetchData(language);
-    }, [language, refreshTrigger]);
+        fetchData(language, defaultFilterResultLimit);
+    }, [language, refreshTrigger, defaultFilterResultLimit]);
 
     //Langauge toggle function
     const toggleLanguage = () => {
@@ -368,7 +373,7 @@ export default function Form1A1({ refreshTrigger }) {
 
         try {
             //for modal loading pop state
-            setLoadingModalMessage(true); 
+            setLoadingModalMessage(true);
 
             const response = await axios.post('http://localhost:3001/api/form1A1/updateParticipantAndSubmissionData', selectedRow); // Send the edited data object
 
@@ -406,7 +411,7 @@ export default function Form1A1({ refreshTrigger }) {
         } catch (err) {
             console.error('Error updating record:', err);
             alert('❌ Error occurred while updating');
-        } finally{
+        } finally {
             setLoadingModalMessage(false); //for modal loading pop state
         }
 
@@ -444,7 +449,9 @@ export default function Form1A1({ refreshTrigger }) {
             {/* Buttons */}
             <div className="d-flex justify-content-between mb-2">
                 <div>
-                    <button className='btn btn-primary btn-sm me-2 ' style={{ width: '120px' }} onClick={() => fetchData(language)} title='To reload data from application database'>Refresh</button>
+                    {/*<button className='btn btn-primary btn-sm me-2 ' style={{ width: '120px' }} onClick={() => fetchData(language)} title='To reload data from application database'>Refresh</button>*/}
+                    <button className='btn btn-primary btn-sm me-2 ' style={{ width: '120px' }} onClick={() => {setDefaultFilterResultLimit(1000);}} title='To reload data from application database'>Refresh</button>
+                    <button className='btn btn-primary btn-sm me-2' style={{ width: '120px' }} onClick={() => {setDefaultFilterResultLimit(''); }} title='Show all records of existing data for this activity (can be slow)'> Show all data</button>
                     <button className='btn btn-primary btn-sm me-2' style={{ width: '120px' }} onClick={handleDownloadForm1A1DataFromKobo} title='To cleanup application database and reload new data from KoboToolbox online database'>Load new data</button>
                     <button className='btn btn-primary btn-sm' style={{ width: '120px' }} onClick={handleExcelExport} title='To export the data to Excel template file' >Export</button>
                 </div>
@@ -646,7 +653,7 @@ export default function Form1A1({ refreshTrigger }) {
                                 </div>
 
                                 {/* Modal Table */}
-                                <div className="table-responsive mb-3" style={{ maxHeight: '475px', overflowY: 'auto' }}>
+                                <div className="table-responsive mb-3" style={{ maxHeight: '430px', overflowY: 'auto' }}>
                                     <table className="table table-bordered table-hover table-sm text-nowrap">
                                         <thead className="table-info">
                                             {modalData.length > 0 && (

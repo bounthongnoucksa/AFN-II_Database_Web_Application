@@ -644,7 +644,7 @@ export default function Form1A3a({ refreshTrigger }) {
                                 </div>
 
                                 {/* Modal Table */}
-                                <div className="table-responsive mb-3" style={{ maxHeight: '475px', overflowY: 'auto' }}>
+                                <div className="table-responsive mb-3" style={{ maxHeight: '430px', overflowY: 'auto' }}>
                                     <table className="table table-bordered table-hover table-sm text-nowrap">
                                         <thead className="table-info">
                                             {modalData.length > 0 && (

@@ -149,11 +149,14 @@ function runQuery(db, sql, params = []) {
 
 
 // ############################ Function to get Form 1A3b participant data ############################
-function getForm1A4ParticipantData(language) {
+function getForm1A4ParticipantData(language, limit) {
     return new Promise((resolve, reject) => {
 
         const db = getDBConnection(); // Get the database connection
 
+        const queryParams = [];
+
+        // Construct the base query based on language
         let query = '';
         if (language === 'LA') {
             query = `
@@ -227,7 +230,7 @@ function getForm1A4ParticipantData(language) {
                             CASE WHEN np.rn = 1 THEN np.Ben ELSE NULL END AS Ben,
                             CASE WHEN np.rn = 1 THEN np.OtherFund ELSE NULL END AS 'Other Fund'
                         FROM NumberedParticipants np
-                        ORDER BY np.Id DESC, np.rn;
+                        ORDER BY np.Id DESC, np.rn
             `;
         } else if (language === 'EN') {
             // EN version
@@ -303,11 +306,18 @@ function getForm1A4ParticipantData(language) {
                         CASE WHEN np.rn = 1 THEN np.Ben ELSE NULL END AS Ben,
                         CASE WHEN np.rn = 1 THEN np.OtherFund ELSE NULL END AS 'Other Fund'
                     FROM NumberedParticipants np
-                    ORDER BY np.Id DESC, np.rn;
+                    ORDER BY np.Id DESC, np.rn
             `;
         }
+        // If limit is provided and valid, append LIMIT clause
+        let finalQuery = query;
+        if (limit && !isNaN(limit)) {
+            finalQuery += `LIMIT ?`;
+            queryParams.push(Number(limit))
+        }
 
-        db.all(query, [], (err, rows) => {
+        //db.all(query, [], (err, rows) => {
+        db.all(finalQuery, queryParams, (err, rows) => {
             db.close();
             if (err) {
 
@@ -516,7 +526,7 @@ function getForm1A4ParticipantDataBySID(SubmissionId, language) {
 
 
 // ############################ Function to delete Form 1A4 submission data from both local database and KoboToolbox Online ############################
-async function deleteSubmissionInKoboAndDatabase(submissionId) {
+async function deleteForm1A4SubmissionInKoboAndDatabase(submissionId) {
     try {
         // Delete the whole submission from Kobo
         // this function will not handle data refresh to local database
@@ -653,7 +663,7 @@ function runAll(db, sql, params = []) {
     });
 }
 //Get raw participant data from database by SubmissionId
-async function getRawSubmissionAndParticipantsData(submissionId) {
+async function getRawForm1A4SubmissionAndParticipantsData(submissionId) {
     const db = getDBConnection();
 
     const submission = await runGet(db, "SELECT * FROM tb_Form_1A4_Submission WHERE Id = ?", [submissionId]);
@@ -697,8 +707,15 @@ function formatLocalISOWithOffset(date = new Date()) {
 
 // Function to escape XML special characters
 function escapeXML(str) {
-    if (!str) return '';
-    return str.replace(/&/g, '&amp;')
+    //if (!str) return '';
+    if (str === null || str === undefined) return '';
+    // return str.replace(/&/g, '&amp;')
+    //     .replace(/</g, '&lt;')
+    //     .replace(/>/g, '&gt;')
+    //     .replace(/'/g, '&apos;')
+    //     .replace(/"/g, '&quot;');
+    return String(str)
+        .replace(/&/g, '&amp;')
         .replace(/</g, '&lt;')
         .replace(/>/g, '&gt;')
         .replace(/'/g, '&apos;')
@@ -707,152 +724,185 @@ function escapeXML(str) {
 
 
 
-// // //############################ XML Builder function: ############################
-// // function buildSubmissionXML(submission, participants) {
-// //     const now = formatLocalISOWithOffset();
-// //     const end = formatLocalISOWithOffset(new Date(Date.now() + 10 * 60000));
+//############################ XML Builder function: ############################
+function buildForm1A4SubmissionXML(submission, participants) {
+    const now = formatLocalISOWithOffset();
+    const end = formatLocalISOWithOffset(new Date(Date.now() + 10 * 60000));
 
-// //     // console.log("Participants from DB:", participants);
-// //     // console.log("Type of participants:", typeof participants);
-// //     // console.log("IsArray?", Array.isArray(participants));
+    const xml = [];
+    xml.push(`<?xml version='1.0' encoding='UTF-8' ?>`);
+    xml.push(`<data id='${KOBO_FORM_1A4_FORM_ID}'>`);
 
-// //     const xml = [];
-// //     xml.push(`<?xml version='1.0' encoding='UTF-8' ?>`);
-// //     xml.push(`<data id='${KOBO_CB_FOR_STAFF_FORM_ID}'>`);
-// //     xml.push(`  <start>${now}</start>`);
-// //     xml.push(`  <end>${end}</end>`);
-// //     xml.push(`  <date_lv6zg63>${escapeXML(submission.ReportingPeriodDate)}</date_lv6zg63>`);
+    // Metadata timestamps
+    xml.push(`  <start>${now}</start>`);
+    xml.push(`  <end>${end}</end>`);
+    xml.push(`  <_reportingperiod>${escapeXML(submission.Reporting_period)}</_reportingperiod>`);
 
-// //     xml.push(`  <group_of5oy77>`);
-// //     xml.push(`    <date_mg3ho62>${escapeXML(submission.ActivityStartDate)}</date_mg3ho62>`);
-// //     xml.push(`    <date_pg0bf05>${escapeXML(submission.ActivityEndDate)}</date_pg0bf05>`);
-// //     xml.push(`  </group_of5oy77>`);
+    // Location and general info
+    xml.push(`  <select_one_province>${escapeXML(submission.Province)}</select_one_province>`);
+    xml.push(`  <select_one_district>${escapeXML(submission.District)}</select_one_district>`);
+    xml.push(`  <select_one_district_village>${escapeXML(submission.Village)}</select_one_district_village>`);
+    xml.push(`  <_devplan>${escapeXML(submission.DevPlan)}</_devplan>`);
+    xml.push(`  <_subactivity>${escapeXML(submission.SubActivity)}</_subactivity>`);
 
-// //     xml.push(`  <select_one_category>${escapeXML(submission.Category)}</select_one_category>`);
-// //     xml.push(`  <select_one_topic>${escapeXML(submission.Topic)}</select_one_topic>`);
-// //     xml.push(`  <_act_location>${escapeXML(submission.ActivityLocation)}</_act_location>`);
+    // Group: Activity Conduct Dates
+    xml.push(`  <group_actconductdate_sa1oe86>`);
+    xml.push(`    <date_ha2jz81>${escapeXML(submission.Conduct_date1)}</date_ha2jz81>`);
+    xml.push(`    <date_up9xu24>${escapeXML(submission.Conduct_date2)}</date_up9xu24>`);
+    xml.push(`  </group_actconductdate_sa1oe86>`);
 
-// //     participants.forEach(p => {
-// //         xml.push(`  <group_ap1ti89>`);
-// //         xml.push(`    <_participation_name>${escapeXML(p.Name)}</_participation_name>`);
-// //         xml.push(`    <_reponsibility>${escapeXML(p.Responsibility)}</_reponsibility>`);
-// //         xml.push(`    <_office>${escapeXML(p.Office)}</_office>`);
-// //         xml.push(`    <_type_of_staff>${escapeXML(p.StaffType)}</_type_of_staff>`);
-// //         xml.push(`    <_gender>${escapeXML(p.Gender)}</_gender>`);
-// //         xml.push(`  </group_ap1ti89>`);
-// //     });
+    // Conservation Info
+    xml.push(`  <cons_area>${submission.Cons_identified || 0}</cons_area>`);
+    xml.push(`  <decimal_qs5co50>${submission.Cons_area || 0}</decimal_qs5co50>`);
+    xml.push(`  <_select_one_conductedby_01>${escapeXML(submission.Conducted_by)}</_select_one_conductedby_01>`);
+    xml.push(`  <text_zk0ie07>${escapeXML(submission.KeySpeciesConserved)}</text_zk0ie07>`);
 
-// //     xml.push(`  <group_kw0iz30>`);
-// //     xml.push(`    <_IFAD_>${submission.IFAD || ''}</_IFAD_>`);
-// //     xml.push(`    <_MAF_>${submission.MAF || ''}</_MAF_>`);
-// //     xml.push(`    <_WFP_>${submission.WFP || ''}</_WFP_>`);
-// //     xml.push(`    <_GoL_>${submission.GoL || ''}</_GoL_>`);
-// //     xml.push(`    <_Ben_>${submission.Ben || ''}</_Ben_>`);
-// //     xml.push(`  </group_kw0iz30>`);
+    // Participants
+    participants.forEach(p => {
+        xml.push(`  <group_participantdetail_hp48r4>`);
 
-// //     xml.push(`  <meta>`);
-// //     xml.push(`    <instanceID>uuid:${submission.Uuid}</instanceID>`);
-// //     xml.push(`  </meta>`);
-// //     xml.push(`</data>`);
+        xml.push(`    <doyouhavehh_id>${escapeXML(p.HaveHH_id)}</doyouhavehh_id>`);
+        xml.push(`    <mainhhid>${escapeXML(p.HHId)}</mainhhid>`);
+        xml.push(`    <select_one_mainNameAndSurname>${escapeXML(p.NameAndSurname)}</select_one_mainNameAndSurname>`);
+        xml.push(`    <_mainAge>${escapeXML(p.Age)}</_mainAge>`);
+        xml.push(`    <_mainGender>${escapeXML(p.Gender)}</_mainGender>`);
+        xml.push(`    <_mainEthnicity>${escapeXML(p.Ethnicity)}</_mainEthnicity>`);
+        xml.push(`    <_mainPovertyLevel>${escapeXML(p.Poverty_level)}</_mainPovertyLevel>`);
+        xml.push(`    <_mainPWD>${escapeXML(p.PWD_status)}</_mainPWD>`);
+        xml.push(`    <_mainAPGMember>${escapeXML(p.APGMember)}</_mainAPGMember>`);
 
-// //     return xml.join('\n');
-// // }
+        xml.push(`  </group_participantdetail_hp48r4>`);
+    });
 
+    // Group: Contributions
+    xml.push(`  <group_wz1ah68>`);
+    xml.push(`    <_IFAD_>${submission.IFAD || 0}</_IFAD_>`);
+    xml.push(`    <_MAF_>${submission.MAF || 0}</_MAF_>`);
+    xml.push(`    <_WFP_>${submission.WFP || 0}</_WFP_>`);
+    xml.push(`    <_GoL_>${submission.GoL || 0}</_GoL_>`);
+    xml.push(`    <_Ben_>${submission.Ben || 0}</_Ben_>`);
+    xml.push(`    <integer_oz4sh88>${submission.OtherFund || 0}</integer_oz4sh88>`);
+    xml.push(`  </group_wz1ah68>`);
 
-// // //############################ Function to submit new submission to KoboToolbox Online ############################
-// // async function submitNewSubmissionToKobo(xmlData) {
-// //     const form = new FormData();
-// //     form.append('xml_submission_file', xmlData, { filename: 'submission.xml' });
+    // Meta
+    xml.push(`  <meta>`);
+    xml.push(`    <instanceID>uuid:${escapeXML(submission.Uuid)}</instanceID>`);
+    xml.push(`  </meta>`);
 
-// //     await axios.post(KOBO_NEW_SUBMISSION_API, form, {
-// //         headers: {
-// //             ...form.getHeaders(),
-// //             Authorization: `Token ${KOBO_API_KEY}`
-// //         }
-// //     });
-// // }
+    xml.push(`</data>`);
 
-// // //Due to the issue of database column return from frontend has 2 langues switch so the column is is dynamic
-// // //so we need to normalized it before running SQL command
-// // // Map localized keys to English DB column names
-// // const normalizeKeys = (data) => {
-// //     return {
-// //         PID: data.PID || data.ParticipantId,
-// //         SubmissionID: data.SubmissionID || data.SubmissionId,
-// //         Name: data["Name"] || data["ຊື່ ແລະ ນາມສະກຸນ ຜູ້ເຂົ້າຮ່ວມ"],
-// //         Responsibility: data["Responsibility"] || data["ໜ້າທີ່ຮັບຜິດຊອບ"],
-// //         Office: data["Office"] || data["ມາຈາກຫ້ອງການ"],
-// //         StaffType: data["StaffType"] || data["ເປັນພະນັກງານຂອງ"],
-// //         Gender: data["Gender"] || data["ເພດ"],
-// //         Category: data["Category"] || data["ຮູບແບບການຝຶກ"],
-// //         Topic: data["Topic"] || data["ຫົວຂໍ້ສະເພາະດ້ານໃດ"],
-// //         ActivityLocation: data["ActivityLocation"] || data["ສະຖານທີ ຈັດປະຊຸມ ຫຼື ຝຶກອົບຮົມ"],
-// //         ReportingPeriod: data["ReportingPeriod"] || data["ໄລຍະເວລາລາຍງານ"],
-// //         StartDate: data["StartDate"] || data["ວັນເລີ່ມ"],
-// //         EndDate: data["EndDate"] || data["ວັນສຳເລັດ"],
-// //         IFAD: parseInt(data.IFAD) || 0,
-// //         MAF: parseInt(data.MAF) || 0,
-// //         WFP: parseInt(data.WFP) || 0,
-// //         GoL: parseInt(data.GoL) || 0,
-// //         Ben: parseInt(data.Ben) || 0,
-// //     };
-// // };
+    return xml.join('\n');
+}
 
 
 
-// // // ############################ Edit Submission and participation data ############################
-// // async function editSubmissionAndParticipants(data) {
+//############################ Function to submit new submission to KoboToolbox Online ############################
+async function submitNewForm1A4SubmissionToKobo(xmlData) {
+    const form = new FormData();
+    form.append('xml_submission_file', xmlData, { filename: 'submission.xml' });
+
+    await axios.post(KOBO_NEW_SUBMISSION_API, form, {
+        headers: {
+            ...form.getHeaders(),
+            Authorization: `Token ${KOBO_API_KEY}`
+        }
+    });
+}
+
+//Due to the issue of database column return from frontend has 2 langues switch so the column is is dynamic
+//so we need to normalized it before running SQL command
+// Map localized keys to English DB column names
+const normalizeKeys = (data) => {
+    return {
+        // IDs
+        PID: data.PID || data.ParticipantId,
+        SubmissionID: data.SubmissionID || data.Id || data["SubmissionID"],
+
+        // Participant fields
+        Age: parseInt(data.Age || data["ອາຍຸ"] || 0),
+
+        // Submission fields
+        ReportingPeriod: data.ReportingPeriod || data["ໄລຍະເວລາລາຍງານ"] || data["Reporting Period"] || null,
+        ConductDateStart: data.ConductDateStart || data["ວັນເລີ່ມ"] || data["Start Date"] || null,
+        ConductDateEnd: data.ConductDateEnd || data["ວັນສຳເລັດ"] || data["End Date"] || null,
+        ConsArea: parseFloat(data.ConsArea || data["ຂະໜາດຂອງເຂດສະຫງວນ(ເຮັກຕາ)"] || data["Conservation Area"] || 0),
+        KeySpeciesConserved: data.KeySpeciesConserved || data["ຊະນິດພັນ (ພືດ/ສັດນ້ຳ) ຕົ້ນຕໍທີ່ສະຫງວນ"] || data["Key Species Conserved"] || null,
+
+        // Financial support fields
+        IFAD: parseInt(data.IFAD || 0),
+        MAF: parseInt(data.MAF || 0),
+        WFP: parseInt(data.WFP || 0),
+        GoL: parseInt(data.GoL || 0),
+        Ben: parseInt(data.Ben || 0),
+        OtherFund: parseInt(data.OtherFund || data["Other Fund"] || 0)
+    };
+};
 
 
-// //     const db = getDBConnection();
-// //     const d = normalizeKeys(data);
 
-// //     console.log("Data received:", data);
-// //     console.log("NormalizedKeys", d);
-// //     try {
-// //         // Update participant
-// //         await runQuery(db, `
-// //         UPDATE tb_CB_Staff_Participant
-// //         SET
-// //         Name = ?,
-// //         Responsibility = ?
-// //         WHERE Id = ?; `
-// //             , [d.Name, d.Responsibility, d.PID]);
+// ############################ Edit Submission and participation data ############################
+async function editForm1A4SubmissionAndParticipants(data) {
 
-// //         // Update submission
-// //         await runQuery(db, `
-// //         UPDATE tb_CB_Staff_Submission
-// //         SET
-// //         ReportingPeriodDate = ?,
-// //         ActivityStartDate = ?,
-// //         ActivityEndDate = ?,
-// //         ActivityLocation = ?,
-// //         IFAD = ?,
-// //         MAF = ?,
-// //         WFP = ?,
-// //         GoL = ?,
-// //         Ben = ?
-// //         WHERE Id = ?;`,
-// //             [d.ReportingPeriod,
-// //             d.StartDate,
-// //             d.EndDate,
-// //             d.ActivityLocation,
-// //             d.IFAD,
-// //             d.MAF,
-// //             d.WFP,
-// //             d.GoL,
-// //             d.Ben,
-// //             d.SubmissionID]);
 
-// //         console.log("Update cb staff data to database success.");
+    const db = getDBConnection();
+    const d = normalizeKeys(data);
 
-// //     } catch (error) {
-// //         console.error("Error updating data to database from backend", error.message);
-// //     } finally {
-// //         if (db) db.close();
-// //     }
+    console.log("🔁 Received Data:", data);
+    console.log("📦 Normalized Data (1A4):", d);
 
-// // }
+    try {
+        // ✅ Update Participant Record
+        await runQuery(db, `
+            UPDATE tb_Form_1A4_Participant
+            SET
+                Age = ?
+                
+            WHERE Id = ?;
+        `, [
+            d.Age,
+            d.PID
+        ]);
+
+        // ✅ Update Submission Record
+        await runQuery(db, `
+            UPDATE tb_Form_1A4_Submission
+            SET
+                Reporting_period = ?,
+                Conduct_date1 = ?,
+                Conduct_date2 = ?,               
+                Cons_area = ?,                
+                KeySpeciesConserved = ?,
+                IFAD = ?,
+                MAF = ?,
+                WFP = ?,
+                GoL = ?,
+                Ben = ?,
+                OtherFund = ?
+            WHERE Id = ?;
+        `, [
+            d.ReportingPeriod,
+            d.ConductDateStart,
+            d.ConductDateEnd,
+            d.ConsArea,
+            d.KeySpeciesConserved,
+            d.IFAD,
+            d.MAF,
+            d.WFP,
+            d.GoL,
+            d.Ben,
+            d.OtherFund,
+            d.SubmissionID
+        ]);
+
+        console.log("✅ Form 1A4 data updated successfully.");
+    } catch (err) {
+        console.error("❌ Failed to update Form 1A4 data:", err.message);
+        throw err;
+    } finally {
+        if (db) await db.close();
+    }
+
+}
 
 
 
@@ -865,6 +915,12 @@ export {
     getForm1A4SubmissionUUIDBySubmissionId,
     getForm1A4NewSubmissionIdByUUID,
     deleteOnlyForm1A4ParticipantInDB,
-    deleteOnlyForm1A4SubmissionInKobo
+    deleteOnlyForm1A4SubmissionInKobo,
+
+    deleteForm1A4SubmissionInKoboAndDatabase,
+    getRawForm1A4SubmissionAndParticipantsData,
+    buildForm1A4SubmissionXML,
+    submitNewForm1A4SubmissionToKobo,
+    editForm1A4SubmissionAndParticipants
 
 }

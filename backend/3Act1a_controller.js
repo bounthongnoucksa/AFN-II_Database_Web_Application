@@ -52,7 +52,7 @@ async function downloadForm3Act1aSubmissionDataFromKoboToolbox() {
                     ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
                     [
                         submissionId,
-                        el["formhub/uuid"] || el["_uuid"] || null,
+                        el["_uuid"] || null,
                         el["start"] || null,
                         el["end"] || null,
                         el["_reportingperiod"] || null,
@@ -136,11 +136,13 @@ function runQuery(db, sql, params = []) {
 
 
 // ############################ Function to get Form 1BAct8 participant data ############################
-function getForm3Act1aParticipantData(language) {
+function getForm3Act1aParticipantData(language, limit) {
     return new Promise((resolve, reject) => {
 
         const db = getDBConnection(); // Get the database connection
+        const queryParams = [];
 
+        // Construct the base query based on language
         let query = '';
         if (language === 'LA') {
             query = `
@@ -234,7 +236,7 @@ function getForm3Act1aParticipantData(language) {
                     CASE WHEN np.rn = 1 THEN np.Ben ELSE NULL END AS 'Ben',
                     CASE WHEN np.rn = 1 THEN np.OtherFund ELSE NULL END AS 'Other Fund'
                 FROM NumberedParticipants np
-                ORDER BY np.Id DESC, np.rn;
+                ORDER BY np.Id DESC, np.rn
             `;
         } else if (language === 'EN') {
             // EN version
@@ -329,11 +331,18 @@ function getForm3Act1aParticipantData(language) {
                     CASE WHEN np.rn = 1 THEN np.Ben ELSE NULL END AS 'Ben',
                     CASE WHEN np.rn = 1 THEN np.OtherFund ELSE NULL END AS 'Other Fund'
                 FROM NumberedParticipants np
-                ORDER BY np.Id DESC, np.rn;
+                ORDER BY np.Id DESC, np.rn
             `;
         }
+        // If limit is provided and valid, append LIMIT clause
+        let finalQuery = query;
+        if (limit && !isNaN(limit)) {
+            finalQuery += `LIMIT ?`;
+            queryParams.push(Number(limit))
+        }
 
-        db.all(query, [], (err, rows) => {
+        //db.all(query, [], (err, rows) => {
+        db.all(finalQuery, queryParams, (err, rows) => {
             db.close();
             if (err) {
 
@@ -579,7 +588,7 @@ function getForm3Act1aParticipantDataBySID(SubmissionId, language) {
 
 
 // ############################ Function to delete Form 3Act1a submission data from both local database and KoboToolbox Online ############################
-async function deleteSubmissionInKoboAndDatabase(submissionId) {
+async function deleteForm3Act1aSubmissionInKoboAndDatabase(submissionId) {
     try {
         // Delete the whole submission from Kobo
         // this function will not handle data refresh to local database
@@ -716,7 +725,7 @@ function runAll(db, sql, params = []) {
     });
 }
 //Get raw participant data from database by SubmissionId
-async function getRawSubmissionAndParticipantsData(submissionId) {
+async function getRawForm3Act1aSubmissionAndParticipantsData(submissionId) {
     const db = getDBConnection();
 
     const submission = await runGet(db, "SELECT * FROM tb_Form_3Act1a_Submission WHERE Id = ?", [submissionId]);
@@ -760,8 +769,15 @@ function formatLocalISOWithOffset(date = new Date()) {
 
 // Function to escape XML special characters
 function escapeXML(str) {
-    if (!str) return '';
-    return str.replace(/&/g, '&amp;')
+    //if (!str) return '';
+    if (str === null || str === undefined) return '';
+    // return str.replace(/&/g, '&amp;')
+    //     .replace(/</g, '&lt;')
+    //     .replace(/>/g, '&gt;')
+    //     .replace(/'/g, '&apos;')
+    //     .replace(/"/g, '&quot;');
+    return String(str)
+        .replace(/&/g, '&amp;')
         .replace(/</g, '&lt;')
         .replace(/>/g, '&gt;')
         .replace(/'/g, '&apos;')
@@ -770,152 +786,197 @@ function escapeXML(str) {
 
 
 
-// // //############################ XML Builder function: ############################
-// // function buildSubmissionXML(submission, participants) {
-// //     const now = formatLocalISOWithOffset();
-// //     const end = formatLocalISOWithOffset(new Date(Date.now() + 10 * 60000));
+//############################ XML Builder function: ############################
+function buildForm3Act1aSubmissionXML(submission, participants) {
+    const now = formatLocalISOWithOffset();
+    const end = formatLocalISOWithOffset(new Date(Date.now() + 10 * 60000)); // 10 mins later
 
-// //     // console.log("Participants from DB:", participants);
-// //     // console.log("Type of participants:", typeof participants);
-// //     // console.log("IsArray?", Array.isArray(participants));
+    const xml = [];
+    xml.push(`<?xml version='1.0' encoding='UTF-8' ?>`);
+    xml.push(`<data id='${KOBO_FORM_3Act1aFORM_ID}'>`);
 
-// //     const xml = [];
-// //     xml.push(`<?xml version='1.0' encoding='UTF-8' ?>`);
-// //     xml.push(`<data id='${KOBO_CB_FOR_STAFF_FORM_ID}'>`);
-// //     xml.push(`  <start>${now}</start>`);
-// //     xml.push(`  <end>${end}</end>`);
-// //     xml.push(`  <date_lv6zg63>${escapeXML(submission.ReportingPeriodDate)}</date_lv6zg63>`);
+    // Metadata timestamps
+    xml.push(`  <start>${now}</start>`);
+    xml.push(`  <end>${end}</end>`);
+    xml.push(`  <_reportingperiod>${escapeXML(submission.Reporting_period)}</_reportingperiod>`);
 
-// //     xml.push(`  <group_of5oy77>`);
-// //     xml.push(`    <date_mg3ho62>${escapeXML(submission.ActivityStartDate)}</date_mg3ho62>`);
-// //     xml.push(`    <date_pg0bf05>${escapeXML(submission.ActivityEndDate)}</date_pg0bf05>`);
-// //     xml.push(`  </group_of5oy77>`);
+    // Location and general info
+    xml.push(`  <select_one_province>${escapeXML(submission.Province)}</select_one_province>`);
+    xml.push(`  <select_one_district>${escapeXML(submission.District)}</select_one_district>`);
+    xml.push(`  <select_one_district_village>${escapeXML(submission.Village)}</select_one_district_village>`);
+    xml.push(`  <_subactivity>${escapeXML(submission.SubActivity)}</_subactivity>`);
 
-// //     xml.push(`  <select_one_category>${escapeXML(submission.Category)}</select_one_category>`);
-// //     xml.push(`  <select_one_topic>${escapeXML(submission.Topic)}</select_one_topic>`);
-// //     xml.push(`  <_act_location>${escapeXML(submission.ActivityLocation)}</_act_location>`);
+    // Group: Activity Conduct Dates
+    xml.push(`  <group_actconductdate_sa1oe86>`);
+    xml.push(`    <date_ha2jz81>${escapeXML(submission.Conduct_Start)}</date_ha2jz81>`);
+    xml.push(`    <date_up9xu24>${escapeXML(submission.Conduct_End)}</date_up9xu24>`);
+    xml.push(`  </group_actconductdate_sa1oe86>`);
 
-// //     participants.forEach(p => {
-// //         xml.push(`  <group_ap1ti89>`);
-// //         xml.push(`    <_participation_name>${escapeXML(p.Name)}</_participation_name>`);
-// //         xml.push(`    <_reponsibility>${escapeXML(p.Responsibility)}</_reponsibility>`);
-// //         xml.push(`    <_office>${escapeXML(p.Office)}</_office>`);
-// //         xml.push(`    <_type_of_staff>${escapeXML(p.StaffType)}</_type_of_staff>`);
-// //         xml.push(`    <_gender>${escapeXML(p.Gender)}</_gender>`);
-// //         xml.push(`  </group_ap1ti89>`);
-// //     });
+    // Other Information
+    xml.push(`  <_1_2_3>${escapeXML(submission.MeetingNo)}</_1_2_3>`);
+    xml.push(`  <_Yes_No_>${escapeXML(submission.VDPApproval)}</_Yes_No_>`);
+    xml.push(`  <_actlist>${escapeXML(submission.InvestmentItems)}</_actlist>`);
+    xml.push(`  <_othersinfo>${escapeXML(submission.OtherInfo)}</_othersinfo>`);
 
-// //     xml.push(`  <group_kw0iz30>`);
-// //     xml.push(`    <_IFAD_>${submission.IFAD || ''}</_IFAD_>`);
-// //     xml.push(`    <_MAF_>${submission.MAF || ''}</_MAF_>`);
-// //     xml.push(`    <_WFP_>${submission.WFP || ''}</_WFP_>`);
-// //     xml.push(`    <_GoL_>${submission.GoL || ''}</_GoL_>`);
-// //     xml.push(`    <_Ben_>${submission.Ben || ''}</_Ben_>`);
-// //     xml.push(`  </group_kw0iz30>`);
+    // Participants (group_participantdetail_hp48r4)
+    participants.forEach(p => {
+        xml.push(`  <group_participantdetail_hp48r4>`);
+        xml.push(`    <doyouhavehh_id>${escapeXML(p.HaveHH_id)}</doyouhavehh_id>`);
+        xml.push(`    <mainhhid>${escapeXML(p.HHId)}</mainhhid>`);
 
-// //     xml.push(`  <meta>`);
-// //     xml.push(`    <instanceID>uuid:${submission.Uuid}</instanceID>`);
-// //     xml.push(`  </meta>`);
-// //     xml.push(`</data>`);
+        if (p.HaveHH_id === 'hhidyes') {
+            xml.push(`    <select_one_mainNameAndSurname>${escapeXML(p.NameAndSurname)}</select_one_mainNameAndSurname>`);
+        } else {
+            xml.push(`    <text_hx6fh11>${escapeXML(p.NameAndSurname)}</text_hx6fh11>`);
+        }
 
-// //     return xml.join('\n');
-// // }
+        xml.push(`    <_mainAge>${p.Age || 0}</_mainAge>`);
+        xml.push(`    <_mainGender>${escapeXML(p.Gender)}</_mainGender>`);
+        xml.push(`    <_mainEthnicity>${escapeXML(p.Ethnicity)}</_mainEthnicity>`);
+        xml.push(`    <_mainPovertyLevel>${escapeXML(p.PovertyLevel)}</_mainPovertyLevel>`);
+        xml.push(`    <_mainPWD>${escapeXML(p.PWD)}</_mainPWD>`);
+        xml.push(`  </group_participantdetail_hp48r4>`);
+    });
 
+    // Group: Contributions
+    xml.push(`  <group_wz1ah68>`);
+    xml.push(`    <_IFAD_>${submission.IFAD || 0}</_IFAD_>`);
+    xml.push(`    <_MAF_>${submission.MAF || 0}</_MAF_>`);
+    xml.push(`    <_WFP_>${submission.WFP || 0}</_WFP_>`);
+    xml.push(`    <_GoL_>${submission.GoL || 0}</_GoL_>`);
+    xml.push(`    <_Ben_>${submission.Ben || 0}</_Ben_>`);
+    xml.push(`    <integer_oz4sh88>${submission.OtherFund || 0}</integer_oz4sh88>`);
+    xml.push(`  </group_wz1ah68>`);
 
-// // //############################ Function to submit new submission to KoboToolbox Online ############################
-// // async function submitNewSubmissionToKobo(xmlData) {
-// //     const form = new FormData();
-// //     form.append('xml_submission_file', xmlData, { filename: 'submission.xml' });
+    // Meta
+    xml.push(`  <meta>`);
+    xml.push(`    <instanceID>uuid:${escapeXML(submission.Uuid)}</instanceID>`);
+    xml.push(`  </meta>`);
 
-// //     await axios.post(KOBO_NEW_SUBMISSION_API, form, {
-// //         headers: {
-// //             ...form.getHeaders(),
-// //             Authorization: `Token ${KOBO_API_KEY}`
-// //         }
-// //     });
-// // }
+    xml.push(`</data>`);
 
-// // //Due to the issue of database column return from frontend has 2 langues switch so the column is is dynamic
-// // //so we need to normalized it before running SQL command
-// // // Map localized keys to English DB column names
-// // const normalizeKeys = (data) => {
-// //     return {
-// //         PID: data.PID || data.ParticipantId,
-// //         SubmissionID: data.SubmissionID || data.SubmissionId,
-// //         Name: data["Name"] || data["ຊື່ ແລະ ນາມສະກຸນ ຜູ້ເຂົ້າຮ່ວມ"],
-// //         Responsibility: data["Responsibility"] || data["ໜ້າທີ່ຮັບຜິດຊອບ"],
-// //         Office: data["Office"] || data["ມາຈາກຫ້ອງການ"],
-// //         StaffType: data["StaffType"] || data["ເປັນພະນັກງານຂອງ"],
-// //         Gender: data["Gender"] || data["ເພດ"],
-// //         Category: data["Category"] || data["ຮູບແບບການຝຶກ"],
-// //         Topic: data["Topic"] || data["ຫົວຂໍ້ສະເພາະດ້ານໃດ"],
-// //         ActivityLocation: data["ActivityLocation"] || data["ສະຖານທີ ຈັດປະຊຸມ ຫຼື ຝຶກອົບຮົມ"],
-// //         ReportingPeriod: data["ReportingPeriod"] || data["ໄລຍະເວລາລາຍງານ"],
-// //         StartDate: data["StartDate"] || data["ວັນເລີ່ມ"],
-// //         EndDate: data["EndDate"] || data["ວັນສຳເລັດ"],
-// //         IFAD: parseInt(data.IFAD) || 0,
-// //         MAF: parseInt(data.MAF) || 0,
-// //         WFP: parseInt(data.WFP) || 0,
-// //         GoL: parseInt(data.GoL) || 0,
-// //         Ben: parseInt(data.Ben) || 0,
-// //     };
-// // };
+    return xml.join('\n');
+}
 
 
 
-// // // ############################ Edit Submission and participation data ############################
-// // async function editSubmissionAndParticipants(data) {
+
+//############################ Function to submit new submission to KoboToolbox Online ############################
+async function submitNewForm3Act1aSubmissionToKobo(xmlData) {
+    const form = new FormData();
+    form.append('xml_submission_file', xmlData, { filename: 'submission.xml' });
+
+    await axios.post(KOBO_NEW_SUBMISSION_API, form, {
+        headers: {
+            ...form.getHeaders(),
+            Authorization: `Token ${KOBO_API_KEY}`
+        }
+    });
+}
+
+//Due to the issue of database column return from frontend has 2 langues switch so the column is is dynamic
+//so we need to normalized it before running SQL command
+// Map localized keys to English DB column names
+const normalizeKeys = (data) => {
+    return {
+        PID: data.PID || data.ParticipantId,
+        SubmissionID: data.SubmissionID || data.SubmissionId,
+
+        // Participant fields
+        HaveHH_id: data.HaveHHId || data["ມີລະຫັດຄົວເຮືອນບໍ"] || null,
+        HHId: data.HHId || data["HH ID"] || data["ລະຫັດຄົວເຮືອນ"] || null,
+        NameAndSurname: data.NameAndSurname || data["Participant Name"] || data["ຊື່ຜູ້ເຂົ້າຮ່ວມ"] || null,
+        Age: parseInt(data.Age || data["ອາຍຸ"] || 0),
+        Gender: data.Gender || data["Gender"] || data["ເພດ"] || null,
+        Ethnicity: data.Ethnicity || data["Ethnicity"] || data["ຊົນເຜົ່າ"] || null,
+        PovertyLevel: data.PovertyLevel || data["Poverty Level"] || data["ຖານະຄອບຄົວ"] || null,
+        PWD: data.PWD || data["PWD Status"] || data["ເສຍອົງຄະ"] || null,
+
+        // Submission fields
+        Reporting_period: data.ReportingPeriod || data["Reporting Period"] || data["ໄລຍະເວລາລາຍງານ"] || null,
+        Province: data.Province || data["Province"] || data["ແຂວງ"] || null,
+        District: data.District || data["District"] || data["ເມືອງ"] || null,
+        Village: data.Village || data["Village"] || data["ບ້ານ"] || null,
+        SubActivity: data.SubActivity || data["Sub-Activity"] || data["ກິດຈະກຳຍ່ອຍທີ່ເຂົ້າຮ່ວມ"] || null,
+        Conduct_Start: data.Conduct_Start || data["Start Date"] || data["ວັນເລີ່ມ"] || null,
+        Conduct_End: data.Conduct_End || data["End Date"] || data["ວັນສຳເລັດ"] || null,
+        MeetingNo: data.MeetingNo || data["Meeting No."] || data["ກອງປະຊຸມຄັ້ງທີ"] || null,
+        VDPApproval: data.VDPApproval || data["VDP Approved?"] || data["ແຜນບ້ານຖຶກຮັບຮອງ"] || null,
+        InvestmentItems: data.InvestmentItems || data["Investment Items"] || data["ລາຍການລົງທຶນ"] || null,
+        OtherInfo: data.OtherInfo || data["Other Info"] || null,
+
+        // Contribution values
+        IFAD: parseFloat(data.IFAD || 0),
+        MAF: parseFloat(data.MAF || 0),
+        WFP: parseFloat(data.WFP || 0),
+        GoL: parseFloat(data.GoL || 0),
+        Ben: parseFloat(data.Ben || 0),
+        OtherFund: parseFloat(data.OtherFund || data.Other || data["Other Fund"] || 0),
+    };
+};
 
 
-// //     const db = getDBConnection();
-// //     const d = normalizeKeys(data);
 
-// //     console.log("Data received:", data);
-// //     console.log("NormalizedKeys", d);
-// //     try {
-// //         // Update participant
-// //         await runQuery(db, `
-// //         UPDATE tb_CB_Staff_Participant
-// //         SET
-// //         Name = ?,
-// //         Responsibility = ?
-// //         WHERE Id = ?; `
-// //             , [d.Name, d.Responsibility, d.PID]);
+// ############################ Edit Submission and participation data ############################
+async function editForm3Act1aSubmissionAndParticipants(data) {
+    const db = getDBConnection();
+    const d = normalizeKeys(data);
 
-// //         // Update submission
-// //         await runQuery(db, `
-// //         UPDATE tb_CB_Staff_Submission
-// //         SET
-// //         ReportingPeriodDate = ?,
-// //         ActivityStartDate = ?,
-// //         ActivityEndDate = ?,
-// //         ActivityLocation = ?,
-// //         IFAD = ?,
-// //         MAF = ?,
-// //         WFP = ?,
-// //         GoL = ?,
-// //         Ben = ?
-// //         WHERE Id = ?;`,
-// //             [d.ReportingPeriod,
-// //             d.StartDate,
-// //             d.EndDate,
-// //             d.ActivityLocation,
-// //             d.IFAD,
-// //             d.MAF,
-// //             d.WFP,
-// //             d.GoL,
-// //             d.Ben,
-// //             d.SubmissionID]);
+    console.log("🔁 Received Data:", data);
+    console.log("📦 Normalized Data:", d);
 
-// //         console.log("Update cb staff data to database success.");
+    try {
+        // ✅ Update Participant Record
+        await runQuery(db, `
+            UPDATE tb_Form_3Act1a_Participant
+            SET
+                Age = ?   
+            WHERE Id = ?;
+        `, [
+            d.Age,
+            d.PID
+        ]);
 
-// //     } catch (error) {
-// //         console.error("Error updating data to database from backend", error.message);
-// //     } finally {
-// //         if (db) db.close();
-// //     }
+        // ✅ Update Submission Record
+        await runQuery(db, `
+            UPDATE tb_Form_3Act1a_Submission
+            SET
+                Reporting_period = ?,
+                SubActivity = ?,
+                Conduct_Start = ?,
+                Conduct_End = ?,
+                MeetingNo = ?,               
+                IFAD = ?,
+                MAF = ?,
+                WFP = ?,
+                GoL = ?,
+                Ben = ?,
+                OtherFund = ?
+            WHERE Id = ?;
+        `, [
+            d.Reporting_period,
+            d.SubActivity,
+            d.Conduct_Start,
+            d.Conduct_End,
+            d.MeetingNo,
+            d.IFAD,
+            d.MAF,
+            d.WFP,
+            d.GoL,
+            d.Ben,
+            d.OtherFund,
+            d.SubmissionID
+        ]);
 
-// // }
+        console.log("✅ Form 3Act1a data updated successfully.");
+    } catch (err) {
+        console.error("❌ Failed to update Form 3Act1a data:", err.message);
+        throw err;
+    } finally {
+        if (db) await db.close();
+    }
+}
+
 
 
 
@@ -928,6 +989,12 @@ export {
     getForm3Act1aSubmissionUUIDBySubmissionId,
     getForm3Act1aNewSubmissionIdByUUID,
     deleteOnlyForm3Act1aParticipantInDB,
-    deleteOnlyForm3Act1aSubmissionInKobo
+    deleteOnlyForm3Act1aSubmissionInKobo,
+
+    deleteForm3Act1aSubmissionInKoboAndDatabase,
+    getRawForm3Act1aSubmissionAndParticipantsData,
+    buildForm3Act1aSubmissionXML,
+    submitNewForm3Act1aSubmissionToKobo,
+    editForm3Act1aSubmissionAndParticipants
 
 }

@@ -20,7 +20,7 @@ import { getCBForStaffStatics, getCBForVillagersStatics, getForm1A1Statics, getF
 import { get1A1OutreachData, get1A4OutreachData, get1BAct6OutreachData, get1BAct8OutreachData, get2Act1OutreachData, get2Act2OutreachData, get2Act3OutreachData, get3Act2OutreachData } from './outreach_controller.js';
 
 //Import logframe functions
- import { getIndicatorData } from './logframe_controller.js';
+import { getIndicatorData } from './logframe_controller.js';
 
 //Import CB for staff functions
 import {
@@ -112,14 +112,19 @@ import {
 } from './1A3b_controller.js'
 
 ////Import Form 1A4 functions
-import{
+import {
     downloadForm1A4SubmissionDataFromKoboToolbox,
     getForm1A4ParticipantData,
     getForm1A4ParticipantDataBySID,
     getForm1A4SubmissionUUIDBySubmissionId,
     getForm1A4NewSubmissionIdByUUID,
     deleteOnlyForm1A4ParticipantInDB,
-    deleteOnlyForm1A4SubmissionInKobo
+    deleteOnlyForm1A4SubmissionInKobo,
+    deleteForm1A4SubmissionInKoboAndDatabase,
+    getRawForm1A4SubmissionAndParticipantsData,
+    buildForm1A4SubmissionXML,
+    submitNewForm1A4SubmissionToKobo,
+    editForm1A4SubmissionAndParticipants
 } from './1A4_controller.js'
 
 //Import Form 1A5a functions
@@ -152,22 +157,32 @@ import {
     getForm1BAct6SubmissionUUIDBySubmissionId,
     getForm1BAct6NewSubmissionIdByUUID,
     deleteOnlyForm1BAct6ParticipantInDB,
-    deleteOnlyForm1BAct6SubmissionInKobo
+    deleteOnlyForm1BAct6SubmissionInKobo,
+    deleteForm1BAct6SubmissionInKoboAndDatabase,
+    buildForm1BAct6SubmissionXML,
+    submitNewForm1BAct6SubmissionToKobo,
+    editForm1BAct6SubmissionAndParticipants,
+    getRawForm1BAct6SubmissionAndParticipantsData
 } from './1BAct6_controller.js'
 
 //Import Form 1BAct7 functions
-import { 
+import {
     downloadForm1BAct7SubmissionDataFromKoboToolbox,
     getForm1BAct7ParticipantData,
     getForm1BAct7ParticipantDataBySID,
     getForm1BAct7SubmissionUUIDBySubmissionId,
     getForm1BAct7NewSubmissionIdByUUID,
     deleteOnlyForm1BAct7ParticipantInDB,
-    deleteOnlyForm1BAct7SubmissionInKobo
+    deleteOnlyForm1BAct7SubmissionInKobo,
+    deleteForm1BAct7SubmissionInKoboAndDatabase,
+    getRawForm1BAct7SubmissionAndParticipantsData,
+    buildForm1BAct7SubmissionXML,
+    submitNewForm1BAct7SubmissionToKobo,
+    editForm1BAct7SubmissionAndParticipants
 } from './1BAct7_controller.js';
 
 //Import Form 1BAct8 functions
-import { 
+import {
     downloadForm1BAct8SubmissionDataFromKoboToolbox,
     getForm1BAct8ParticipantData,
     getForm1BAct8ParticipantDataBySID,
@@ -175,10 +190,10 @@ import {
     getForm1BAct8NewSubmissionIdByUUID,
     deleteOnlyForm1BAct8ParticipantInDB,
     deleteOnlyForm1BAct8SubmissionInKobo
- } from './1BAct8_controller.js';
+} from './1BAct8_controller.js';
 
 //Import Form 2Act1 functions
- import { 
+import {
     downloadForm2Act1SubmissionDataFromKoboToolbox,
     getForm2Act1ParticipantData,
     getForm2Act1ParticipantDataBySID,
@@ -186,10 +201,10 @@ import {
     getForm2Act1NewSubmissionIdByUUID,
     deleteOnlyForm2Act1ParticipantInDB,
     deleteOnlyForm2Act1SubmissionInKobo
- } from './2Act1_controller.js';
+} from './2Act1_controller.js';
 
 //Import Form 2Act2 functions
-import { 
+import {
     downloadForm2Act2SubmissionDataFromKoboToolbox,
     getForm2Act2ParticipantData,
     getForm2Act2ParticipantDataBySID,
@@ -200,7 +215,7 @@ import {
 } from './2Act2_controller.js';
 
 //Import Form 2Act3 functions
-import { 
+import {
     downloadForm2Act3SubmissionDataFromKoboToolbox,
     getForm2Act3ParticipantData,
     getForm2Act3ParticipantDataBySID,
@@ -208,32 +223,42 @@ import {
     getForm2Act3NewSubmissionIdByUUID,
     deleteOnlyForm2Act3ParticipantInDB,
     deleteOnlyForm2Act3SubmissionInKobo
- } from './2Act3_controller.js';
+} from './2Act3_controller.js';
 
 //Import Form 3Act1a functions
- import { 
+import {
     downloadForm3Act1aSubmissionDataFromKoboToolbox,
     getForm3Act1aParticipantData,
     getForm3Act1aParticipantDataBySID,
     getForm3Act1aSubmissionUUIDBySubmissionId,
     getForm3Act1aNewSubmissionIdByUUID,
     deleteOnlyForm3Act1aParticipantInDB,
-    deleteOnlyForm3Act1aSubmissionInKobo
- } from './3Act1a_controller.js';
+    deleteOnlyForm3Act1aSubmissionInKobo,
+    deleteForm3Act1aSubmissionInKoboAndDatabase,
+    getRawForm3Act1aSubmissionAndParticipantsData,
+    buildForm3Act1aSubmissionXML,
+    submitNewForm3Act1aSubmissionToKobo,
+    editForm3Act1aSubmissionAndParticipants
+} from './3Act1a_controller.js';
 
 //Import Form 3Act1b functions
- import { 
+import {
     downloadForm3Act1bSubmissionDataFromKoboToolbox,
     getForm3Act1bParticipantData,
     getForm3Act1bParticipantDataBySID,
     getForm3Act1bSubmissionUUIDBySubmissionId,
     getForm3Act1bNewSubmissionIdByUUID,
     deleteOnlyForm3Act1bParticipantInDB,
-    deleteOnlyForm3Act1bSubmissionInKobo
- } from './3Act1b_controller.js';
+    deleteOnlyForm3Act1bSubmissionInKobo,
+    deleteForm3Act1bSubmissionInKoboAndDatabase,
+    getRawForm3Act1bSubmissionAndParticipantsData,
+    buildForm3Act1bSubmissionXML,
+    submitNewForm3Act1bSubmissionToKobo,
+    editForm3Act1bSubmissionAndParticipants
+} from './3Act1b_controller.js';
 
 //Import Form 3Act2 functions
- import { 
+import {
     downloadForm3Act2SubmissionDataFromKoboToolbox,
     getForm3Act2ParticipantData,
     getForm3Act2ParticipantDataBySID,
@@ -241,7 +266,7 @@ import {
     getForm3Act2NewSubmissionIdByUUID,
     deleteOnlyForm3Act2ParticipantInDB,
     deleteOnlyForm3Act2SubmissionInKobo
- } from './3Act2_controller.js';
+} from './3Act2_controller.js';
 
 
 
@@ -273,7 +298,7 @@ app.use(express.json());
 
 //##################### Function to handle all Outreach Report data #####################
 app.get('/api/form1A1/getOutreachData', async (req, res) => {
-    
+
     const { reportingPeriod, reportYear } = req.query;
     if (!reportingPeriod || !reportYear) {
         return res.status(400).json({ error: 'Missing ReportYear or ReportingPeriod' });
@@ -285,12 +310,12 @@ app.get('/api/form1A1/getOutreachData', async (req, res) => {
 
     } catch (err) {
         console.err('error getting 1A1 Outreach data', err);
-        res.status(500).json({ success: false, message: 'Internal Server Error',error: err.message  });
+        res.status(500).json({ success: false, message: 'Internal Server Error', error: err.message });
     }
 });
 
 app.get('/api/form1A4/getOutreachData', async (req, res) => {
-    
+
     const { reportingPeriod, reportYear } = req.query;
     if (!reportingPeriod || !reportYear) {
         return res.status(400).json({ error: 'Missing ReportYear or ReportingPeriod' });
@@ -302,12 +327,12 @@ app.get('/api/form1A4/getOutreachData', async (req, res) => {
 
     } catch (err) {
         console.err('error getting 1A4 Outreach data', err);
-        res.status(500).json({ success: false, message: 'Internal Server Error',error: err.message  });
+        res.status(500).json({ success: false, message: 'Internal Server Error', error: err.message });
     }
 });
 
 app.get('/api/form1BAct6/getOutreachData', async (req, res) => {
-    
+
     const { reportingPeriod, reportYear } = req.query;
     if (!reportingPeriod || !reportYear) {
         return res.status(400).json({ error: 'Missing ReportYear or ReportingPeriod' });
@@ -319,12 +344,12 @@ app.get('/api/form1BAct6/getOutreachData', async (req, res) => {
 
     } catch (err) {
         console.err('error getting 1BAct6 Outreach data', err);
-        res.status(500).json({ success: false, message: 'Internal Server Error',error: err.message  });
+        res.status(500).json({ success: false, message: 'Internal Server Error', error: err.message });
     }
 });
 
 app.get('/api/form1BAct8/getOutreachData', async (req, res) => {
-    
+
     const { reportingPeriod, reportYear } = req.query;
     if (!reportingPeriod || !reportYear) {
         return res.status(400).json({ error: 'Missing ReportYear or ReportingPeriod' });
@@ -336,12 +361,12 @@ app.get('/api/form1BAct8/getOutreachData', async (req, res) => {
 
     } catch (err) {
         console.err('error getting 1BAct8 Outreach data', err);
-        res.status(500).json({ success: false, message: 'Internal Server Error',error: err.message  });
+        res.status(500).json({ success: false, message: 'Internal Server Error', error: err.message });
     }
 });
 
 app.get('/api/form2Act1/getOutreachData', async (req, res) => {
-    
+
     const { reportingPeriod, reportYear } = req.query;
     if (!reportingPeriod || !reportYear) {
         return res.status(400).json({ error: 'Missing ReportYear or ReportingPeriod' });
@@ -353,12 +378,12 @@ app.get('/api/form2Act1/getOutreachData', async (req, res) => {
 
     } catch (err) {
         console.err('error getting 2Act1 Outreach data', err);
-        res.status(500).json({ success: false, message: 'Internal Server Error',error: err.message  });
+        res.status(500).json({ success: false, message: 'Internal Server Error', error: err.message });
     }
 });
 
 app.get('/api/form2Act2/getOutreachData', async (req, res) => {
-    
+
     const { reportingPeriod, reportYear } = req.query;
     if (!reportingPeriod || !reportYear) {
         return res.status(400).json({ error: 'Missing ReportYear or ReportingPeriod' });
@@ -370,12 +395,12 @@ app.get('/api/form2Act2/getOutreachData', async (req, res) => {
 
     } catch (err) {
         console.err('error getting 2Act2 Outreach data', err);
-        res.status(500).json({ success: false, message: 'Internal Server Error',error: err.message  });
+        res.status(500).json({ success: false, message: 'Internal Server Error', error: err.message });
     }
 });
 
 app.get('/api/form2Act3/getOutreachData', async (req, res) => {
-    
+
     const { reportingPeriod, reportYear } = req.query;
     if (!reportingPeriod || !reportYear) {
         return res.status(400).json({ error: 'Missing ReportYear or ReportingPeriod' });
@@ -387,12 +412,12 @@ app.get('/api/form2Act3/getOutreachData', async (req, res) => {
 
     } catch (err) {
         console.err('error getting 2Act3 Outreach data', err);
-        res.status(500).json({ success: false, message: 'Internal Server Error',error: err.message  });
+        res.status(500).json({ success: false, message: 'Internal Server Error', error: err.message });
     }
 });
 
 app.get('/api/form3Act2/getOutreachData', async (req, res) => {
-    
+
     const { reportingPeriod, reportYear } = req.query;
     if (!reportingPeriod || !reportYear) {
         return res.status(400).json({ error: 'Missing ReportYear or ReportingPeriod' });
@@ -404,7 +429,7 @@ app.get('/api/form3Act2/getOutreachData', async (req, res) => {
 
     } catch (err) {
         console.err('error getting 3Act2 Outreach data', err);
-        res.status(500).json({ success: false, message: 'Internal Server Error',error: err.message  });
+        res.status(500).json({ success: false, message: 'Internal Server Error', error: err.message });
     }
 });
 
@@ -431,7 +456,7 @@ app.get('/api/form3Act2/getOutreachData', async (req, res) => {
 app.get('/api/all/getLogframeData', getIndicatorData); //testing
 
 // app.get('/api/all/getLogframeData', async (req, res) => {
-    
+
 
 //     try {
 //         const data = await fetchIndicatorData();
@@ -547,11 +572,12 @@ app.get('/api/cbForStaff/getParticipantData', async (req, res) => {
     try {
         // Optional: language query parameter (default to LA)
         const language = req.query.lang || 'LA';
+        const limit = req.query.limit; // Limit the result send to frontend. Can be undefined, empty string, or a number string
         if (!language) {
             return res.status(400).json({ success: false, message: 'Language is required' });
         }
 
-        const data = await getCBStaffParticipantData(language);
+        const data = await getCBStaffParticipantData(language, limit);
         res.json({ success: true, data });
     } catch (error) {
         console.error('Error fetching CB Staff data:', error);
@@ -819,11 +845,12 @@ app.get('/api/cbForVillagers/getParticipantData', async (req, res) => {
     try {
         // Optional: language query parameter (default to LA)
         const language = req.query.lang || 'LA';
+        const limit = req.query.limit; // Limit the result send to frontend. Can be undefined, empty string, or a number string
         if (!language) {
             return res.status(400).json({ success: false, message: 'Language is required' });
         }
 
-        const data = await getCBVillagerParticipantData(language);
+        const data = await getCBVillagerParticipantData(language, limit);
         res.json({ success: true, data });
     } catch (error) {
         console.error('Error fetching CB Villagers data:', error);
@@ -1085,11 +1112,12 @@ app.get('/api/form1A1/getParticipantData', async (req, res) => {
     try {
         // Optional: language query parameter (default to LA)
         const language = req.query.lang || 'LA';
+        const limit = req.query.limit; // Limit the result send to frontend. Can be undefined, empty string, or a number string
         if (!language) {
             return res.status(400).json({ success: false, message: 'Language is required' });
         }
 
-        const data = await getForm1A1ParticipantData(language);
+        const data = await getForm1A1ParticipantData(language, limit);
         res.json({ success: true, data });
     } catch (error) {
         console.error('Error fetching Form 1A1 data:', error);
@@ -1352,11 +1380,13 @@ app.get('/api/form1A2/getParticipantData', async (req, res) => {
     try {
         // Optional: language query parameter (default to LA)
         const language = req.query.lang || 'LA';
+        const limit = req.query.limit; // Limit the result send to frontend. Can be undefined, empty string, or a number string
+
         if (!language) {
             return res.status(400).json({ success: false, message: 'Language is required' });
         }
 
-        const data = await getForm1A2ParticipantData(language);
+        const data = await getForm1A2ParticipantData(language, limit);
         res.json({ success: true, data });
     } catch (error) {
         console.error('Error fetching Form 1A2 data:', error);
@@ -2146,20 +2176,21 @@ app.get('/api/form1A4/getParticipantData', async (req, res) => {
     try {
         // Optional: language query parameter (default to LA)
         const language = req.query.lang || 'LA';
+        const limit = req.query.limit; // Limit the result send to frontend. Can be undefined, empty string, or a number string
         if (!language) {
             return res.status(400).json({ success: false, message: 'Language is required' });
         }
 
-        const data = await getForm1A4ParticipantData(language);
+        const data = await getForm1A4ParticipantData(language, limit);
         res.json({ success: true, data });
     } catch (error) {
-        console.error('Error fetching Form 1A3b data:', error);
-        res.status(500).json({ success: false, message: 'Failed to fetch Form 1A3b data', error: error.message });
+        console.error('Error fetching Form 1A4 data:', error);
+        res.status(500).json({ success: false, message: 'Failed to fetch Form 1A4 data', error: error.message });
     }
 });
 
 
-// API endpoint to get Form 1A1 data by Submission ID
+// API endpoint to get Form 1A4 data by Submission ID
 app.get('/api/form1A4/getParticipantDataBySID', async (req, res) => {
     try {
         // Get the submissionId from query parameters
@@ -2264,23 +2295,23 @@ app.get('/api/form1A4/exportToExcel', async (req, res) => {
 });
 
 
-// // app.delete('/api/form1A4/deleteSubmission', async (req, res) => {
-// //     try {
-// //         const submissionId = req.query.submissionId;
-// //         if (!submissionId) {
-// //             return res.status(400).json({ success: false, message: 'Submission ID is required' });
-// //         }
+app.delete('/api/form1A4/deleteSubmission', async (req, res) => {
+    try {
+        const submissionId = req.query.submissionId;
+        if (!submissionId) {
+            return res.status(400).json({ success: false, message: 'Submission ID is required' });
+        }
 
-// //         // Call the function to delete the submission
-// //         await deleteSubmissionInKoboAndDatabase(submissionId);
-// //         res.json({ success: true, message: 'Submission deleted successfully' });
-// //     } catch (error) {
+        // Call the function to delete the submission
+        await deleteForm1A4SubmissionInKoboAndDatabase(submissionId);
+        res.json({ success: true, message: 'Submission deleted successfully' });
+    } catch (error) {
 
-// //         console.error('Error deleting submission:', error);
-// //         res.status(500).json({ success: false, message: 'Failed to delete submission hahaha', error: error.message });
+        console.error('Error deleting submission:', error);
+        res.status(500).json({ success: false, message: 'Failed to delete submission hahaha', error: error.message });
 
-// //     }
-// // });
+    }
+});
 
 // API endpoint to get UUID of a submission the UUID is important to get new submission ID from KoboToolbox when a previous submission is deleted
 app.get('/api/form1A4/getUUID', async (req, res) => {
@@ -2327,52 +2358,51 @@ app.get('/api/form1A4/getNewSubmissionID', async (req, res) => {
 })
 
 
-// // //delete a participant and update the submission in KoboToolbox
-// // app.post('/api/form1A4/deleteParticipant', async (req, res) => {
-// //     const { participantId, submissionId } = req.body;
-// //     try {
-// //         await deleteOnlyParticipantInDB(participantId);
-// //         await deleteOnlySubmissionInKobo(submissionId);
+//delete a participant and update the submission in KoboToolbox
+app.post('/api/form1A4/deleteParticipant', async (req, res) => {
+    const { participantId, submissionId } = req.body;
+    try {
+        await deleteOnlyForm1A4ParticipantInDB(participantId);
+        await deleteOnlyForm1A4SubmissionInKobo(submissionId);
 
-// //         const { submission, participants } = await getRawSubmissionAndParticipantsData(submissionId);
-// //         const xmlData = buildSubmissionXML(submission, participants);
-// //         await submitNewSubmissionToKobo(xmlData); //submit the updated submission to KoboToolbox
-// //         res.json({ success: true });
-// //     } catch (err) {
-// //         console.error(err);
-// //         res.status(500).json({ success: false, error: err.message });
-// //     }
+        const { submission, participants } = await getRawForm1A4SubmissionAndParticipantsData(submissionId);
+        const xmlData = buildForm1A4SubmissionXML(submission, participants);
+        await submitNewForm1A4SubmissionToKobo(xmlData); //submit the updated submission to KoboToolbox
+        res.json({ success: true });
+    } catch (err) {
+        console.error(err);
+        res.status(500).json({ success: false, error: err.message });
+    }
+});
 
-// // });
+// Function to update participant data and submission in local database and KoboToolbox
+app.post('/api/form1A4/updateParticipantAndSubmissionData', async (req, res) => {
+    const data = req.body;
+    if (!data.PID || !data.SubmissionID) {
+        return res.status(400).json({ success: false, message: 'Participant ID and Submission ID are required' });
 
-// // // Function to update participant data and submission in local database and KoboToolbox
-// // app.post('/api/form1A4/updateParticipantAndSubmissionData', async (req, res) => {
-// //     const data = req.body;
-// //     if (!data.PID || !data.SubmissionID) {
-// //         return res.status(400).json({ success: false, message: 'Participant ID and Submission ID are required' });
-
-// //     }
-// //     try {
-// //         //update new data to local database
-// //         await editSubmissionAndParticipants(data);
-
-
-// //         //delete submission data in Kobo
-// //         await deleteOnlySubmissionInKobo(data.SubmissionID);
-
-// //         //Submit new submission data from local database to Kobo
-// //         const { submission, participants } = await getRawSubmissionAndParticipantsData(data.SubmissionID);
-// //         const xmlData = buildSubmissionXML(submission, participants);
-// //         await submitNewSubmissionToKobo(xmlData); //submit the updated submission to KoboToolbox
-// //         res.json({ success: true, message: 'Participant and submission data updated successfully' });
+    }
+    try {
+        //update new data to local database
+        await editForm1A4SubmissionAndParticipants(data);
 
 
+        //delete submission data in Kobo
+        await deleteOnlyForm1A4SubmissionInKobo(data.SubmissionID);
 
-// //     } catch (error) {
-// //         console.error('Error updating participant and submission data at backend:', error.message);
-// //         res.status(500).json({ success: false, message: 'Failed to update participant and submission data', error: error.message });
-// //     }
-// // });
+        //Submit new submission data from local database to Kobo
+        const { submission, participants } = await getRawForm1A4SubmissionAndParticipantsData(data.SubmissionID);
+        const xmlData = buildForm1A4SubmissionXML(submission, participants);
+        await submitNewForm1A4SubmissionToKobo(xmlData); //submit the updated submission to KoboToolbox
+        res.json({ success: true, message: 'Participant and submission data updated successfully' });
+
+
+
+    } catch (error) {
+        console.error('Error updating participant and submission data at backend:', error.message);
+        res.status(500).json({ success: false, message: 'Failed to update participant and submission data', error: error.message });
+    }
+});
 
 
 // //###################### End Function to handle Form 1A4 ################################
@@ -2931,11 +2961,13 @@ app.get('/api/form1BAct6/getParticipantData', async (req, res) => {
     try {
         // Optional: language query parameter (default to LA)
         const language = req.query.lang || 'LA';
+        const limit = req.query.limit; // Limit the result send to frontend. Can be undefined, empty string, or a number string
+
         if (!language) {
             return res.status(400).json({ success: false, message: 'Language is required' });
         }
 
-        const data = await getForm1BAct6ParticipantData(language);
+        const data = await getForm1BAct6ParticipantData(language, limit);
         res.json({ success: true, data });
     } catch (error) {
         console.error('Error fetching Form 1BAct6 data:', error);
@@ -3049,23 +3081,23 @@ app.get('/api/form1BAct6/exportToExcel', async (req, res) => {
 });
 
 
-// // app.delete('/api/form1BAct6/deleteSubmission', async (req, res) => {
-// //     try {
-// //         const submissionId = req.query.submissionId;
-// //         if (!submissionId) {
-// //             return res.status(400).json({ success: false, message: 'Submission ID is required' });
-// //         }
+app.delete('/api/form1BAct6/deleteSubmission', async (req, res) => {
+    try {
+        const submissionId = req.query.submissionId;
+        if (!submissionId) {
+            return res.status(400).json({ success: false, message: 'Submission ID is required' });
+        }
 
-// //         // Call the function to delete the submission
-// //         await deleteSubmissionInKoboAndDatabase(submissionId);
-// //         res.json({ success: true, message: 'Submission deleted successfully' });
-// //     } catch (error) {
+        // Call the function to delete the submission
+        await deleteForm1BAct6SubmissionInKoboAndDatabase(submissionId);
+        res.json({ success: true, message: 'Submission deleted successfully' });
+    } catch (error) {
 
-// //         console.error('Error deleting submission:', error);
-// //         res.status(500).json({ success: false, message: 'Failed to delete submission hahaha', error: error.message });
+        console.error('Error deleting submission:', error);
+        res.status(500).json({ success: false, message: 'Failed to delete submission hahaha', error: error.message });
 
-// //     }
-// // });
+    }
+});
 
 // API endpoint to get UUID of a submission the UUID is important to get new submission ID from KoboToolbox when a previous submission is deleted
 app.get('/api/form1BAct6/getUUID', async (req, res) => {
@@ -3112,52 +3144,52 @@ app.get('/api/form1BAct6/getNewSubmissionID', async (req, res) => {
 })
 
 
-// // //delete a participant and update the submission in KoboToolbox
-// // app.post('/api/form1BAct6/deleteParticipant', async (req, res) => {
-// //     const { participantId, submissionId } = req.body;
-// //     try {
-// //         await deleteOnlyParticipantInDB(participantId);
-// //         await deleteOnlySubmissionInKobo(submissionId);
+//delete a participant and update the submission in KoboToolbox
+app.post('/api/form1BAct6/deleteParticipant', async (req, res) => {
+    const { participantId, submissionId } = req.body;
+    try {
+        await deleteOnlyForm1BAct6ParticipantInDB(participantId);
+        await deleteOnlyForm1BAct6SubmissionInKobo(submissionId);
 
-// //         const { submission, participants } = await getRawSubmissionAndParticipantsData(submissionId);
-// //         const xmlData = buildSubmissionXML(submission, participants);
-// //         await submitNewSubmissionToKobo(xmlData); //submit the updated submission to KoboToolbox
-// //         res.json({ success: true });
-// //     } catch (err) {
-// //         console.error(err);
-// //         res.status(500).json({ success: false, error: err.message });
-// //     }
+        const { submission, participants } = await getRawForm1BAct6SubmissionAndParticipantsData(submissionId);
+        const xmlData = buildForm1BAct6SubmissionXML(submission, participants);
+        await submitNewForm1BAct6SubmissionToKobo(xmlData); //submit the updated submission to KoboToolbox
+        res.json({ success: true });
+    } catch (err) {
+        console.error(err);
+        res.status(500).json({ success: false, error: err.message });
+    }
 
-// // });
+});
 
-// // // Function to update participant data and submission in local database and KoboToolbox
-// // app.post('/api/form1BAct6/updateParticipantAndSubmissionData', async (req, res) => {
-// //     const data = req.body;
-// //     if (!data.PID || !data.SubmissionID) {
-// //         return res.status(400).json({ success: false, message: 'Participant ID and Submission ID are required' });
+// Function to update participant data and submission in local database and KoboToolbox
+app.post('/api/form1BAct6/updateParticipantAndSubmissionData', async (req, res) => {
+    const data = req.body;
+    if (!data.PID || !data.SubmissionID) {
+        return res.status(400).json({ success: false, message: 'Participant ID and Submission ID are required' });
 
-// //     }
-// //     try {
-// //         //update new data to local database
-// //         await editSubmissionAndParticipants(data);
-
-
-// //         //delete submission data in Kobo
-// //         await deleteOnlySubmissionInKobo(data.SubmissionID);
-
-// //         //Submit new submission data from local database to Kobo
-// //         const { submission, participants } = await getRawSubmissionAndParticipantsData(data.SubmissionID);
-// //         const xmlData = buildSubmissionXML(submission, participants);
-// //         await submitNewSubmissionToKobo(xmlData); //submit the updated submission to KoboToolbox
-// //         res.json({ success: true, message: 'Participant and submission data updated successfully' });
+    }
+    try {
+        //update new data to local database
+        await editForm1BAct6SubmissionAndParticipants(data);
 
 
+        //delete submission data in Kobo
+        await deleteOnlyForm1BAct6SubmissionInKobo(data.SubmissionID);
 
-// //     } catch (error) {
-// //         console.error('Error updating participant and submission data at backend:', error.message);
-// //         res.status(500).json({ success: false, message: 'Failed to update participant and submission data', error: error.message });
-// //     }
-// // });
+        //Submit new submission data from local database to Kobo
+        const { submission, participants } = await getRawForm1BAct6SubmissionAndParticipantsData(data.SubmissionID);
+        const xmlData = buildForm1BAct6SubmissionXML(submission, participants);
+        await submitNewForm1BAct6SubmissionToKobo(xmlData); //submit the updated submission to KoboToolbox
+        res.json({ success: true, message: 'Participant and submission data updated successfully' });
+
+
+
+    } catch (error) {
+        console.error('Error updating participant and submission data at backend:', error.message);
+        res.status(500).json({ success: false, message: 'Failed to update participant and submission data', error: error.message });
+    }
+});
 
 
 // //###################### End Function to handle Form 1BAct6 ################################
@@ -3195,11 +3227,12 @@ app.get('/api/form1BAct7/getParticipantData', async (req, res) => {
     try {
         // Optional: language query parameter (default to LA)
         const language = req.query.lang || 'LA';
+        const limit = req.query.limit; // Limit the result send to frontend. Can be undefined, empty string, or a number string
         if (!language) {
             return res.status(400).json({ success: false, message: 'Language is required' });
         }
 
-        const data = await getForm1BAct7ParticipantData(language);
+        const data = await getForm1BAct7ParticipantData(language, limit);
         res.json({ success: true, data });
     } catch (error) {
         console.error('Error fetching Form 1BAct7 data:', error);
@@ -3313,23 +3346,23 @@ app.get('/api/form1BAct7/exportToExcel', async (req, res) => {
 });
 
 
-// // app.delete('/api/form1BAct7/deleteSubmission', async (req, res) => {
-// //     try {
-// //         const submissionId = req.query.submissionId;
-// //         if (!submissionId) {
-// //             return res.status(400).json({ success: false, message: 'Submission ID is required' });
-// //         }
+app.delete('/api/form1BAct7/deleteSubmission', async (req, res) => {
+    try {
+        const submissionId = req.query.submissionId;
+        if (!submissionId) {
+            return res.status(400).json({ success: false, message: 'Submission ID is required' });
+        }
 
-// //         // Call the function to delete the submission
-// //         await deleteSubmissionInKoboAndDatabase(submissionId);
-// //         res.json({ success: true, message: 'Submission deleted successfully' });
-// //     } catch (error) {
+        // Call the function to delete the submission
+        await deleteForm1BAct7SubmissionInKoboAndDatabase(submissionId);
+        res.json({ success: true, message: 'Submission deleted successfully' });
+    } catch (error) {
 
-// //         console.error('Error deleting submission:', error);
-// //         res.status(500).json({ success: false, message: 'Failed to delete submission hahaha', error: error.message });
+        console.error('Error deleting submission:', error);
+        res.status(500).json({ success: false, message: 'Failed to delete submission hahaha', error: error.message });
 
-// //     }
-// // });
+    }
+});
 
 // API endpoint to get UUID of a submission the UUID is important to get new submission ID from KoboToolbox when a previous submission is deleted
 app.get('/api/form1BAct7/getUUID', async (req, res) => {
@@ -3376,52 +3409,52 @@ app.get('/api/form1BAct7/getNewSubmissionID', async (req, res) => {
 })
 
 
-// // //delete a participant and update the submission in KoboToolbox
-// // app.post('/api/form1BAct7/deleteParticipant', async (req, res) => {
-// //     const { participantId, submissionId } = req.body;
-// //     try {
-// //         await deleteOnlyParticipantInDB(participantId);
-// //         await deleteOnlySubmissionInKobo(submissionId);
+//delete a participant and update the submission in KoboToolbox
+app.post('/api/form1BAct7/deleteParticipant', async (req, res) => {
+    const { participantId, submissionId } = req.body;
+    try {
+        await deleteOnlyForm1BAct7ParticipantInDB(participantId);
+        await deleteOnlyForm1BAct7SubmissionInKobo(submissionId);
 
-// //         const { submission, participants } = await getRawSubmissionAndParticipantsData(submissionId);
-// //         const xmlData = buildSubmissionXML(submission, participants);
-// //         await submitNewSubmissionToKobo(xmlData); //submit the updated submission to KoboToolbox
-// //         res.json({ success: true });
-// //     } catch (err) {
-// //         console.error(err);
-// //         res.status(500).json({ success: false, error: err.message });
-// //     }
+        const { submission, participants } = await getRawForm1BAct7SubmissionAndParticipantsData(submissionId);
+        const xmlData = buildForm1BAct7SubmissionXML(submission, participants);
+        await submitNewForm1BAct7SubmissionToKobo(xmlData); //submit the updated submission to KoboToolbox
+        res.json({ success: true });
+    } catch (err) {
+        console.error(err);
+        res.status(500).json({ success: false, error: err.message });
+    }
 
-// // });
+});
 
-// // // Function to update participant data and submission in local database and KoboToolbox
-// // app.post('/api/form1BAct7/updateParticipantAndSubmissionData', async (req, res) => {
-// //     const data = req.body;
-// //     if (!data.PID || !data.SubmissionID) {
-// //         return res.status(400).json({ success: false, message: 'Participant ID and Submission ID are required' });
+// Function to update participant data and submission in local database and KoboToolbox
+app.post('/api/form1BAct7/updateParticipantAndSubmissionData', async (req, res) => {
+    const data = req.body;
+    if (!data.PID || !data.SubmissionID) {
+        return res.status(400).json({ success: false, message: 'Participant ID and Submission ID are required' });
 
-// //     }
-// //     try {
-// //         //update new data to local database
-// //         await editSubmissionAndParticipants(data);
-
-
-// //         //delete submission data in Kobo
-// //         await deleteOnlySubmissionInKobo(data.SubmissionID);
-
-// //         //Submit new submission data from local database to Kobo
-// //         const { submission, participants } = await getRawSubmissionAndParticipantsData(data.SubmissionID);
-// //         const xmlData = buildSubmissionXML(submission, participants);
-// //         await submitNewSubmissionToKobo(xmlData); //submit the updated submission to KoboToolbox
-// //         res.json({ success: true, message: 'Participant and submission data updated successfully' });
+    }
+    try {
+        //update new data to local database
+        await editForm1BAct7SubmissionAndParticipants(data);
 
 
+        //delete submission data in Kobo
+        await deleteOnlyForm1BAct7SubmissionInKobo(data.SubmissionID);
 
-// //     } catch (error) {
-// //         console.error('Error updating participant and submission data at backend:', error.message);
-// //         res.status(500).json({ success: false, message: 'Failed to update participant and submission data', error: error.message });
-// //     }
-// // });
+        //Submit new submission data from local database to Kobo
+        const { submission, participants } = await getRawForm1BAct7SubmissionAndParticipantsData(data.SubmissionID);
+        const xmlData = buildForm1BAct7SubmissionXML(submission, participants);
+        await submitNewForm1BAct7SubmissionToKobo(xmlData); //submit the updated submission to KoboToolbox
+        res.json({ success: true, message: 'Participant and submission data updated successfully' });
+
+
+
+    } catch (error) {
+        console.error('Error updating participant and submission data at backend:', error.message);
+        res.status(500).json({ success: false, message: 'Failed to update participant and submission data', error: error.message });
+    }
+});
 
 
 // //###################### End Function to handle Form 1BAct7 ################################
@@ -4518,11 +4551,12 @@ app.get('/api/form3Act1a/getParticipantData', async (req, res) => {
     try {
         // Optional: language query parameter (default to LA)
         const language = req.query.lang || 'LA';
+        const limit = req.query.limit; // Limit the result send to frontend. Can be undefined, empty string, or a number string
         if (!language) {
             return res.status(400).json({ success: false, message: 'Language is required' });
         }
 
-        const data = await getForm3Act1aParticipantData(language);
+        const data = await getForm3Act1aParticipantData(language, limit);
         res.json({ success: true, data });
     } catch (error) {
         console.error('Error fetching Form 3Act1a data:', error);
@@ -4636,23 +4670,23 @@ app.get('/api/form3Act1a/exportToExcel', async (req, res) => {
 });
 
 
-// // app.delete('/api/form3Act1a/deleteSubmission', async (req, res) => {
-// //     try {
-// //         const submissionId = req.query.submissionId;
-// //         if (!submissionId) {
-// //             return res.status(400).json({ success: false, message: 'Submission ID is required' });
-// //         }
+app.delete('/api/form3Act1a/deleteSubmission', async (req, res) => {
+    try {
+        const submissionId = req.query.submissionId;
+        if (!submissionId) {
+            return res.status(400).json({ success: false, message: 'Submission ID is required' });
+        }
 
-// //         // Call the function to delete the submission
-// //         await deleteSubmissionInKoboAndDatabase(submissionId);
-// //         res.json({ success: true, message: 'Submission deleted successfully' });
-// //     } catch (error) {
+        // Call the function to delete the submission
+        await deleteForm3Act1aSubmissionInKoboAndDatabase(submissionId);
+        res.json({ success: true, message: 'Submission deleted successfully' });
+    } catch (error) {
 
-// //         console.error('Error deleting submission:', error);
-// //         res.status(500).json({ success: false, message: 'Failed to delete submission hahaha', error: error.message });
+        console.error('Error deleting submission:', error);
+        res.status(500).json({ success: false, message: 'Failed to delete submission hahaha', error: error.message });
 
-// //     }
-// // });
+    }
+});
 
 // API endpoint to get UUID of a submission the UUID is important to get new submission ID from KoboToolbox when a previous submission is deleted
 app.get('/api/form3Act1a/getUUID', async (req, res) => {
@@ -4699,52 +4733,52 @@ app.get('/api/form3Act1a/getNewSubmissionID', async (req, res) => {
 })
 
 
-// // //delete a participant and update the submission in KoboToolbox
-// // app.post('/api/form3Act1a/deleteParticipant', async (req, res) => {
-// //     const { participantId, submissionId } = req.body;
-// //     try {
-// //         await deleteOnlyParticipantInDB(participantId);
-// //         await deleteOnlySubmissionInKobo(submissionId);
+//delete a participant and update the submission in KoboToolbox
+app.post('/api/form3Act1a/deleteParticipant', async (req, res) => {
+    const { participantId, submissionId } = req.body;
+    try {
+        await deleteOnlyForm3Act1aParticipantInDB(participantId);
+        await deleteOnlyForm3Act1aSubmissionInKobo(submissionId);
 
-// //         const { submission, participants } = await getRawSubmissionAndParticipantsData(submissionId);
-// //         const xmlData = buildSubmissionXML(submission, participants);
-// //         await submitNewSubmissionToKobo(xmlData); //submit the updated submission to KoboToolbox
-// //         res.json({ success: true });
-// //     } catch (err) {
-// //         console.error(err);
-// //         res.status(500).json({ success: false, error: err.message });
-// //     }
+        const { submission, participants } = await getRawForm3Act1aSubmissionAndParticipantsData(submissionId);
+        const xmlData = buildForm3Act1aSubmissionXML(submission, participants);
+        await submitNewForm3Act1aSubmissionToKobo(xmlData); //submit the updated submission to KoboToolbox
+        res.json({ success: true });
+    } catch (err) {
+        console.error(err);
+        res.status(500).json({ success: false, error: err.message });
+    }
 
-// // });
+});
 
-// // // Function to update participant data and submission in local database and KoboToolbox
-// // app.post('/api/form3Act1a/updateParticipantAndSubmissionData', async (req, res) => {
-// //     const data = req.body;
-// //     if (!data.PID || !data.SubmissionID) {
-// //         return res.status(400).json({ success: false, message: 'Participant ID and Submission ID are required' });
+// Function to update participant data and submission in local database and KoboToolbox
+app.post('/api/form3Act1a/updateParticipantAndSubmissionData', async (req, res) => {
+    const data = req.body;
+    if (!data.PID || !data.SubmissionID) {
+        return res.status(400).json({ success: false, message: 'Participant ID and Submission ID are required' });
 
-// //     }
-// //     try {
-// //         //update new data to local database
-// //         await editSubmissionAndParticipants(data);
-
-
-// //         //delete submission data in Kobo
-// //         await deleteOnlySubmissionInKobo(data.SubmissionID);
-
-// //         //Submit new submission data from local database to Kobo
-// //         const { submission, participants } = await getRawSubmissionAndParticipantsData(data.SubmissionID);
-// //         const xmlData = buildSubmissionXML(submission, participants);
-// //         await submitNewSubmissionToKobo(xmlData); //submit the updated submission to KoboToolbox
-// //         res.json({ success: true, message: 'Participant and submission data updated successfully' });
+    }
+    try {
+        //update new data to local database
+        await editForm3Act1aSubmissionAndParticipants(data);
 
 
+        //delete submission data in Kobo
+        await deleteOnlyForm3Act1aSubmissionInKobo(data.SubmissionID);
 
-// //     } catch (error) {
-// //         console.error('Error updating participant and submission data at backend:', error.message);
-// //         res.status(500).json({ success: false, message: 'Failed to update participant and submission data', error: error.message });
-// //     }
-// // });
+        //Submit new submission data from local database to Kobo
+        const { submission, participants } = await getRawForm3Act1aSubmissionAndParticipantsData(data.SubmissionID);
+        const xmlData = buildForm3Act1aSubmissionXML(submission, participants);
+        await submitNewForm3Act1aSubmissionToKobo(xmlData); //submit the updated submission to KoboToolbox
+        res.json({ success: true, message: 'Participant and submission data updated successfully' });
+
+
+
+    } catch (error) {
+        console.error('Error updating participant and submission data at backend:', error.message);
+        res.status(500).json({ success: false, message: 'Failed to update participant and submission data', error: error.message });
+    }
+});
 
 
 // //###################### End Function to handle Form 3Act1a ################################
@@ -4788,11 +4822,13 @@ app.get('/api/form3Act1b/getParticipantData', async (req, res) => {
     try {
         // Optional: language query parameter (default to LA)
         const language = req.query.lang || 'LA';
+        const limit = req.query.limit; // Limit the result send to frontend. Can be undefined, empty string, or a number string
+
         if (!language) {
             return res.status(400).json({ success: false, message: 'Language is required' });
         }
 
-        const data = await getForm3Act1bParticipantData(language);
+        const data = await getForm3Act1bParticipantData(language, limit);
         res.json({ success: true, data });
     } catch (error) {
         console.error('Error fetching Form 3Act1b data:', error);
@@ -4906,23 +4942,23 @@ app.get('/api/form3Act1b/exportToExcel', async (req, res) => {
 });
 
 
-// // app.delete('/api/form3Act1b/deleteSubmission', async (req, res) => {
-// //     try {
-// //         const submissionId = req.query.submissionId;
-// //         if (!submissionId) {
-// //             return res.status(400).json({ success: false, message: 'Submission ID is required' });
-// //         }
+app.delete('/api/form3Act1b/deleteSubmission', async (req, res) => {
+    try {
+        const submissionId = req.query.submissionId;
+        if (!submissionId) {
+            return res.status(400).json({ success: false, message: 'Submission ID is required' });
+        }
 
-// //         // Call the function to delete the submission
-// //         await deleteSubmissionInKoboAndDatabase(submissionId);
-// //         res.json({ success: true, message: 'Submission deleted successfully' });
-// //     } catch (error) {
+        // Call the function to delete the submission
+        await deleteForm3Act1bSubmissionInKoboAndDatabase(submissionId);
+        res.json({ success: true, message: 'Submission deleted successfully' });
+    } catch (error) {
 
-// //         console.error('Error deleting submission:', error);
-// //         res.status(500).json({ success: false, message: 'Failed to delete submission hahaha', error: error.message });
+        console.error('Error deleting submission:', error);
+        res.status(500).json({ success: false, message: 'Failed to delete submission hahaha', error: error.message });
 
-// //     }
-// // });
+    }
+});
 
 // API endpoint to get UUID of a submission the UUID is important to get new submission ID from KoboToolbox when a previous submission is deleted
 app.get('/api/form3Act1b/getUUID', async (req, res) => {
@@ -4969,52 +5005,53 @@ app.get('/api/form3Act1b/getNewSubmissionID', async (req, res) => {
 })
 
 
-// // //delete a participant and update the submission in KoboToolbox
-// // app.post('/api/form3Act1b/deleteParticipant', async (req, res) => {
-// //     const { participantId, submissionId } = req.body;
-// //     try {
-// //         await deleteOnlyParticipantInDB(participantId);
-// //         await deleteOnlySubmissionInKobo(submissionId);
+//delete a participant and update the submission in KoboToolbox
+app.post('/api/form3Act1b/deleteParticipant', async (req, res) => {
+    const { participantId, submissionId } = req.body;
+    try {
+        await deleteOnlyForm3Act1bParticipantInDB(participantId);
+        await deleteOnlyForm3Act1bSubmissionInKobo(submissionId);
 
-// //         const { submission, participants } = await getRawSubmissionAndParticipantsData(submissionId);
-// //         const xmlData = buildSubmissionXML(submission, participants);
-// //         await submitNewSubmissionToKobo(xmlData); //submit the updated submission to KoboToolbox
-// //         res.json({ success: true });
-// //     } catch (err) {
-// //         console.error(err);
-// //         res.status(500).json({ success: false, error: err.message });
-// //     }
+        const { submission, participants } = await getRawForm3Act1bSubmissionAndParticipantsData(submissionId);
+        const xmlData = buildForm3Act1bSubmissionXML(submission, participants);
+        await submitNewForm3Act1bSubmissionToKobo(xmlData); //submit the updated submission to KoboToolbox
+        res.json({ success: true });
+    } catch (err) {
+        console.error(err);
+        res.status(500).json({ success: false, error: err.message });
+    }
 
-// // });
+});
 
-// // // Function to update participant data and submission in local database and KoboToolbox
-// // app.post('/api/form3Act1b/updateParticipantAndSubmissionData', async (req, res) => {
-// //     const data = req.body;
-// //     if (!data.PID || !data.SubmissionID) {
-// //         return res.status(400).json({ success: false, message: 'Participant ID and Submission ID are required' });
+// Function to update participant data and submission in local database and KoboToolbox
+app.post('/api/form3Act1b/updateParticipantAndSubmissionData', async (req, res) => {
+    const data = req.body;
+    if (!data.PID || !data.SubmissionID) {
+        return res.status(400).json({ success: false, message: 'Participant ID and Submission ID are required' });
 
-// //     }
-// //     try {
-// //         //update new data to local database
-// //         await editSubmissionAndParticipants(data);
-
-
-// //         //delete submission data in Kobo
-// //         await deleteOnlySubmissionInKobo(data.SubmissionID);
-
-// //         //Submit new submission data from local database to Kobo
-// //         const { submission, participants } = await getRawSubmissionAndParticipantsData(data.SubmissionID);
-// //         const xmlData = buildSubmissionXML(submission, participants);
-// //         await submitNewSubmissionToKobo(xmlData); //submit the updated submission to KoboToolbox
-// //         res.json({ success: true, message: 'Participant and submission data updated successfully' });
+    }
+    try {
+        //update new data to local database
+        await editForm3Act1bSubmissionAndParticipants(data);
 
 
+        //delete submission data in Kobo
+        await deleteOnlyForm3Act1bSubmissionInKobo(data.SubmissionID);
 
-// //     } catch (error) {
-// //         console.error('Error updating participant and submission data at backend:', error.message);
-// //         res.status(500).json({ success: false, message: 'Failed to update participant and submission data', error: error.message });
-// //     }
-// // });
+        //Submit new submission data from local database to Kobo
+        const { submission, participants } = await getRawForm3Act1bSubmissionAndParticipantsData(data.SubmissionID);
+
+        const xmlData = buildForm3Act1bSubmissionXML(submission, participants);      
+        await submitNewForm3Act1bSubmissionToKobo(xmlData); //submit the updated submission to KoboToolbox
+        res.json({ success: true, message: 'Participant and submission data updated successfully' });
+
+
+
+    } catch (error) {
+        console.error('Error updating participant and submission data at backend:', error.message);
+        res.status(500).json({ success: false, message: 'Failed to update participant and submission data', error: error.message });
+    }
+});
 
 
 // //###################### End Function to handle Form 3Act1b ################################
