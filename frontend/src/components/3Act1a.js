@@ -492,7 +492,7 @@ export default function Form3Act1a({ refreshTrigger }) {
             {loading ? (
                 <div>Loading...</div>
             ) : (
-                <div className="table-responsive" style={{ overflowX: 'auto', overflowY: 'auto', maxHeight: '550px' }}>
+                <div className="table-responsive" style={{ overflowX: 'auto', overflowY: 'auto', maxHeight: '616px' }}>
                     <table className="table table-bordered table-hover table-sm text-nowrap">
                         <thead className="table-success sticky-header">
                             {data.length > 0 && (

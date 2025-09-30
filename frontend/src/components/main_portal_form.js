@@ -187,11 +187,12 @@ export default function MainPortalForm() {
                 <br />
                 <div style={{ textAlign: 'center', margin: '0 auto', maxWidth: '1000px', fontSize: "28px" }}>ຖານຂໍ້ມູນການຕິດຕາມ ແລະ ປະເມີນຜົນ ໂຄງການກະສິກຳເພື່ອໂພຊະນາການໄລຍະ 2</div>
                 <div style={{ textAlign: 'center', margin: '0 auto', maxWidth: '1000px', fontFamily: "'Times New Roman', sans-serif", fontSize: "25px" }}>M & E Database</div>
+                <div style={{ textAlign: 'center', margin: '0 auto', maxWidth: '1000px', fontFamily: "'Times New Roman', sans-serif", fontSize: "20px" }}>Agriculture for Nutrition Project Phase II</div>
             </div>
 
-            <div className="text-center py-2 font-weight-bold" style={{ backgroundColor: theme.subHeaderBg, color: theme.subHeaderColor, fontSize: "20px", fontFamily: "'Times New Roman', sans-serif" }}>
+            {/* <div className="text-center py-2 font-weight-bold" style={{ backgroundColor: theme.subHeaderBg, color: theme.subHeaderColor, fontSize: "20px", fontFamily: "'Times New Roman', sans-serif" }}>
                 Agriculture for Nutrition Project Phase II
-            </div>
+            </div> */}
 
 
 
