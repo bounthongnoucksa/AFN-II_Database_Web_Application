@@ -26,7 +26,7 @@ import OutreachCalc from './OutreachCalc';
 import LogFrame from './logFrame';
 
 export default function MainPortalForm() {
-    const [activeTab, setActiveTab] = useState('tab3');
+    const [activeTab, setActiveTab] = useState('tab1');
 
     const switchTab = (tabId) => {
         setActiveTab(tabId);

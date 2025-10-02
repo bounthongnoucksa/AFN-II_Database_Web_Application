@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Loading...</title>
+  <style>
+    body {
+      background: transparent;
+      color: #555;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-direction: column;
+      font-family: sans-serif;
+      height: 100vh;
+      margin: 0;
+    }
+
+    /* Spinner container */
+    .spinner {
+      margin-bottom: 20px;
+      width: 40px;
+      height: 40px;
+      border: 5px solid #ccc;
+      border-top-color: #0078d7; /* Accent color */
+      border-radius: 50%;
+      animation: spin 1s linear infinite;
+    }
+
+    /* Keyframes for spinner rotation */
+    @keyframes spin {
+      from {
+        transform: rotate(0deg);
+      }
+      to {
+        transform: rotate(360deg);
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="spinner"></div>
+  <h2>Starting up, please wait...</h2>
+</body>
+</html>

@@ -64,3 +64,29 @@ Manually generate API Key via terminal:
 node -e "console.log(require('crypto').randomBytes(32).toString('hex'))"
 
 (In production we can autogenerate using a NodeJS function and save to database with status column active/inactive)
+
+
+
+====================================
+How to buil and publish the update:
+====================================
+How to Build and Publish
+
+Set the GitHub Token in your terminal (required to publish):
+
+export GH_TOKEN=your_token   # Linux/macOS
+set GH_TOKEN=your_token      # Windows CMD
+$env:GH_TOKEN="your_token"   # PowerShell
+
+
+You can generate the token here: https://github.com/settings/tokens
+ (select repo scope)
+
+
+Then run:
+npm run publish
+
+This will:
+- Build your app
+- Create an installer (.exe)
+- Upload the installer + metadata (latest.yml) to a GitHub Release
