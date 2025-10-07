@@ -85,12 +85,12 @@ async function downloadForm1A4SubmissionDataFromKoboToolbox() {
                     parseInt(el["decimal_qs5co50"] || 0),
                     el["_select_one_conductedby_01"] || null,
                     el["text_zk0ie07"] || null,
-                    parseInt(el["group_wz1ah68/_IFAD_"] || 0),
-                    parseInt(el["group_wz1ah68/_MAF_"] || 0),
-                    parseInt(el["group_wz1ah68/_WFP_"] || 0),
-                    parseInt(el["group_wz1ah68/_GoL_"] || 0),
-                    parseInt(el["group_wz1ah68/_Ben_"] || 0),
-                    parseInt(el["group_wz1ah68/integer_oz4sh88"] || 0),
+                    parseInt(el["group_wz1ah68/_IFAD_"] || null),
+                    parseInt(el["group_wz1ah68/_MAF_"] || null),
+                    parseInt(el["group_wz1ah68/_WFP_"] || null),
+                    parseInt(el["group_wz1ah68/_GoL_"] || null),
+                    parseInt(el["group_wz1ah68/_Ben_"] || null),
+                    parseInt(el["group_wz1ah68/integer_oz4sh88"] || null),
                     el["__version__"] || null,
                     el["_submission_time"] || null
                 ]);
@@ -763,7 +763,14 @@ function buildForm1A4SubmissionXML(submission, participants) {
 
         xml.push(`    <doyouhavehh_id>${escapeXML(p.HaveHH_id)}</doyouhavehh_id>`);
         xml.push(`    <mainhhid>${escapeXML(p.HHId)}</mainhhid>`);
-        xml.push(`    <select_one_mainNameAndSurname>${escapeXML(p.NameAndSurname)}</select_one_mainNameAndSurname>`);
+
+        if (p.HaveHH_id === "hhidyes") {
+            xml.push(`    <select_one_mainNameAndSurname>${escapeXML(p.NameAndSurname)}</select_one_mainNameAndSurname>`);
+
+        } else {
+            xml.push(`    <text_hx6fh11>${escapeXML(p.NameAndSurname)}</text_hx6fh11>`);
+        }
+
         xml.push(`    <_mainAge>${escapeXML(p.Age)}</_mainAge>`);
         xml.push(`    <_mainGender>${escapeXML(p.Gender)}</_mainGender>`);
         xml.push(`    <_mainEthnicity>${escapeXML(p.Ethnicity)}</_mainEthnicity>`);
@@ -776,12 +783,12 @@ function buildForm1A4SubmissionXML(submission, participants) {
 
     // Group: Contributions
     xml.push(`  <group_wz1ah68>`);
-    xml.push(`    <_IFAD_>${submission.IFAD || 0}</_IFAD_>`);
-    xml.push(`    <_MAF_>${submission.MAF || 0}</_MAF_>`);
-    xml.push(`    <_WFP_>${submission.WFP || 0}</_WFP_>`);
-    xml.push(`    <_GoL_>${submission.GoL || 0}</_GoL_>`);
-    xml.push(`    <_Ben_>${submission.Ben || 0}</_Ben_>`);
-    xml.push(`    <integer_oz4sh88>${submission.OtherFund || 0}</integer_oz4sh88>`);
+    xml.push(`    <_IFAD_>${submission.IFAD || null}</_IFAD_>`);
+    xml.push(`    <_MAF_>${submission.MAF || null}</_MAF_>`);
+    xml.push(`    <_WFP_>${submission.WFP || null}</_WFP_>`);
+    xml.push(`    <_GoL_>${submission.GoL || null}</_GoL_>`);
+    xml.push(`    <_Ben_>${submission.Ben || null}</_Ben_>`);
+    xml.push(`    <integer_oz4sh88>${submission.OtherFund || null}</integer_oz4sh88>`);
     xml.push(`  </group_wz1ah68>`);
 
     // Meta
@@ -829,12 +836,12 @@ const normalizeKeys = (data) => {
         KeySpeciesConserved: data.KeySpeciesConserved || data["ຊະນິດພັນ (ພືດ/ສັດນ້ຳ) ຕົ້ນຕໍທີ່ສະຫງວນ"] || data["Key Species Conserved"] || null,
 
         // Financial support fields
-        IFAD: parseInt(data.IFAD || 0),
-        MAF: parseInt(data.MAF || 0),
-        WFP: parseInt(data.WFP || 0),
-        GoL: parseInt(data.GoL || 0),
-        Ben: parseInt(data.Ben || 0),
-        OtherFund: parseInt(data.OtherFund || data["Other Fund"] || 0)
+        IFAD: isNaN(parseInt(data.IFAD)) ? null : parseInt(data.IFAD),
+        MAF: isNaN(parseInt(data.MAF)) ? null : parseInt(data.MAF),
+        WFP: isNaN(parseInt(data.WFP)) ? null : parseInt(data.WFP),
+        GoL: isNaN(parseInt(data.GoL)) ? null : parseInt(data.GoL),
+        Ben: isNaN(parseInt(data.Ben)) ? null : parseInt(data.Ben),
+        OtherFund: isNaN(parseInt(data.OtherFund || data["Other Fund"])) ? null : parseInt(data.OtherFund || data["Other Fund"])
     };
 };
 

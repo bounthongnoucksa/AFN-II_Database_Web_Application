@@ -515,9 +515,9 @@ export default function Form1A4({ refreshTrigger }) {
                                 >
                                     {Object.entries(row).map(([col, value], colIdx) => (
                                         <td key={col}>
-                                            {(colIdx >= 22 && colIdx <= 27 && !isNaN(value))
+                                            {(colIdx >= 22 && colIdx <= 27 && value != null && value != '' && !isNaN(value))
                                                 ? Number(value).toLocaleString()
-                                                : value}
+                                                : value ?? ''}
                                         </td>
                                     ))}
                                 </tr>
@@ -580,7 +580,9 @@ export default function Form1A4({ refreshTrigger }) {
                                             const isDateField = idx >= 3 && idx <= 5;
                                             //const isEditableText = (idx >= 11 && idx <= 7) || (idx >= 13 && idx <= 18);
                                             const isEditableText = (idx === 14);
-                                            const isNumericField = (idx >= 23 && idx <= 28) || (idx === 12) || (idx === 17);
+                                            const isTextNoRefresh = (idx === 11);
+                                            const isNumericField = (idx === 17);
+                                            const isNumberFeildNoRefresh = (idx >= 23 && idx <= 28) || (idx === 12);
 
                                             return (
                                                 <React.Fragment key={idx}>
@@ -606,6 +608,20 @@ export default function Form1A4({ refreshTrigger }) {
                                                                 type="number"
                                                                 className="form-control form-control-sm"
                                                                 value={value ?? ''}
+                                                                //value={value}
+                                                                onChange={(e) =>
+                                                                    setSelectedRow((prev) => ({
+                                                                        ...prev,
+                                                                        [key]: e.target.value,
+                                                                    }))
+                                                                }
+                                                            />
+                                                        ): isNumberFeildNoRefresh ? (
+                                                            <input
+                                                                type="number"
+                                                                className="form-control form-control-sm"
+                                                                //value={value ?? ''}
+                                                                value={value}
                                                                 onChange={(e) =>
                                                                     setSelectedRow((prev) => ({
                                                                         ...prev,
@@ -617,7 +633,8 @@ export default function Form1A4({ refreshTrigger }) {
                                                             <input
                                                                 type="text"
                                                                 className="form-control form-control-sm"
-                                                                value={value ?? ''}
+                                                                //value={value ?? ''}
+                                                                value={value}
                                                                 onChange={(e) =>
                                                                     setSelectedRow((prev) => ({
                                                                         ...prev,
@@ -625,7 +642,20 @@ export default function Form1A4({ refreshTrigger }) {
                                                                     }))
                                                                 }
                                                             />
-                                                        ) : (
+                                                        ): isTextNoRefresh ? (
+                                                            <input
+                                                                type="text"
+                                                                className="form-control form-control-sm"
+                                                                //value={value ?? ''}
+                                                                value={value}
+                                                                onChange={(e) =>
+                                                                    setSelectedRow((prev) => ({
+                                                                        ...prev,
+                                                                        [key]: e.target.value,
+                                                                    }))
+                                                                }
+                                                            />
+                                                        ): (
                                                             <input
                                                                 type="text"
                                                                 className="form-control form-control-sm"
@@ -672,7 +702,7 @@ export default function Form1A4({ refreshTrigger }) {
                                                 >
                                                     {Object.entries(row).map(([col, value], colIdx) => (
                                                         <td key={col}>
-                                                            {(colIdx >= 23 && colIdx <= 28 && !isNaN(value))
+                                                            {(colIdx >= 23 && colIdx <= 28 && value != null && value != '' &&  !isNaN(value))
                                                                 ? Number(value).toLocaleString()
                                                                 : value}
                                                         </td>
