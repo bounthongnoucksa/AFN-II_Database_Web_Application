@@ -500,7 +500,7 @@ export default function Form1A1({ refreshTrigger }) {
                                 <tr>
                                     {Object.keys(data[0]).map((col) => (
                                         <th key={col}>{col}</th>
-                                        
+
                                     ))}
                                 </tr>
                             )}
@@ -516,12 +516,12 @@ export default function Form1A1({ refreshTrigger }) {
                                     }}
                                     onContextMenu={(e) => handleContextMenu(e, row)}
                                 >
-                                    {Object.entries(row).map(([col, value], colIdx) => (                                        
+                                    {Object.entries(row).map(([col, value], colIdx) => (
                                         <td key={col}>
-                                            {(colIdx >= 23 && colIdx <= 28 && value != null && value != ''  && !isNaN(value))
+                                            {(colIdx >= 23 && colIdx <= 28 && value != null && value != '' && !isNaN(value))
                                                 ? Number(value).toLocaleString()
-                                                : value}
-                                        </td>                                        
+                                                : value ?? ''}
+                                        </td>
                                     ))}
                                 </tr>
                             ))}
@@ -676,11 +676,11 @@ export default function Form1A1({ refreshTrigger }) {
                                                 >
                                                     {Object.entries(row).map(([col, value], colIdx) => (
                                                         financialFields.includes(col) ? null : (
-                                                        <td key={col}>
-                                                            {(colIdx >= 24 && colIdx <= 29 && value != null && value != ''  && !isNaN(value))
-                                                                ? Number(value).toLocaleString()
-                                                                : value}
-                                                        </td>
+                                                            <td key={col}>
+                                                                {(colIdx >= 24 && colIdx <= 29 && value != null && value != '' && !isNaN(value))
+                                                                    ? Number(value).toLocaleString()
+                                                                    : value}
+                                                            </td>
                                                         )
                                                     ))}
                                                 </tr>

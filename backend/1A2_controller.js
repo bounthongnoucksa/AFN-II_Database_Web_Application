@@ -98,12 +98,12 @@ async function downloadForm1A2SubmissionDataFromKoboToolbox() {
                             p["group_wi0we41/module_4"] || null,
                             p["group_wi0we41/g_receive_Yes_No"] || null,
                             p["group_wi0we41/select_one_qg7ja17"] || null,
-                            parseInt(p["group_wi0we41/group_wz1ah68/_IFAD_"] || 0),
-                            parseInt(p["group_wi0we41/group_wz1ah68/_MAF_"] || 0),
-                            parseInt(p["group_wi0we41/group_wz1ah68/_WFP_"] || 0),
-                            parseInt(p["group_wi0we41/group_wz1ah68/_GoL_"] || 0),
-                            parseInt(p["group_wi0we41/group_wz1ah68/_Ben_"] || 0),
-                            parseInt(p["group_wi0we41/group_wz1ah68/integer_oz4sh88"] || 0)
+                            parseInt(p["group_wi0we41/group_wz1ah68/_IFAD_"] || null),
+                            parseInt(p["group_wi0we41/group_wz1ah68/_MAF_"] || null),
+                            parseInt(p["group_wi0we41/group_wz1ah68/_WFP_"] || null),
+                            parseInt(p["group_wi0we41/group_wz1ah68/_GoL_"] || null),
+                            parseInt(p["group_wi0we41/group_wz1ah68/_Ben_"] || null),
+                            parseInt(p["group_wi0we41/group_wz1ah68/integer_oz4sh88"] || null)
                         ]);
                     }
                 }
@@ -766,7 +766,12 @@ function buildForm1A2SubmissionXML(submission, participants) {
 
         xml.push(`    <doyouhavehh_id>${escapeXML(p.HaveHH_id)}</doyouhavehh_id>`);
         xml.push(`    <mainhhid>${escapeXML(p.HHId)}</mainhhid>`);
-        xml.push(`    <select_one_mainNameAndSurname>${escapeXML(p.NameAndSurname)}</select_one_mainNameAndSurname>`);
+        if (p.HaveHH_id === 'hhidyes') {
+            xml.push(`    <select_one_mainNameAndSurname>${escapeXML(p.NameAndSurname)}</select_one_mainNameAndSurname>`);
+        } else {
+            xml.push(`    <text_hx6fh11>${escapeXML(p.NameAndSurname)}</text_hx6fh11>`);
+        }
+
         xml.push(`    <age_selected>${escapeXML(p.Age)}</age_selected>`);
         xml.push(`    <gender_selected>${escapeXML(p.Gender)}</gender_selected>`);
         xml.push(`    <_PW_BW_PW_BW>${escapeXML(p.PWBWStatus)}</_PW_BW_PW_BW>`);
@@ -786,12 +791,12 @@ function buildForm1A2SubmissionXML(submission, participants) {
 
         // Contribution group
         xml.push(`    <group_wz1ah68>`);
-        xml.push(`      <_IFAD_>${p.IFAD || 0}</_IFAD_>`);
-        xml.push(`      <_MAF_>${p.MAF || 0}</_MAF_>`);
-        xml.push(`      <_WFP_>${p.WFP || 0}</_WFP_>`);
-        xml.push(`      <_GoL_>${p.GoL || 0}</_GoL_>`);
-        xml.push(`      <_Ben_>${p.Ben || 0}</_Ben_>`);
-        xml.push(`      <integer_oz4sh88>${p.OtherFund || 0}</integer_oz4sh88>`);
+        xml.push(`      <_IFAD_>${p.IFAD || ''}</_IFAD_>`);
+        xml.push(`      <_MAF_>${p.MAF || ''}</_MAF_>`);
+        xml.push(`      <_WFP_>${p.WFP || ''}</_WFP_>`);
+        xml.push(`      <_GoL_>${p.GoL || ''}</_GoL_>`);
+        xml.push(`      <_Ben_>${p.Ben || ''}</_Ben_>`);
+        xml.push(`      <integer_oz4sh88>${p.OtherFund || ''}</integer_oz4sh88>`);
         xml.push(`    </group_wz1ah68>`);
 
         xml.push(`  </group_wi0we41>`);
@@ -855,12 +860,12 @@ const normalizeKeys = (data) => {
         // GrantUseFor: data["GrantUseFor"] || data["ໃຊ້ທຶນໃນການປະກອບອາຊີບ"],
 
         // Contributions
-        IFAD: parseInt(data.IFAD) || 0,
-        MAF: parseInt(data.MAF) || 0,
-        WFP: parseInt(data.WFP) || 0,
-        GoL: parseInt(data.GoL) || 0,
-        Ben: parseInt(data.Ben) || 0,
-        OtherFund: parseInt(data["Other Fund"]) || 0,
+        IFAD: isNaN(parseInt(data.IFAD)) ? null : parseInt(data.IFAD),
+        MAF: isNaN(parseInt(data.MAF)) ? null : parseInt(data.MAF),
+        WFP: isNaN(parseInt(data.WFP)) ? null : parseInt(data.WFP),
+        GoL: isNaN(parseInt(data.GoL)) ? null : parseInt(data.GoL),
+        Ben: isNaN(parseInt(data.Ben)) ? null : parseInt(data.Ben),
+        OtherFund: isNaN(parseInt(data["Other Fund"])) ? null : parseInt(data["Other Fund"]),
     };
 };
 
