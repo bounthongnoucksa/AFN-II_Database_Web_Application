@@ -82,10 +82,10 @@ async function downloadCBVillagersSubmissionDataFromKoboToolbox() {
                     el["text_otherlocation_xi6ak40"] || null,
                     el["_select_one_conductedby_01"] || null,
                     el["_activitycode"] || null,
-                    parseInt(el["group_wz1ah68/_IFAD_"] || 0),
-                    parseInt(el["group_wz1ah68/_MAF_"] || 0),
-                    parseInt(el["group_wz1ah68/_WFP_"] || 0),
-                    parseInt(el["group_wz1ah68/_GoL_"] || 0),
+                    parseInt(el["group_wz1ah68/_IFAD_"] || null),
+                    parseInt(el["group_wz1ah68/_MAF_"] || null),
+                    parseInt(el["group_wz1ah68/_WFP_"] || null),
+                    parseInt(el["group_wz1ah68/_GoL_"] || null),
                     el["__version__"] || null,
                     el["_submission_time"] || null
                 ]);
@@ -392,10 +392,14 @@ function getCBVillagersParticipantDataBySID(SubmissionId, language) {
                         (SELECT Label_Lao FROM Translation_EN_LA WHERE FormName='cb_for_villagers' AND ItemCode=np.PWD LIMIT 1) AS 'ຜູ້ພິການ',
                         (SELECT Label_Lao FROM Translation_EN_LA WHERE FormName='cb_for_villagers' AND ItemCode=np.APGMember LIMIT 1) AS 'ສະມາຊິກກຸ່ມ APG',
 
-                        CASE WHEN np.rn = 1 THEN np.IFAD ELSE NULL END AS IFAD,
-                        CASE WHEN np.rn = 1 THEN np.MAF ELSE NULL END AS MAF,
-                        CASE WHEN np.rn = 1 THEN np.WFP ELSE NULL END AS WFP,
-                        CASE WHEN np.rn = 1 THEN np.GoL ELSE NULL END AS GoL
+                        --CASE WHEN np.rn = 1 THEN np.IFAD ELSE NULL END AS IFAD,
+                        --CASE WHEN np.rn = 1 THEN np.MAF ELSE NULL END AS MAF,
+                        --CASE WHEN np.rn = 1 THEN np.WFP ELSE NULL END AS WFP,
+                        --CASE WHEN np.rn = 1 THEN np.GoL ELSE NULL END AS GoL
+                        np.IFAD AS IFAD,
+                        np.MAF AS MAF,
+                        np.WFP AS WFP,
+                        np.GoL AS GoL
                     FROM NumberedParticipants np
                     ORDER BY np.Id DESC, np.rn;
             `;
@@ -466,10 +470,14 @@ function getCBVillagersParticipantDataBySID(SubmissionId, language) {
                             (SELECT Label_English FROM Translation_EN_LA WHERE FormName='cb_for_villagers' AND ItemCode=np.PWD LIMIT 1) AS 'PWD',
                             (SELECT Label_English FROM Translation_EN_LA WHERE FormName='cb_for_villagers' AND ItemCode=np.APGMember LIMIT 1) AS 'APG Member',
 
-                            CASE WHEN np.rn = 1 THEN np.IFAD ELSE NULL END AS IFAD,
-                            CASE WHEN np.rn = 1 THEN np.MAF ELSE NULL END AS MAF,
-                            CASE WHEN np.rn = 1 THEN np.WFP ELSE NULL END AS WFP,
-                            CASE WHEN np.rn = 1 THEN np.GoL ELSE NULL END AS GoL
+                            --CASE WHEN np.rn = 1 THEN np.IFAD ELSE NULL END AS IFAD,
+                            --CASE WHEN np.rn = 1 THEN np.MAF ELSE NULL END AS MAF,
+                            --CASE WHEN np.rn = 1 THEN np.WFP ELSE NULL END AS WFP,
+                            --CASE WHEN np.rn = 1 THEN np.GoL ELSE NULL END AS GoL
+                            np.IFAD AS IFAD,
+                            np.MAF AS MAF,
+                            np.WFP AS WFP,
+                            np.GoL AS GoL
                         FROM NumberedParticipants np
                         ORDER BY np.Id DESC, np.rn;            
             `;
@@ -739,7 +747,13 @@ function buildCBVillagerSubmissionXML(submission, participants) {
 
         xml.push(`    <doyouhavehh_id>${escapeXML(p.HaveHHId)}</doyouhavehh_id>`);
         xml.push(`    <mainhhid>${escapeXML(p.HHId)}</mainhhid>`);
-        xml.push(`    <select_one_mainNameAndSurname>${escapeXML(p.NameAndSurname)}</select_one_mainNameAndSurname>`);
+
+        if (p.HaveHHId === "hhidyes") {
+            xml.push(`    <select_one_mainNameAndSurname>${escapeXML(p.NameAndSurname)}</select_one_mainNameAndSurname>`);
+        }else{
+            xml.push(`    <_namenohhid>${escapeXML(p.NameAndSurname)}</_namenohhid>`);
+        }
+
         xml.push(`    <age_selected>${escapeXML(p.Age)}</age_selected>`);
         xml.push(`    <gender_selected>${escapeXML(p.Gender)}</gender_selected>`);
         xml.push(`    <_main_participant_responsibili>${escapeXML(p.Responsibility)}</_main_participant_responsibili>`);
@@ -754,10 +768,10 @@ function buildCBVillagerSubmissionXML(submission, participants) {
 
     // Group: Contributions
     xml.push(`  <group_wz1ah68>`);
-    xml.push(`    <_IFAD_>${submission.IFAD || 0}</_IFAD_>`);
-    xml.push(`    <_MAF_>${submission.MAF || 0}</_MAF_>`);
-    xml.push(`    <_WFP_>${submission.WFP || 0}</_WFP_>`);
-    xml.push(`    <_GoL_>${submission.GoL || 0}</_GoL_>`);
+    xml.push(`    <_IFAD_>${submission.IFAD || ''}</_IFAD_>`);
+    xml.push(`    <_MAF_>${submission.MAF || ''}</_MAF_>`);
+    xml.push(`    <_WFP_>${submission.WFP || ''}</_WFP_>`);
+    xml.push(`    <_GoL_>${submission.GoL || ''}</_GoL_>`);
     xml.push(`  </group_wz1ah68>`);
 
     // Meta
@@ -799,10 +813,10 @@ const normalizeKeys = (data) => {
         OtherLocation: data["Other venues than village"] || data["ສະຖານທີ່ອື່ນ (ນອກຈາກບ້ານ)"],
         ActivityCode: data["Activity Code"] || data["ກິດຈະກຳໃດ"],
 
-        IFAD: parseInt(data.IFAD) || 0,
-        MAF: parseInt(data.MAF) || 0,
-        WFP: parseInt(data.WFP) || 0,
-        GoL: parseInt(data.GoL) || 0
+        IFAD: isNaN(parseInt(data.IFAD)) ? null : parseInt(data.IFAD),
+        MAF: isNaN(parseInt(data.MAF)) ? null : parseInt(data.MAF),
+        WFP: isNaN(parseInt(data.WFP)) ? null : parseInt(data.WFP),
+        GoL: isNaN(parseInt(data.GoL)) ? null : parseInt(data.GoL)
     };
 };
 

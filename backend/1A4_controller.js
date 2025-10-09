@@ -407,12 +407,18 @@ function getForm1A4ParticipantDataBySID(SubmissionId, language) {
                     (SELECT Label_Lao FROM Translation_EN_LA WHERE FormName='form_1a4' AND ItemCode=np.PWD_status LIMIT 1) AS 'ຜູ້ພິການບໍ',
                     (SELECT Label_Lao FROM Translation_EN_LA WHERE FormName='form_1a4' AND ItemCode=np.APGMember LIMIT 1) AS 'ເປັນສະມາຊິກກຸ່ມບໍ',
 
-                    CASE WHEN np.rn = 1 THEN np.IFAD ELSE NULL END AS IFAD,
-                    CASE WHEN np.rn = 1 THEN np.MAF ELSE NULL END AS MAF,
-                    CASE WHEN np.rn = 1 THEN np.WFP ELSE NULL END AS WFP,
-                    CASE WHEN np.rn = 1 THEN np.GoL ELSE NULL END AS GoL,
-                    CASE WHEN np.rn = 1 THEN np.Ben ELSE NULL END AS Ben,
-                    CASE WHEN np.rn = 1 THEN np.OtherFund ELSE NULL END AS 'Other Fund'
+                    --CASE WHEN np.rn = 1 THEN np.IFAD ELSE NULL END AS IFAD,
+                    --CASE WHEN np.rn = 1 THEN np.MAF ELSE NULL END AS MAF,
+                    --CASE WHEN np.rn = 1 THEN np.WFP ELSE NULL END AS WFP,
+                    --CASE WHEN np.rn = 1 THEN np.GoL ELSE NULL END AS GoL,
+                    --CASE WHEN np.rn = 1 THEN np.Ben ELSE NULL END AS Ben,
+                    --CASE WHEN np.rn = 1 THEN np.OtherFund ELSE NULL END AS 'Other Fund'
+                    np.IFAD AS IFAD,
+                    np.MAF AS MAF,
+                    np.WFP AS WFP,
+                    np.GoL AS GoL,
+                    np.Ben AS Ben,
+                    np.OtherFund AS 'Other Fund'
                 FROM NumberedParticipants np
                 ORDER BY np.Id DESC, np.rn;
 
@@ -486,12 +492,18 @@ function getForm1A4ParticipantDataBySID(SubmissionId, language) {
                     (SELECT Label_English FROM Translation_EN_LA WHERE FormName='form_1a4' AND ItemCode=np.PWD_status LIMIT 1) AS 'PWD Status',
                     (SELECT Label_English FROM Translation_EN_LA WHERE FormName='form_1a4' AND ItemCode=np.APGMember LIMIT 1) AS 'APG Member',
 
-                    CASE WHEN np.rn = 1 THEN np.IFAD ELSE NULL END AS IFAD,
-                    CASE WHEN np.rn = 1 THEN np.MAF ELSE NULL END AS MAF,
-                    CASE WHEN np.rn = 1 THEN np.WFP ELSE NULL END AS WFP,
-                    CASE WHEN np.rn = 1 THEN np.GoL ELSE NULL END AS GoL,
-                    CASE WHEN np.rn = 1 THEN np.Ben ELSE NULL END AS Ben,
-                    CASE WHEN np.rn = 1 THEN np.OtherFund ELSE NULL END AS 'Other Fund'
+                    --CASE WHEN np.rn = 1 THEN np.IFAD ELSE NULL END AS IFAD,
+                    --CASE WHEN np.rn = 1 THEN np.MAF ELSE NULL END AS MAF,
+                    --CASE WHEN np.rn = 1 THEN np.WFP ELSE NULL END AS WFP,
+                    --CASE WHEN np.rn = 1 THEN np.GoL ELSE NULL END AS GoL,
+                    --CASE WHEN np.rn = 1 THEN np.Ben ELSE NULL END AS Ben,
+                    --CASE WHEN np.rn = 1 THEN np.OtherFund ELSE NULL END AS 'Other Fund'
+                    np.IFAD AS IFAD,
+                    np.MAF AS MAF,
+                    np.WFP AS WFP,
+                    np.GoL AS GoL,
+                    np.Ben AS Ben,
+                    np.OtherFund AS 'Other Fund'
                 FROM NumberedParticipants np
                 ORDER BY np.Id DESC, np.rn;
             `;
@@ -783,12 +795,12 @@ function buildForm1A4SubmissionXML(submission, participants) {
 
     // Group: Contributions
     xml.push(`  <group_wz1ah68>`);
-    xml.push(`    <_IFAD_>${submission.IFAD || null}</_IFAD_>`);
-    xml.push(`    <_MAF_>${submission.MAF || null}</_MAF_>`);
-    xml.push(`    <_WFP_>${submission.WFP || null}</_WFP_>`);
-    xml.push(`    <_GoL_>${submission.GoL || null}</_GoL_>`);
-    xml.push(`    <_Ben_>${submission.Ben || null}</_Ben_>`);
-    xml.push(`    <integer_oz4sh88>${submission.OtherFund || null}</integer_oz4sh88>`);
+    xml.push(`    <_IFAD_>${submission.IFAD || ''}</_IFAD_>`);
+    xml.push(`    <_MAF_>${submission.MAF || ''}</_MAF_>`);
+    xml.push(`    <_WFP_>${submission.WFP || ''}</_WFP_>`);
+    xml.push(`    <_GoL_>${submission.GoL || ''}</_GoL_>`);
+    xml.push(`    <_Ben_>${submission.Ben || ''}</_Ben_>`);
+    xml.push(`    <integer_oz4sh88>${submission.OtherFund || ''}</integer_oz4sh88>`);
     xml.push(`  </group_wz1ah68>`);
 
     // Meta

@@ -79,12 +79,12 @@ async function downloadForm1A1SubmissionDataFromKoboToolbox() {
                     el["group_actconductdate_sa1oe86/date_up9xu24"] || null,
                     el["_select_one_conductedby_01"] || null,
                     el["_0_Not_1_New_2_Renovated"] || null,
-                    parseInt(el["group_wz1ah68/_IFAD_"] || 0),
-                    parseInt(el["group_wz1ah68/_MAF_"] || 0),
-                    parseInt(el["group_wz1ah68/_WFP_"] || 0),
-                    parseInt(el["group_wz1ah68/_GoL_"] || 0),
-                    parseInt(el["group_wz1ah68/_Ben_"] || 0),
-                    parseInt(el["group_wz1ah68/integer_oz4sh88"] || 0),
+                    parseInt(el["group_wz1ah68/_IFAD_"] || null),
+                    parseInt(el["group_wz1ah68/_MAF_"] || null),
+                    parseInt(el["group_wz1ah68/_WFP_"] || null),
+                    parseInt(el["group_wz1ah68/_GoL_"] || null),
+                    parseInt(el["group_wz1ah68/_Ben_"] || null),
+                    parseInt(el["group_wz1ah68/integer_oz4sh88"] || null),
                     el["__version__"] || null,
                     el["_submission_time"] || null,
                 ]);
@@ -420,12 +420,18 @@ function getForm1A1ParticipantDataBySID(SubmissionId, language) {
                         (SELECT Label_Lao FROM Translation_EN_LA WHERE FormName='form_1a1' AND ItemCode=np.APGMember LIMIT 1) AS 'ເປັນສະມາຊິກກຸ່ມບໍ',
                         (SELECT Label_Lao FROM Translation_EN_LA WHERE FormName='form_1a1' AND ItemCode=np.VNCAvailable LIMIT 1) AS 'ສ້າງສູນຮຽນຮູ້ແລ້ວບໍ',
 
-                        CASE WHEN np.rn = 1 THEN np.IFAD ELSE NULL END AS IFAD,
-                        CASE WHEN np.rn = 1 THEN np.MAF ELSE NULL END AS MAF,
-                        CASE WHEN np.rn = 1 THEN np.WFP ELSE NULL END AS WFP,
-                        CASE WHEN np.rn = 1 THEN np.GoL ELSE NULL END AS GoL,
-                        CASE WHEN np.rn = 1 THEN np.Ben ELSE NULL END AS Ben,
-                        CASE WHEN np.rn = 1 THEN np.OtherFund ELSE NULL END AS OtherFund
+                        --CASE WHEN np.rn = 1 THEN np.IFAD ELSE NULL END AS IFAD,
+                        --CASE WHEN np.rn = 1 THEN np.MAF ELSE NULL END AS MAF,
+                        --CASE WHEN np.rn = 1 THEN np.WFP ELSE NULL END AS WFP,
+                        --CASE WHEN np.rn = 1 THEN np.GoL ELSE NULL END AS GoL,
+                        --CASE WHEN np.rn = 1 THEN np.Ben ELSE NULL END AS Ben,
+                        --CASE WHEN np.rn = 1 THEN np.OtherFund ELSE NULL END AS OtherFund
+                        np.IFAD AS IFAD,
+                        np.MAF AS MAF,
+                        np.WFP AS WFP,
+                        np.GoL AS GoL,
+                        np.Ben AS Ben,
+                        np.OtherFund AS OtherFund
                     FROM NumberedParticipants np
                     ORDER BY np.Id DESC, np.rn;
             `;
@@ -501,12 +507,18 @@ function getForm1A1ParticipantDataBySID(SubmissionId, language) {
                             (SELECT Label_English FROM Translation_EN_LA WHERE FormName='form_1a1' AND ItemCode=np.APGMember LIMIT 1) AS 'APG Member',
                             (SELECT Label_English FROM Translation_EN_LA WHERE FormName='form_1a1' AND ItemCode=np.VNCAvailable LIMIT 1) AS 'VNC Available',
 
-                            CASE WHEN np.rn = 1 THEN np.IFAD ELSE NULL END AS IFAD,
-                            CASE WHEN np.rn = 1 THEN np.MAF ELSE NULL END AS MAF,
-                            CASE WHEN np.rn = 1 THEN np.WFP ELSE NULL END AS WFP,
-                            CASE WHEN np.rn = 1 THEN np.GoL ELSE NULL END AS GoL,
-                            CASE WHEN np.rn = 1 THEN np.Ben ELSE NULL END AS Ben,
-                            CASE WHEN np.rn = 1 THEN np.OtherFund ELSE NULL END AS Other
+                            --CASE WHEN np.rn = 1 THEN np.IFAD ELSE NULL END AS IFAD,
+                            --CASE WHEN np.rn = 1 THEN np.MAF ELSE NULL END AS MAF,
+                            --CASE WHEN np.rn = 1 THEN np.WFP ELSE NULL END AS WFP,
+                            --CASE WHEN np.rn = 1 THEN np.GoL ELSE NULL END AS GoL,
+                            --CASE WHEN np.rn = 1 THEN np.Ben ELSE NULL END AS Ben,
+                            --CASE WHEN np.rn = 1 THEN np.OtherFund ELSE NULL END AS Other
+                            np.IFAD AS IFAD,
+                            np.MAF AS MAF,
+                            np.WFP AS WFP,
+                            np.GoL AS GoL,
+                            np.Ben AS Ben,
+                            np.OtherFund AS OtherFund
                         FROM NumberedParticipants np
                         ORDER BY np.Id DESC, np.rn;              
             `;
@@ -776,7 +788,14 @@ function buildForm1A1SubmissionXML(submission, participants) {
 
         xml.push(`    <doyouhavehh_id>${escapeXML(p.HaveHHId)}</doyouhavehh_id>`);
         xml.push(`    <mainhhid>${escapeXML(p.HHId)}</mainhhid>`);
-        xml.push(`    <select_one_mainNameAndSurname>${escapeXML(p.NameAndSurname)}</select_one_mainNameAndSurname>`);
+
+        if (p.HaveHHId === 'hhidyes') {
+            xml.push(`    <select_one_mainNameAndSurname>${escapeXML(p.NameAndSurname)}</select_one_mainNameAndSurname>`);
+        }else{
+            xml.push(`    <text_hx6fh11>${escapeXML(p.NameAndSurname)}</text_hx6fh11>`);
+        }
+
+
         xml.push(`    <age_selected>${escapeXML(p.Age)}</age_selected>`);
         xml.push(`    <_Yes_No_>${escapeXML(p.WomanHead)}</_Yes_No_>`);
         xml.push(`    <_PW_BW_PW_BW_>${escapeXML(p.PWBWStatus)}</_PW_BW_PW_BW_>`);
@@ -792,12 +811,12 @@ function buildForm1A1SubmissionXML(submission, participants) {
 
     // Group: Contributions
     xml.push(`  <group_wz1ah68>`);
-    xml.push(`    <_IFAD_>${submission.IFAD || 0}</_IFAD_>`);
-    xml.push(`    <_MAF_>${submission.MAF || 0}</_MAF_>`);
-    xml.push(`    <_WFP_>${submission.WFP || 0}</_WFP_>`);
-    xml.push(`    <_GoL_>${submission.GoL || 0}</_GoL_>`);
-    xml.push(`    <_Ben_>${submission.Ben || 0}</_Ben_>`);
-    xml.push(`    <integer_oz4sh88>${submission.OtherFund || 0}</integer_oz4sh88>`);
+    xml.push(`    <_IFAD_>${submission.IFAD || ''}</_IFAD_>`);
+    xml.push(`    <_MAF_>${submission.MAF || ''}</_MAF_>`);
+    xml.push(`    <_WFP_>${submission.WFP || ''}</_WFP_>`);
+    xml.push(`    <_GoL_>${submission.GoL || ''}</_GoL_>`);
+    xml.push(`    <_Ben_>${submission.Ben || ''}</_Ben_>`);
+    xml.push(`    <integer_oz4sh88>${submission.OtherFund || ''}</integer_oz4sh88>`);
     xml.push(`  </group_wz1ah68>`);
 
     // Meta
@@ -860,12 +879,12 @@ const normalizeKeys = (data) => {
         VNCAvailable: data.VNCAvailable || data["ສ້າງສູນຮຽນຮູ້ແລ້ວບໍ"] || data["VNC Available"] || null,
 
         // Financial support fields (optional chaining with fallback to 0)
-        IFAD: parseInt(data.IFAD || 0),
-        MAF: parseInt(data.MAF || 0),
-        WFP: parseInt(data.WFP || 0),
-        GoL: parseInt(data.GoL || 0),
-        Ben: parseInt(data.Ben || 0),
-        OtherFund: parseInt(data.OtherFund || data.Other | data["Other Fund"] || 0),
+        IFAD: isNaN(parseInt(data.IFAD)) ? null : parseInt(data.IFAD),
+        MAF: isNaN(parseInt(data.MAF)) ? null : parseInt(data.MAF),
+        WFP: isNaN(parseInt(data.WFP)) ? null : parseInt(data.WFP),
+        GoL: isNaN(parseInt(data.GoL)) ? null : parseInt(data.GoL),
+        Ben: isNaN(parseInt(data.Ben)) ? null : parseInt(data.Ben),
+        OtherFund: isNaN(parseInt(data.OtherFund || data.Other | data["Other Fund"])) ? null : parseInt(data.OtherFund || data.Other | data["Other Fund"])
     };
 };
 

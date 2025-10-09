@@ -14,7 +14,7 @@ export default function CBForStaff({ refreshTrigger }) {
     const [language, setLanguage] = useState('LA'); // default language
     const [loading, setLoading] = useState(false);
     const [defaultFilterResultLimit, setDefaultFilterResultLimit] = useState(1000); // limit the result to 1000 records by default. if want to change this value then need to change on refresh button below as well.
-
+    const financialFields = ['IFAD', 'MAF', 'WFP', 'GoL', 'Ben'];
 
 
     // add new
@@ -451,8 +451,8 @@ export default function CBForStaff({ refreshTrigger }) {
             <div className="d-flex justify-content-between mb-2">
                 <div>
                     {/*<button className='btn btn-primary btn-sm me-2 ' style={{ width: '120px' }} onClick={() => fetchData(language)} title='To reload data from application database'>Refresh</button>*/}
-                    <button className='btn btn-primary btn-sm me-2 ' style={{ width: '120px' }} onClick={() => {setDefaultFilterResultLimit(1000);}} title='To reload data from application database'>Refresh</button>
-                    <button className='btn btn-primary btn-sm me-2' style={{ width: '120px' }} onClick={() => {setDefaultFilterResultLimit(''); }} title='Show all records of existing data for this activity (can be slow)'> Show all data</button>
+                    <button className='btn btn-primary btn-sm me-2 ' style={{ width: '120px' }} onClick={() => { setDefaultFilterResultLimit(1000); }} title='To reload data from application database'>Refresh</button>
+                    <button className='btn btn-primary btn-sm me-2' style={{ width: '120px' }} onClick={() => { setDefaultFilterResultLimit(''); }} title='Show all records of existing data for this activity (can be slow)'> Show all data</button>
                     <button className='btn btn-primary btn-sm me-2' style={{ width: '120px' }} onClick={handleDownloadCBStaffDataFromKobo} title='To cleanup application database and reload new data from KoboToolbox online database'>Load new data</button>
                     <button className='btn btn-primary btn-sm' style={{ width: '120px' }} title='To export the data to Excel template file' onClick={handleExcelExport}>Export</button>
                 </div>
@@ -521,9 +521,9 @@ export default function CBForStaff({ refreshTrigger }) {
                                 >
                                     {Object.entries(row).map(([col, value], colIdx) => (
                                         <td key={col}>
-                                            {(colIdx >= 14 && colIdx <= 18 && !isNaN(value))
+                                            {(colIdx >= 14 && colIdx <= 18 && value != null && value != '' && !isNaN(value))
                                                 ? Number(value).toLocaleString()
-                                                : value}
+                                                : value ?? ''}
                                         </td>
                                     ))}
                                 </tr>
@@ -586,7 +586,8 @@ export default function CBForStaff({ refreshTrigger }) {
 
                                             const isDateField = idx >= 3 && idx <= 5;
                                             const isEditableText = (idx >= 6 && idx <= 7) || idx === 9 || (idx >= 14 && idx <= 19);
-                                            const isNumericField = (idx >= 15 && idx <= 19) || idx === 7;
+                                            const isNumericField = idx === 7 || (idx >= 15 && idx <= 19);
+                                            //const isNumberFeildNoRefresh = ;
 
                                             return (
                                                 <React.Fragment key={idx}>
@@ -657,13 +658,15 @@ export default function CBForStaff({ refreshTrigger }) {
                                 </div>
 
                                 {/* Modal Table */}
+
                                 <div className="table-responsive mb-3" style={{ maxHeight: '430px', overflowY: 'auto' }}>
                                     <table className="table table-bordered table-hover table-sm text-nowrap">
                                         <thead className="table-info">
                                             {modalData.length > 0 && (
                                                 <tr>
                                                     {Object.keys(modalData[0]).map((col) => (
-                                                        <th key={col}>{col}</th>
+                                                        // <th key={col}>{col}</th>
+                                                        financialFields.includes(col) ? null : <th key={col}>{col}</th>
                                                     ))}
                                                 </tr>
                                             )}
@@ -677,11 +680,13 @@ export default function CBForStaff({ refreshTrigger }) {
                                                     style={{ cursor: 'pointer' }}
                                                 >
                                                     {Object.entries(row).map(([col, value], colIdx) => (
-                                                        <td key={col}>
-                                                            {(colIdx >= 15 && colIdx <= 19 && !isNaN(value))
-                                                                ? Number(value).toLocaleString()
-                                                                : value}
-                                                        </td>
+                                                        financialFields.includes(col) ? null : (
+                                                            <td key={col}>
+                                                                {(colIdx >= 15 && colIdx <= 19 && value != null && value != '' && !isNaN(value))
+                                                                    ? Number(value).toLocaleString()
+                                                                    : value}
+                                                            </td>
+                                                        )
                                                     ))}
                                                 </tr>
                                             ))}

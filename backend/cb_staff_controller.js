@@ -75,6 +75,7 @@ function getCBStaffParticipantData(language, limit) {
                 CASE WHEN np.rn = 1 THEN np.WFP ELSE NULL END AS WFP,
                 CASE WHEN np.rn = 1 THEN np.GoL ELSE NULL END AS GoL,
                 CASE WHEN np.rn = 1 THEN np.Ben ELSE NULL END AS Ben
+
             FROM NumberedParticipants np
             LEFT JOIN Translation_EN_LA officeT ON officeT.FormName='cb_for_staff' AND officeT.ItemCode=np.Office
             LEFT JOIN Translation_EN_LA staffT ON staffT.FormName='cb_for_staff' AND staffT.ItemCode=np.StaffType
@@ -281,11 +282,16 @@ function getCBStaffParticipantDataBySID(SubmissionId, language) {
                               np.ActivityLocation AS 'ສະຖານທີ ຈັດປະຊຸມ ຫຼື ຝຶກອົບຮົມ',
 
                               -- Show only for first participant
-                              CASE WHEN np.rn = 1 THEN np.IFAD ELSE NULL END AS IFAD,
-                              CASE WHEN np.rn = 1 THEN np.MAF ELSE NULL END AS MAF,
-                              CASE WHEN np.rn = 1 THEN np.WFP ELSE NULL END AS WFP,
-                              CASE WHEN np.rn = 1 THEN np.GoL ELSE NULL END AS GoL,
-                              CASE WHEN np.rn = 1 THEN np.Ben ELSE NULL END AS Ben
+                              --CASE WHEN np.rn = 1 THEN np.IFAD ELSE NULL END AS IFAD,
+                              --CASE WHEN np.rn = 1 THEN np.MAF ELSE NULL END AS MAF,
+                              --CASE WHEN np.rn = 1 THEN np.WFP ELSE NULL END AS WFP,
+                              --CASE WHEN np.rn = 1 THEN np.GoL ELSE NULL END AS GoL,
+                              --CASE WHEN np.rn = 1 THEN np.Ben ELSE NULL END AS Ben
+                            np.IFAD AS IFAD,
+                            np.MAF AS MAF,
+                            np.WFP AS WFP,
+                            np.GoL AS GoL,
+                            np.Ben AS Ben
 
                             FROM NumberedParticipants np
 
@@ -369,11 +375,16 @@ function getCBStaffParticipantDataBySID(SubmissionId, language) {
                                 np.ActivityLocation,
 
                                 -- Show only for first participant
-                                CASE WHEN np.rn = 1 THEN np.IFAD ELSE NULL END AS IFAD,
-                                CASE WHEN np.rn = 1 THEN np.MAF ELSE NULL END AS MAF,
-                                CASE WHEN np.rn = 1 THEN np.WFP ELSE NULL END AS WFP,
-                                CASE WHEN np.rn = 1 THEN np.GoL ELSE NULL END AS GoL,
-                                CASE WHEN np.rn = 1 THEN np.Ben ELSE NULL END AS Ben
+                                --CASE WHEN np.rn = 1 THEN np.IFAD ELSE NULL END AS IFAD,
+                                --CASE WHEN np.rn = 1 THEN np.MAF ELSE NULL END AS MAF,
+                                --CASE WHEN np.rn = 1 THEN np.WFP ELSE NULL END AS WFP,
+                                --CASE WHEN np.rn = 1 THEN np.GoL ELSE NULL END AS GoL,
+                                --CASE WHEN np.rn = 1 THEN np.Ben ELSE NULL END AS Ben
+                                np.IFAD AS IFAD,
+                                np.MAF AS MAF,
+                                np.WFP AS WFP,
+                                np.GoL AS GoL,
+                                np.Ben AS Ben
 
                             FROM NumberedParticipants np
 
@@ -478,11 +489,11 @@ async function downloadCBStaffSubmissionDataFromKoboToolbox() {
                     el["select_one_category"],
                     el["select_one_topic"],
                     el["_act_location"],
-                    parseInt(el["group_kw0iz30/_IFAD_"] || 0),
-                    parseInt(el["group_kw0iz30/_MAF_"] || 0),
-                    parseInt(el["group_kw0iz30/_WFP_"] || 0),
-                    parseInt(el["group_kw0iz30/_GoL_"] || 0),
-                    parseInt(el["group_kw0iz30/_Ben_"] || 0),
+                    parseInt(el["group_kw0iz30/_IFAD_"] || null),
+                    parseInt(el["group_kw0iz30/_MAF_"] || null),
+                    parseInt(el["group_kw0iz30/_WFP_"] || null),
+                    parseInt(el["group_kw0iz30/_GoL_"] || null),
+                    parseInt(el["group_kw0iz30/_Ben_"] || null),
                     el["__version__"],
                     el["_submission_time"]
                 ]);
@@ -708,14 +719,20 @@ function formatLocalISOWithOffset(date = new Date()) {
 
 // Function to escape XML special characters
 function escapeXML(str) {
-    if (!str) return '';
-    return str.replace(/&/g, '&amp;')
+    //if (!str) return '';
+    if (str === null || str === undefined) return '';
+    // return str.replace(/&/g, '&amp;')
+    //     .replace(/</g, '&lt;')
+    //     .replace(/>/g, '&gt;')
+    //     .replace(/'/g, '&apos;')
+    //     .replace(/"/g, '&quot;');
+    return String(str)
+        .replace(/&/g, '&amp;')
         .replace(/</g, '&lt;')
         .replace(/>/g, '&gt;')
         .replace(/'/g, '&apos;')
         .replace(/"/g, '&quot;');
 }
-
 
 
 //############################ XML Builder function: ############################
@@ -749,6 +766,7 @@ function buildSubmissionXML(submission, participants) {
         xml.push(`    <_reponsibility>${escapeXML(p.Responsibility)}</_reponsibility>`);
         xml.push(`    <_office>${escapeXML(p.Office)}</_office>`);
         xml.push(`    <_type_of_staff>${escapeXML(p.StaffType)}</_type_of_staff>`);
+        xml.push(`    <_age>${escapeXML(p.Age)}</_age>`);
         xml.push(`    <_gender>${escapeXML(p.Gender)}</_gender>`);
         xml.push(`  </group_ap1ti89>`);
     });
@@ -794,6 +812,7 @@ const normalizeKeys = (data) => {
         Responsibility: data["Responsibility"] || data["ໜ້າທີ່ຮັບຜິດຊອບ"],
         Office: data["Office"] || data["ມາຈາກຫ້ອງການ"],
         StaffType: data["StaffType"] || data["ເປັນພະນັກງານຂອງ"],
+        Age: data["Age"] || data["ອາຍຸ"],
         Gender: data["Gender"] || data["ເພດ"],
         Category: data["Category"] || data["ຮູບແບບການຝຶກ"],
         Topic: data["Topic"] || data["ຫົວຂໍ້ສະເພາະດ້ານໃດ"],
@@ -801,11 +820,11 @@ const normalizeKeys = (data) => {
         ReportingPeriod: data["ReportingPeriod"] || data["ໄລຍະເວລາລາຍງານ"],
         StartDate: data["StartDate"] || data["ວັນເລີ່ມ"],
         EndDate: data["EndDate"] || data["ວັນສຳເລັດ"],
-        IFAD: parseInt(data.IFAD) || 0,
-        MAF: parseInt(data.MAF) || 0,
-        WFP: parseInt(data.WFP) || 0,
-        GoL: parseInt(data.GoL) || 0,
-        Ben: parseInt(data.Ben) || 0,
+        IFAD: isNaN(parseInt(data.IFAD)) ? null : parseInt(data.IFAD),
+        MAF: isNaN(parseInt(data.MAF)) ? null : parseInt(data.MAF),
+        WFP: isNaN(parseInt(data.WFP)) ? null : parseInt(data.WFP),
+        GoL: isNaN(parseInt(data.GoL)) ? null : parseInt(data.GoL),
+        Ben: isNaN(parseInt(data.Ben)) ? null : parseInt(data.Ben)
     };
 };
 
@@ -826,9 +845,10 @@ async function editSubmissionAndParticipants(data) {
         UPDATE tb_CB_Staff_Participant
         SET
         Name = ?,
-        Responsibility = ?
+        Responsibility = ?,
+        Age = ?
         WHERE Id = ?; `
-            , [d.Name, d.Responsibility, d.PID]);
+            , [d.Name, d.Responsibility, d.Age, d.PID]);
 
         // Update submission
         await runQuery(db, `

@@ -14,7 +14,7 @@ export default function Form1A4({ refreshTrigger }) {
     const [language, setLanguage] = useState('LA'); // default language
     const [loading, setLoading] = useState(false);
     const [defaultFilterResultLimit, setDefaultFilterResultLimit] = useState(1000); // limit the result to 1000 records by default. if want to change this value then need to change on refresh button below as well.
-
+    const financialFields = ['IFAD', 'MAF', 'WFP', 'GoL', 'Ben', 'Other Fund'];
 
 
     // add new
@@ -616,7 +616,7 @@ export default function Form1A4({ refreshTrigger }) {
                                                                     }))
                                                                 }
                                                             />
-                                                        ): isNumberFeildNoRefresh ? (
+                                                        ) : isNumberFeildNoRefresh ? (
                                                             <input
                                                                 type="number"
                                                                 className="form-control form-control-sm"
@@ -642,7 +642,7 @@ export default function Form1A4({ refreshTrigger }) {
                                                                     }))
                                                                 }
                                                             />
-                                                        ): isTextNoRefresh ? (
+                                                        ) : isTextNoRefresh ? (
                                                             <input
                                                                 type="text"
                                                                 className="form-control form-control-sm"
@@ -655,7 +655,7 @@ export default function Form1A4({ refreshTrigger }) {
                                                                     }))
                                                                 }
                                                             />
-                                                        ): (
+                                                        ) : (
                                                             <input
                                                                 type="text"
                                                                 className="form-control form-control-sm"
@@ -687,7 +687,8 @@ export default function Form1A4({ refreshTrigger }) {
                                             {modalData.length > 0 && (
                                                 <tr>
                                                     {Object.keys(modalData[0]).map((col) => (
-                                                        <th key={col}>{col}</th>
+                                                        //<th key={col}>{col}</th>
+                                                        financialFields.includes(col) ? null : <th key={col}>{col}</th>
                                                     ))}
                                                 </tr>
                                             )}
@@ -701,11 +702,13 @@ export default function Form1A4({ refreshTrigger }) {
                                                     style={{ cursor: 'pointer' }}
                                                 >
                                                     {Object.entries(row).map(([col, value], colIdx) => (
-                                                        <td key={col}>
-                                                            {(colIdx >= 23 && colIdx <= 28 && value != null && value != '' &&  !isNaN(value))
-                                                                ? Number(value).toLocaleString()
-                                                                : value}
-                                                        </td>
+                                                        financialFields.includes(col) ? null : (
+                                                            <td key={col}>
+                                                                {(colIdx >= 23 && colIdx <= 28 && value != null && value != '' && !isNaN(value))
+                                                                    ? Number(value).toLocaleString()
+                                                                    : value}
+                                                            </td>
+                                                        )
                                                     ))}
                                                 </tr>
                                             ))}

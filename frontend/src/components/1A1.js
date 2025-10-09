@@ -14,7 +14,7 @@ export default function Form1A1({ refreshTrigger }) {
     const [language, setLanguage] = useState('LA'); // default language
     const [loading, setLoading] = useState(false);
     const [defaultFilterResultLimit, setDefaultFilterResultLimit] = useState(1000); // limit the result to 1000 records by default. if want to change this value then need to change on refresh button below as well.
-
+    const financialFields = ['IFAD', 'MAF', 'WFP', 'GoL', 'Ben', 'Other Fund', 'OtherFund'];
 
 
     // add new
@@ -450,8 +450,8 @@ export default function Form1A1({ refreshTrigger }) {
             <div className="d-flex justify-content-between mb-2">
                 <div>
                     {/*<button className='btn btn-primary btn-sm me-2 ' style={{ width: '120px' }} onClick={() => fetchData(language)} title='To reload data from application database'>Refresh</button>*/}
-                    <button className='btn btn-primary btn-sm me-2 ' style={{ width: '120px' }} onClick={() => {setDefaultFilterResultLimit(1000);}} title='To reload data from application database'>Refresh</button>
-                    <button className='btn btn-primary btn-sm me-2' style={{ width: '120px' }} onClick={() => {setDefaultFilterResultLimit(''); }} title='Show all records of existing data for this activity (can be slow)'> Show all data</button>
+                    <button className='btn btn-primary btn-sm me-2 ' style={{ width: '120px' }} onClick={() => { setDefaultFilterResultLimit(1000); }} title='To reload data from application database'>Refresh</button>
+                    <button className='btn btn-primary btn-sm me-2' style={{ width: '120px' }} onClick={() => { setDefaultFilterResultLimit(''); }} title='Show all records of existing data for this activity (can be slow)'> Show all data</button>
                     <button className='btn btn-primary btn-sm me-2' style={{ width: '120px' }} onClick={handleDownloadForm1A1DataFromKobo} title='To cleanup application database and reload new data from KoboToolbox online database'>Load new data</button>
                     <button className='btn btn-primary btn-sm' style={{ width: '120px' }} onClick={handleExcelExport} title='To export the data to Excel template file' >Export</button>
                 </div>
@@ -500,6 +500,7 @@ export default function Form1A1({ refreshTrigger }) {
                                 <tr>
                                     {Object.keys(data[0]).map((col) => (
                                         <th key={col}>{col}</th>
+                                        
                                     ))}
                                 </tr>
                             )}
@@ -515,12 +516,12 @@ export default function Form1A1({ refreshTrigger }) {
                                     }}
                                     onContextMenu={(e) => handleContextMenu(e, row)}
                                 >
-                                    {Object.entries(row).map(([col, value], colIdx) => (
+                                    {Object.entries(row).map(([col, value], colIdx) => (                                        
                                         <td key={col}>
-                                            {(colIdx >= 23 && colIdx <= 28 && !isNaN(value))
+                                            {(colIdx >= 23 && colIdx <= 28 && value != null && value != ''  && !isNaN(value))
                                                 ? Number(value).toLocaleString()
                                                 : value}
-                                        </td>
+                                        </td>                                        
                                     ))}
                                 </tr>
                             ))}
@@ -659,7 +660,8 @@ export default function Form1A1({ refreshTrigger }) {
                                             {modalData.length > 0 && (
                                                 <tr>
                                                     {Object.keys(modalData[0]).map((col) => (
-                                                        <th key={col}>{col}</th>
+                                                        //<th key={col}>{col}</th>
+                                                        financialFields.includes(col) ? null : <th key={col}>{col}</th>
                                                     ))}
                                                 </tr>
                                             )}
@@ -673,11 +675,13 @@ export default function Form1A1({ refreshTrigger }) {
                                                     style={{ cursor: 'pointer' }}
                                                 >
                                                     {Object.entries(row).map(([col, value], colIdx) => (
+                                                        financialFields.includes(col) ? null : (
                                                         <td key={col}>
-                                                            {(colIdx >= 24 && colIdx <= 29 && !isNaN(value))
+                                                            {(colIdx >= 24 && colIdx <= 29 && value != null && value != ''  && !isNaN(value))
                                                                 ? Number(value).toLocaleString()
                                                                 : value}
                                                         </td>
+                                                        )
                                                     ))}
                                                 </tr>
                                             ))}
