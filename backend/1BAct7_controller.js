@@ -59,11 +59,11 @@ async function downloadForm1BAct7SubmissionDataFromKoboToolbox() {
                     el["_0_1_"] || null,
                     el["_certified"] || null,
                     el["_engaged"] || null,
-                    parseInt(el["group_wz1ah68/_IFAD_"] || 0),
-                    parseInt(el["group_wz1ah68/_MAF_"] || 0),
-                    parseInt(el["group_wz1ah68/_WFP_"] || 0),
-                    parseInt(el["group_wz1ah68/_GoL_"] || 0),
-                    parseInt(el["group_wz1ah68/_Ben_"] || 0),
+                    parseInt(el["group_wz1ah68/_IFAD_"] || null),
+                    parseInt(el["group_wz1ah68/_MAF_"] || null),
+                    parseInt(el["group_wz1ah68/_WFP_"] || null),
+                    parseInt(el["group_wz1ah68/_GoL_"] || null),
+                    parseInt(el["group_wz1ah68/_Ben_"] || null),
                     el["__version__"] || null,
                     el["_submission_time"] || null
                 ]);
@@ -360,14 +360,24 @@ function getForm1BAct7ParticipantDataBySID(SubmissionId, language) {
                     (SELECT Label_Lao FROM Translation_EN_LA WHERE FormName='all_forms' AND ItemCode=np.Ethnicity LIMIT 1) AS 'ຊົນເຜົ່າ',
                     (SELECT Label_Lao FROM Translation_EN_LA WHERE FormName='form_1bact7' AND ItemCode=np.Poverty_level LIMIT 1) AS 'ຄວາມທຸກຍາກ',
                     (SELECT Label_Lao FROM Translation_EN_LA WHERE FormName='form_1bact7' AND ItemCode=np.PWD_status LIMIT 1) AS 'ເສຍອົງຄະບໍ',
-					CASE WHEN np.rn = 1 THEN (SELECT Label_Lao FROM Translation_EN_LA WHERE FormName='form_1bact7' AND ItemCode=np.Equipment_received LIMIT 1) ELSE NULL END AS 'ໄດ້ຮັບອຸປະກອນ',
-                    CASE WHEN np.rn = 1 THEN (SELECT Label_Lao FROM Translation_EN_LA WHERE FormName='form_1bact7' AND ItemCode=np.Certified LIMIT 1) ELSE NULL END AS 'ໄດ້ຮັບໃບຢັ້ງຢືນ',
-                    CASE WHEN np.rn = 1 THEN (SELECT Label_Lao FROM Translation_EN_LA WHERE FormName='form_1bact7' AND ItemCode=np.Engaged LIMIT 1) ELSE NULL END AS 'ໄດ້ເລີ່ມຊື້ຂາບປັດໃຈການຜະລິດ',
-                    CASE WHEN np.rn = 1 THEN np.IFAD ELSE NULL END AS IFAD,
-                    CASE WHEN np.rn = 1 THEN np.MAF ELSE NULL END AS MAF,
-                    CASE WHEN np.rn = 1 THEN np.WFP ELSE NULL END AS WFP,
-                    CASE WHEN np.rn = 1 THEN np.GoL ELSE NULL END AS GoL,
-                    CASE WHEN np.rn = 1 THEN np.Ben ELSE NULL END AS Ben
+					
+                    --CASE WHEN np.rn = 1 THEN (SELECT Label_Lao FROM Translation_EN_LA WHERE FormName='form_1bact7' AND ItemCode=np.Equipment_received LIMIT 1) ELSE NULL END AS 'ໄດ້ຮັບອຸປະກອນ',
+                    --CASE WHEN np.rn = 1 THEN (SELECT Label_Lao FROM Translation_EN_LA WHERE FormName='form_1bact7' AND ItemCode=np.Certified LIMIT 1) ELSE NULL END AS 'ໄດ້ຮັບໃບຢັ້ງຢືນ',
+                    --CASE WHEN np.rn = 1 THEN (SELECT Label_Lao FROM Translation_EN_LA WHERE FormName='form_1bact7' AND ItemCode=np.Engaged LIMIT 1) ELSE NULL END AS 'ໄດ້ເລີ່ມຊື້ຂາບປັດໃຈການຜະລິດ',
+                    --CASE WHEN np.rn = 1 THEN np.IFAD ELSE NULL END AS IFAD,
+                    --CASE WHEN np.rn = 1 THEN np.MAF ELSE NULL END AS MAF,
+                    --CASE WHEN np.rn = 1 THEN np.WFP ELSE NULL END AS WFP,
+                    --CASE WHEN np.rn = 1 THEN np.GoL ELSE NULL END AS GoL,
+                    --CASE WHEN np.rn = 1 THEN np.Ben ELSE NULL END AS Ben
+
+                    (SELECT Label_Lao FROM Translation_EN_LA WHERE FormName='form_1bact7' AND ItemCode=np.Equipment_received LIMIT 1) AS 'ໄດ້ຮັບອຸປະກອນ',
+                    (SELECT Label_Lao FROM Translation_EN_LA WHERE FormName='form_1bact7' AND ItemCode=np.Certified LIMIT 1) AS 'ໄດ້ຮັບໃບຢັ້ງຢືນ',
+                    (SELECT Label_Lao FROM Translation_EN_LA WHERE FormName='form_1bact7' AND ItemCode=np.Engaged LIMIT 1) AS 'ໄດ້ເລີ່ມຊື້ຂາບປັດໃຈການຜະລິດ',
+                    np.IFAD AS IFAD,
+                    np.MAF AS MAF,
+                    np.WFP AS WFP,
+                    np.GoL AS GoL,
+                    np.Ben AS Ben
                 FROM NumberedParticipants np
                 ORDER BY np.Id DESC, np.rn;
             `;
@@ -431,14 +441,25 @@ function getForm1BAct7ParticipantDataBySID(SubmissionId, language) {
                     (SELECT Label_English FROM Translation_EN_LA WHERE FormName='all_forms' AND ItemCode=np.Ethnicity LIMIT 1) AS 'Ethnicity',
                     (SELECT Label_English FROM Translation_EN_LA WHERE FormName='form_1bact7' AND ItemCode=np.Poverty_level LIMIT 1) AS 'Poverty Level',
                     (SELECT Label_English FROM Translation_EN_LA WHERE FormName='form_1bact7' AND ItemCode=np.PWD_status LIMIT 1) AS 'PWD',
-					CASE WHEN np.rn = 1 THEN (SELECT Label_English FROM Translation_EN_LA WHERE FormName='form_1bact7' AND ItemCode=np.Equipment_received LIMIT 1) ELSE NULL END AS 'Starter Kit Rcvd.',
-                    CASE WHEN np.rn = 1 THEN (SELECT Label_English FROM Translation_EN_LA WHERE FormName='form_1bact7' AND ItemCode=np.Certified LIMIT 1) ELSE NULL END AS 'Certified',
-                    CASE WHEN np.rn = 1 THEN (SELECT Label_English FROM Translation_EN_LA WHERE FormName='form_1bact7' AND ItemCode=np.Engaged LIMIT 1) ELSE NULL END AS 'Engaged in commercial',
-                    CASE WHEN np.rn = 1 THEN np.IFAD ELSE NULL END AS IFAD,
-                    CASE WHEN np.rn = 1 THEN np.MAF ELSE NULL END AS MAF,
-                    CASE WHEN np.rn = 1 THEN np.WFP ELSE NULL END AS WFP,
-                    CASE WHEN np.rn = 1 THEN np.GoL ELSE NULL END AS GoL,
-                    CASE WHEN np.rn = 1 THEN np.Ben ELSE NULL END AS Ben
+					
+                    --CASE WHEN np.rn = 1 THEN (SELECT Label_English FROM Translation_EN_LA WHERE FormName='form_1bact7' AND ItemCode=np.Equipment_received LIMIT 1) ELSE NULL END AS 'Starter Kit Rcvd.',
+                    --CASE WHEN np.rn = 1 THEN (SELECT Label_English FROM Translation_EN_LA WHERE FormName='form_1bact7' AND ItemCode=np.Certified LIMIT 1) ELSE NULL END AS 'Certified',
+                    --CASE WHEN np.rn = 1 THEN (SELECT Label_English FROM Translation_EN_LA WHERE FormName='form_1bact7' AND ItemCode=np.Engaged LIMIT 1) ELSE NULL END AS 'Engaged in commercial',
+                    --CASE WHEN np.rn = 1 THEN np.IFAD ELSE NULL END AS IFAD,
+                    --CASE WHEN np.rn = 1 THEN np.MAF ELSE NULL END AS MAF,
+                    --CASE WHEN np.rn = 1 THEN np.WFP ELSE NULL END AS WFP,
+                    --CASE WHEN np.rn = 1 THEN np.GoL ELSE NULL END AS GoL,
+                    --CASE WHEN np.rn = 1 THEN np.Ben ELSE NULL END AS Ben
+
+                    (SELECT Label_English FROM Translation_EN_LA WHERE FormName='form_1bact7' AND ItemCode=np.Equipment_received LIMIT 1) AS 'Starter Kit Rcvd.',
+                    (SELECT Label_English FROM Translation_EN_LA WHERE FormName='form_1bact7' AND ItemCode=np.Certified LIMIT 1) AS 'Certified',
+                    (SELECT Label_English FROM Translation_EN_LA WHERE FormName='form_1bact7' AND ItemCode=np.Engaged LIMIT 1) AS 'Engaged in commercial',
+                    np.IFAD AS IFAD,
+                    np.MAF AS MAF,
+                    np.WFP AS WFP,
+                    np.GoL AS GoL,
+                    np.Ben AS Ben
+
                 FROM NumberedParticipants np
                 ORDER BY np.Id DESC, np.rn;
             `;
@@ -725,11 +746,11 @@ function buildForm1BAct7SubmissionXML(submission, participants) {
 
     // Group: Contributions
     xml.push(`  <group_wz1ah68>`);
-    xml.push(`    <_IFAD_>${submission.IFAD || 0}</_IFAD_>`);
-    xml.push(`    <_MAF_>${submission.MAF || 0}</_MAF_>`);
-    xml.push(`    <_WFP_>${submission.WFP || 0}</_WFP_>`);
-    xml.push(`    <_GoL_>${submission.GoL || 0}</_GoL_>`);
-    xml.push(`    <_Ben_>${submission.Ben || 0}</_Ben_>`);
+    xml.push(`    <_IFAD_>${submission.IFAD || ''}</_IFAD_>`);
+    xml.push(`    <_MAF_>${submission.MAF || ''}</_MAF_>`);
+    xml.push(`    <_WFP_>${submission.WFP || ''}</_WFP_>`);
+    xml.push(`    <_GoL_>${submission.GoL || ''}</_GoL_>`);
+    xml.push(`    <_Ben_>${submission.Ben || ''}</_Ben_>`);
     xml.push(`  </group_wz1ah68>`);
 
     // Meta
@@ -789,11 +810,11 @@ const normalizeKeys = (data) => {
         Engaged: data.Engaged || data["Engaged in commercial"] || data["ໄດ້ເລີ່ມຊື້ຂາບປັດໃຈການຜະລິດ"] || null,
 
         // Contributions
-        IFAD: parseFloat(data.IFAD || 0),
-        MAF: parseFloat(data.MAF || 0),
-        WFP: parseFloat(data.WFP || 0),
-        GoL: parseFloat(data.GoL || 0),
-        Ben: parseFloat(data.Ben || 0),
+        IFAD: isNaN(parseFloat(data.IFAD)) ? null : parseFloat(data.IFAD),
+        MAF: isNaN(parseFloat(data.MAF)) ? null : parseFloat(data.MAF),
+        WFP: isNaN(parseFloat(data.WFP)) ? null : parseFloat(data.WFP),
+        GoL: isNaN(parseFloat(data.GoL)) ? null : parseFloat(data.GoL),
+        Ben: isNaN(parseFloat(data.Ben)) ? null : parseFloat(data.Ben),
     };
 };
 

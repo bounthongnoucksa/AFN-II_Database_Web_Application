@@ -14,7 +14,7 @@ export default function Form1BAct6({ refreshTrigger }) {
     const [language, setLanguage] = useState('LA'); // default language
     const [loading, setLoading] = useState(false);
     const [defaultFilterResultLimit, setDefaultFilterResultLimit] = useState(800); // limit the result to 800 records by default. if want to change this value then need to change on refresh button below as well.
-
+    const financialFields = ['ປະລິມານພືດ (ກິໂລ)','Crop Qty (kg)','ປະເພດສັດ','Livestock Type','ປລິມານສັດ (ກິໂລ)','Livestock Qty(kg)','ພືດອາຫານສັດ (ກິໂລ)','Forage Qty (kg)','AC Registered','IFAD', 'MAF', 'WFP', 'GoL', 'Ben', 'Other Fund'];
 
 
     // add new
@@ -516,9 +516,9 @@ export default function Form1BAct6({ refreshTrigger }) {
                                 >
                                     {Object.entries(row).map(([col, value], colIdx) => (
                                         <td key={col}>
-                                            {(colIdx >= 27 && colIdx <= 32 && !isNaN(value))
+                                            {(((colIdx ===21 || colIdx ===23 || colIdx ===24) && value != null && value != '' && !isNaN(value)) || (colIdx >= 27 && colIdx <= 32 && value != null && value != '' && !isNaN(value)))
                                                 ? Number(value).toLocaleString()
-                                                : value}
+                                                : value ?? ''}
                                         </td>
                                     ))}
                                 </tr>
@@ -658,7 +658,8 @@ export default function Form1BAct6({ refreshTrigger }) {
                                             {modalData.length > 0 && (
                                                 <tr>
                                                     {Object.keys(modalData[0]).map((col) => (
-                                                        <th key={col}>{col}</th>
+                                                        //<th key={col}>{col}</th>
+                                                        financialFields.includes(col) ? null : <th key={col}>{col}</th>
                                                     ))}
                                                 </tr>
                                             )}
@@ -672,11 +673,13 @@ export default function Form1BAct6({ refreshTrigger }) {
                                                     style={{ cursor: 'pointer' }}
                                                 >
                                                     {Object.entries(row).map(([col, value], colIdx) => (
+                                                        financialFields.includes(col) ? null : (
                                                         <td key={col}>
                                                             {(colIdx >= 28 && colIdx <= 33 && !isNaN(value))
                                                                 ? Number(value).toLocaleString()
                                                                 : value}
                                                         </td>
+                                                        )
                                                     ))}
                                                 </tr>
                                             ))}

@@ -63,12 +63,12 @@ async function downloadForm3Act1bSubmissionDataFromKoboToolbox() {
                         el["select_one_tb1ji94"] || null,
                         el["_DNCP_item"] || null,
                         el["_Yes_No_"] || null,
-                        parseInt(el["group_wz1ah68/_IFAD_"] || 0),
-                        parseInt(el["group_wz1ah68/_MAF_"] || 0),
-                        parseInt(el["group_wz1ah68/_WFP_"] || 0),
-                        parseInt(el["group_wz1ah68/_GoL_"] || 0),
-                        parseInt(el["group_wz1ah68/_Ben_"] || 0),
-                        parseInt(el["group_wz1ah68/integer_oz4sh88"] || 0),
+                        parseInt(el["group_wz1ah68/_IFAD_"] || null),
+                        parseInt(el["group_wz1ah68/_MAF_"] || null),
+                        parseInt(el["group_wz1ah68/_WFP_"] || null),
+                        parseInt(el["group_wz1ah68/_GoL_"] || null),
+                        parseInt(el["group_wz1ah68/_Ben_"] || null),
+                        parseInt(el["group_wz1ah68/integer_oz4sh88"] || null),
                         el["__version__"] || null,
                         el["_submission_time"] || null
                     ]
@@ -361,14 +361,17 @@ function getForm3Act1bParticipantDataBySID(SubmissionId, language) {
             (SELECT Label_Lao FROM Translation_EN_LA WHERE FormName='all_forms' AND ItemCode=np.District LIMIT 1) AS 'ເມືອງ',
             --(SELECT Label_Lao FROM Translation_EN_LA WHERE FormName='form_3act1b' AND ItemCode=np.Activity LIMIT 1) AS 'ກິດຈະກຳ',
 			np.Activity AS 'ກິດຈະກຳຍ່ອຍທີ່ເຂົ້າຮ່ວມ',
-            CASE WHEN np.rn = 1 THEN np.MeetingNo ELSE NULL END AS 'ກອງປະຊຸມຄັ້ງທີ',
+            --CASE WHEN np.rn = 1 THEN np.MeetingNo ELSE NULL END AS 'ກອງປະຊຸມຄັ້ງທີ',
+            np.MeetingNo AS 'ກອງປະຊຸມຄັ້ງທີ',
             
             np.Full_name AS 'ຊື່ ແລະ ນາມສະກຸນ',
             (SELECT Label_Lao FROM Translation_EN_LA WHERE FormName='form_3act1b' AND ItemCode=np.Office LIMIT 1) AS 'ມາຈາກຫ້ອງການ',
             np.Age AS 'ອາຍຸ',
             (SELECT Label_Lao FROM Translation_EN_LA WHERE FormName='form_3act1b' AND ItemCode=np.Gender LIMIT 1) AS 'ເພດ',
-			CASE WHEN np.rn = 1 THEN np.VDPApprovalNumber ELSE NULL END AS 'ຈ/ນ VDP ຮັບຮອງ',
-            CASE WHEN np.rn = 1 THEN (SELECT Label_Lao FROM Translation_EN_LA WHERE FormName='form_3act1b' AND ItemCode=np.DNCPApproval LIMIT 1) ELSE NULL END AS 'DNCP Approval',
+			--CASE WHEN np.rn = 1 THEN np.VDPApprovalNumber ELSE NULL END AS 'ຈ/ນ VDP ຮັບຮອງ',
+            --CASE WHEN np.rn = 1 THEN (SELECT Label_Lao FROM Translation_EN_LA WHERE FormName='form_3act1b' AND ItemCode=np.DNCPApproval LIMIT 1) ELSE NULL END AS 'DNCP Approval',
+            np.VDPApprovalNumber AS 'ຈ/ນ VDP ຮັບຮອງ',
+            (SELECT Label_Lao FROM Translation_EN_LA WHERE FormName='form_3act1b' AND ItemCode=np.DNCPApproval LIMIT 1) AS 'DNCP Approval',
             -- CASE WHEN np.rn = 1 THEN np.DNCP_Item ELSE NULL END AS 'ບັນດາກິດຈະກໍາການລົງທຶນ ລວມຢູ່ໃນແຜນ DNCP',
 			CASE WHEN np.rn = 1 THEN TRIM(
 					(CASE WHEN np.DNCP_Item LIKE '%agr_production%' 
@@ -383,13 +386,21 @@ function getForm3Act1bParticipantDataBySID(SubmissionId, language) {
 				ELSE NULL 
 			END AS 'ບັນດາກິດຈະກໍາການລົງທຶນ ລວມຢູ່ໃນແຜນ DNCP',
 
-            CASE WHEN np.rn = 1 THEN (SELECT Label_Lao FROM Translation_EN_LA WHERE FormName='form_3act1b' AND ItemCode=np.EquiptSupported LIMIT 1) ELSE NULL END AS 'ວັດຖຸ/ປັດໃຈໄດ້ຮັບຈາກໂຄງການແລ້ວບໍ',
-            CASE WHEN np.rn = 1 THEN np.IFAD ELSE NULL END AS 'IFAD',
-            CASE WHEN np.rn = 1 THEN np.MAF ELSE NULL END AS 'MAF',
-            CASE WHEN np.rn = 1 THEN np.WFP ELSE NULL END AS 'WFP',
-            CASE WHEN np.rn = 1 THEN np.GoL ELSE NULL END AS 'GoL',
-            CASE WHEN np.rn = 1 THEN np.Ben ELSE NULL END AS 'Ben',
-            CASE WHEN np.rn = 1 THEN np.OtherFund ELSE NULL END AS 'Other Fund'
+            --CASE WHEN np.rn = 1 THEN (SELECT Label_Lao FROM Translation_EN_LA WHERE FormName='form_3act1b' AND ItemCode=np.EquiptSupported LIMIT 1) ELSE NULL END AS 'ວັດຖຸ/ປັດໃຈໄດ້ຮັບຈາກໂຄງການແລ້ວບໍ',
+            --CASE WHEN np.rn = 1 THEN np.IFAD ELSE NULL END AS 'IFAD',
+            --CASE WHEN np.rn = 1 THEN np.MAF ELSE NULL END AS 'MAF',
+            --CASE WHEN np.rn = 1 THEN np.WFP ELSE NULL END AS 'WFP',
+            --CASE WHEN np.rn = 1 THEN np.GoL ELSE NULL END AS 'GoL',
+            --CASE WHEN np.rn = 1 THEN np.Ben ELSE NULL END AS 'Ben',
+            --CASE WHEN np.rn = 1 THEN np.OtherFund ELSE NULL END AS 'Other Fund'
+            (SELECT Label_Lao FROM Translation_EN_LA WHERE FormName='form_3act1b' AND ItemCode=np.EquiptSupported LIMIT 1) AS 'ວັດຖຸ/ປັດໃຈໄດ້ຮັບຈາກໂຄງການແລ້ວບໍ',
+            np.IFAD AS 'IFAD',
+            np.MAF AS 'MAF',
+            np.WFP AS 'WFP',
+            np.GoL AS 'GoL',
+            np.Ben AS 'Ben',
+            np.OtherFund AS 'Other Fund'
+
         FROM NumberedParticipants np
         ORDER BY np.Id DESC, np.rn;
             `;
@@ -442,14 +453,17 @@ function getForm3Act1bParticipantDataBySID(SubmissionId, language) {
             --(SELECT Label_English FROM Translation_EN_LA WHERE FormName='form_3act1b' AND ItemCode=np.Activity LIMIT 1) AS 'Sub-Activity',
 			np.Activity AS 'Sub-Activity',
             
-            CASE WHEN np.rn = 1 THEN np.MeetingNo ELSE NULL END AS 'Meeting No.',
+            --CASE WHEN np.rn = 1 THEN np.MeetingNo ELSE NULL END AS 'Meeting No.',
+            np.MeetingNo AS 'Meeting No.',
             
             np.Full_name AS 'Full Name',
             (SELECT Label_English FROM Translation_EN_LA WHERE FormName='form_3act1b' AND ItemCode=np.Office LIMIT 1) AS 'Representation of line agencies',
             np.Age AS 'Age',
             (SELECT Label_English FROM Translation_EN_LA WHERE FormName='form_3act1b' AND ItemCode=np.Gender LIMIT 1) AS 'Gender',
-			CASE WHEN np.rn = 1 THEN np.VDPApprovalNumber ELSE NULL END AS 'VDP Approved',
-            CASE WHEN np.rn = 1 THEN (SELECT Label_English FROM Translation_EN_LA WHERE FormName='form_3act1b' AND ItemCode=np.DNCPApproval LIMIT 1) ELSE NULL END AS 'DNCP Approval',
+			--CASE WHEN np.rn = 1 THEN np.VDPApprovalNumber ELSE NULL END AS 'VDP Approved',
+            --CASE WHEN np.rn = 1 THEN (SELECT Label_English FROM Translation_EN_LA WHERE FormName='form_3act1b' AND ItemCode=np.DNCPApproval LIMIT 1) ELSE NULL END AS 'DNCP Approval',
+            np.VDPApprovalNumber AS 'VDP Approved',
+            (SELECT Label_English FROM Translation_EN_LA WHERE FormName='form_3act1b' AND ItemCode=np.DNCPApproval LIMIT 1) AS 'DNCP Approval',
             -- CASE WHEN np.rn = 1 THEN np.DNCP_Item ELSE NULL END AS 'DNCP Items',
 			CASE 
 				WHEN np.rn = 1 THEN TRIM(
@@ -466,13 +480,20 @@ function getForm3Act1bParticipantDataBySID(SubmissionId, language) {
 				ELSE NULL 
 			END AS 'DNCP Investment Activities',
 			
-            CASE WHEN np.rn = 1 THEN (SELECT Label_English FROM Translation_EN_LA WHERE FormName='form_3act1b' AND ItemCode=np.EquiptSupported LIMIT 1) ELSE NULL END AS 'Equip. Supported',
-            CASE WHEN np.rn = 1 THEN np.IFAD ELSE NULL END AS 'IFAD',
-            CASE WHEN np.rn = 1 THEN np.MAF ELSE NULL END AS 'MAF',
-            CASE WHEN np.rn = 1 THEN np.WFP ELSE NULL END AS 'WFP',
-            CASE WHEN np.rn = 1 THEN np.GoL ELSE NULL END AS 'GoL',
-            CASE WHEN np.rn = 1 THEN np.Ben ELSE NULL END AS 'Ben',
-            CASE WHEN np.rn = 1 THEN np.OtherFund ELSE NULL END AS 'Other Fund'
+            --CASE WHEN np.rn = 1 THEN (SELECT Label_English FROM Translation_EN_LA WHERE FormName='form_3act1b' AND ItemCode=np.EquiptSupported LIMIT 1) ELSE NULL END AS 'Equip. Supported',
+            --CASE WHEN np.rn = 1 THEN np.IFAD ELSE NULL END AS 'IFAD',
+            --CASE WHEN np.rn = 1 THEN np.MAF ELSE NULL END AS 'MAF',
+            --CASE WHEN np.rn = 1 THEN np.WFP ELSE NULL END AS 'WFP',
+            --CASE WHEN np.rn = 1 THEN np.GoL ELSE NULL END AS 'GoL',
+            --CASE WHEN np.rn = 1 THEN np.Ben ELSE NULL END AS 'Ben',
+            --CASE WHEN np.rn = 1 THEN np.OtherFund ELSE NULL END AS 'Other Fund'
+            (SELECT Label_English FROM Translation_EN_LA WHERE FormName='form_3act1b' AND ItemCode=np.EquiptSupported LIMIT 1) AS 'Equip. Supported',
+            np.IFAD AS 'IFAD',
+            np.MAF AS 'MAF',
+            np.WFP AS 'WFP',
+            np.GoL AS 'GoL',
+            np.Ben AS 'Ben',
+            np.OtherFund AS 'Other Fund'
         FROM NumberedParticipants np
         ORDER BY np.Id DESC, np.rn;
             `;
@@ -749,12 +770,12 @@ function buildForm3Act1bSubmissionXML(submission, participants) {
 
     // Contributions
     xml.push(`  <group_wz1ah68>`);
-    xml.push(`    <_IFAD_>${submission.IFAD || 0}</_IFAD_>`);
-    xml.push(`    <_MAF_>${submission.MAF || 0}</_MAF_>`);
-    xml.push(`    <_WFP_>${submission.WFP || 0}</_WFP_>`);
-    xml.push(`    <_GoL_>${submission.GoL || 0}</_GoL_>`);
-    xml.push(`    <_Ben_>${submission.Ben || 0}</_Ben_>`);
-    xml.push(`    <integer_oz4sh88>${submission.OtherFund || 0}</integer_oz4sh88>`);
+    xml.push(`    <_IFAD_>${submission.IFAD || ''}</_IFAD_>`);
+    xml.push(`    <_MAF_>${submission.MAF || ''}</_MAF_>`);
+    xml.push(`    <_WFP_>${submission.WFP || ''}</_WFP_>`);
+    xml.push(`    <_GoL_>${submission.GoL || ''}</_GoL_>`);
+    xml.push(`    <_Ben_>${submission.Ben || ''}</_Ben_>`);
+    xml.push(`    <integer_oz4sh88>${submission.OtherFund || ''}</integer_oz4sh88>`);
     xml.push(`  </group_wz1ah68>`);
 
     // Meta
@@ -810,12 +831,12 @@ const normalizeKeys = (data) => {
         EquiptSupported: data.EquiptSupported || data["Equip. Supported"] || data["ວັດຖຸ/ປັດໃຈໄດ້ຮັບຈາກໂຄງການ"] || null,
 
         // Contribution values
-        IFAD: parseFloat(data.IFAD || data["IFAD"] || 0),
-        MAF: parseFloat(data.MAF || data["MAF"] || 0),
-        WFP: parseFloat(data.WFP || data["WFP"] || 0),
-        GoL: parseFloat(data.GoL || data["GoL"] || 0),
-        Ben: parseFloat(data.Ben || data["Ben"] || 0),
-        OtherFund: parseFloat(data.OtherFund || data["Other Fund"] || 0)
+        IFAD: isNaN(parseFloat(data.IFAD || data["IFAD"])) ? null : parseFloat(data.IFAD || data["IFAD"]),
+        MAF: isNaN(parseFloat(data.MAF || data["MAF"])) ? null : parseFloat(data.MAF || data["MAF"]),
+        WFP: isNaN(parseFloat(data.WFP || data["WFP"])) ? null : parseFloat(data.WFP || data["WFP"]),
+        GoL: isNaN(parseFloat(data.GoL || data["GoL"])) ? null : parseFloat(data.GoL || data["GoL"]),
+        Ben: isNaN(parseFloat(data.Ben || data["Ben"])) ? null : parseFloat(data.Ben || data["Ben"]),
+        OtherFund: isNaN(parseFloat(data.OtherFund || data["Other Fund"])) ? null : parseFloat(data.OtherFund || data["Other Fund"]),
     };
 };
 

@@ -61,18 +61,18 @@ async function downloadForm1BAct6SubmissionDataFromKoboToolbox() {
                     el["_1_2_"] || null,
                     el["_select_one_conductedby_01"] || null,
                     el["_foodcroptype"] || null,
-                    parseInt(el["_foodcropamount"] || 0),
+                    parseInt(el["_foodcropamount"] || null),
                     el["_livestocktype"] || null,
-                    parseInt(el["_livestockamount"] || 0),
-                    parseInt(el["_forageamount"] || 0),
+                    parseInt(el["_livestockamount"] || null),
+                    parseInt(el["_forageamount"] || null),
                     el["_ac_regis"] || null,
                     el["_grant_receive"] || null,
-                    parseInt(el["group_wz1ah68/_IFAD_"] || 0),
-                    parseInt(el["group_wz1ah68/_MAF_"] || 0),
-                    parseInt(el["group_wz1ah68/_WFP_"] || 0),
-                    parseInt(el["group_wz1ah68/_GoL_"] || 0),
-                    parseInt(el["group_wz1ah68/_Ben_"] || 0),
-                    parseInt(el["group_wz1ah68/integer_oz4sh88"] || 0),
+                    parseInt(el["group_wz1ah68/_IFAD_"] || null),
+                    parseInt(el["group_wz1ah68/_MAF_"] || null),
+                    parseInt(el["group_wz1ah68/_WFP_"] || null),
+                    parseInt(el["group_wz1ah68/_GoL_"] || null),
+                    parseInt(el["group_wz1ah68/_Ben_"] || null),
+                    parseInt(el["group_wz1ah68/integer_oz4sh88"] || null),
                     el["__version__"] || null,
                     el["_submission_time"] || null
                 ]);
@@ -417,20 +417,31 @@ function getForm1BAct6ParticipantDataBySID(SubmissionId, language) {
                     (SELECT Label_Lao FROM Translation_EN_LA WHERE FormName='form_1bact6' AND ItemCode=np.PositionInGroup LIMIT 1) AS 'ຕຳແໜ່ງໃນກຸ່ມ',
                     (SELECT Label_Lao FROM Translation_EN_LA WHERE FormName='form_1bact6' AND ItemCode=np.MSME LIMIT 1) AS 'MSME Member',
 					
-					CASE WHEN np.rn = 1 THEN np.CropType ELSE NULL END AS 'ປະເພດພືດອາຫານ',
-                    CASE WHEN np.rn = 1 THEN np.CropQuantity ELSE NULL END AS 'ປະລິມານພືດ (ກິໂລ)',
-                    CASE WHEN np.rn = 1 THEN np.LivestockType ELSE NULL END AS 'ປະເພດສັດ',
-                    CASE WHEN np.rn = 1 THEN np.LivestockQuantity ELSE NULL END AS 'ປະລິມານສັດ (ກິໂລ)',
-                    CASE WHEN np.rn = 1 THEN np.ForageQuantity ELSE NULL END AS 'ພືດອາຫານສັດ (ກິໂລ)',
+					--CASE WHEN np.rn = 1 THEN np.CropType ELSE NULL END AS 'ປະເພດພືດອາຫານ',
+                    --CASE WHEN np.rn = 1 THEN np.CropQuantity ELSE NULL END AS 'ປະລິມານພືດ (ກິໂລ)',
+                    --CASE WHEN np.rn = 1 THEN np.LivestockType ELSE NULL END AS 'ປະເພດສັດ',
+                    --CASE WHEN np.rn = 1 THEN np.LivestockQuantity ELSE NULL END AS 'ປະລິມານສັດ (ກິໂລ)',
+                    --CASE WHEN np.rn = 1 THEN np.ForageQuantity ELSE NULL END AS 'ພືດອາຫານສັດ (ກິໂລ)',
+                    np.CropType AS 'ປະເພດພືດອາຫານ',
+                    np.CropQuantity AS 'ປະລິມານພືດ (ກິໂລ)',
+                    np.LivestockType AS 'ປະເພດສັດ',
+                    np.LivestockQuantity AS 'ປລິມານສັດ (ກິໂລ)',
+                    np.ForageQuantity AS 'ພືດອາຫານສັດ (ກິໂລ)',
 					
                     (SELECT Label_Lao FROM Translation_EN_LA WHERE FormName='form_1bact6' AND ItemCode=np.ACRegistered LIMIT 1) AS 'AC Registered',
                     (SELECT Label_Lao FROM Translation_EN_LA WHERE FormName='form_1bact6' AND ItemCode=np.GrantReceived LIMIT 1) AS 'ໄດ້ຮັບທຶນ',
-                    CASE WHEN np.rn = 1 THEN np.IFAD ELSE NULL END AS IFAD,
-                    CASE WHEN np.rn = 1 THEN np.MAF ELSE NULL END AS MAF,
-                    CASE WHEN np.rn = 1 THEN np.WFP ELSE NULL END AS WFP,
-                    CASE WHEN np.rn = 1 THEN np.GoL ELSE NULL END AS GoL,
-                    CASE WHEN np.rn = 1 THEN np.Ben ELSE NULL END AS Ben,
-                    CASE WHEN np.rn = 1 THEN np.OtherFund ELSE NULL END AS 'Other Fund'
+                    --CASE WHEN np.rn = 1 THEN np.IFAD ELSE NULL END AS IFAD,
+                    --CASE WHEN np.rn = 1 THEN np.MAF ELSE NULL END AS MAF,
+                    --CASE WHEN np.rn = 1 THEN np.WFP ELSE NULL END AS WFP,
+                    --CASE WHEN np.rn = 1 THEN np.GoL ELSE NULL END AS GoL,
+                    --CASE WHEN np.rn = 1 THEN np.Ben ELSE NULL END AS Ben,
+                    --CASE WHEN np.rn = 1 THEN np.OtherFund ELSE NULL END AS 'Other Fund'
+                    np.IFAD AS IFAD,
+                    np.MAF AS MAF,
+                    np.WFP AS WFP,
+                    np.GoL AS GoL,
+                    np.Ben AS Ben,
+                    np.OtherFund AS 'Other Fund'
                 FROM NumberedParticipants np
                 ORDER BY np.Id DESC, np.rn;
             `;
@@ -505,21 +516,32 @@ function getForm1BAct6ParticipantDataBySID(SubmissionId, language) {
                     (SELECT Label_English FROM Translation_EN_LA WHERE FormName='form_1bact6' AND ItemCode=np.PWD_status LIMIT 1) AS 'PWD Status',
                     (SELECT Label_English FROM Translation_EN_LA WHERE FormName='form_1bact6' AND ItemCode=np.PositionInGroup LIMIT 1) AS 'Position in group',
                     (SELECT Label_English FROM Translation_EN_LA WHERE FormName='form_1bact6' AND ItemCode=np.MSME LIMIT 1) AS 'MSME',
-					CASE WHEN np.rn = 1 THEN np.CropType ELSE NULL END AS 'Crop Type',
-                    CASE WHEN np.rn = 1 THEN np.CropQuantity ELSE NULL END AS 'Crop Qty (kg)',
-                    CASE WHEN np.rn = 1 THEN np.LivestockType ELSE NULL END AS 'Livestock Type',
-                    CASE WHEN np.rn = 1 THEN np.LivestockQuantity ELSE NULL END AS 'Livestock Qty (kg)',
-                    CASE WHEN np.rn = 1 THEN np.ForageQuantity ELSE NULL END AS 'Forage Qty (kg)',
+					--CASE WHEN np.rn = 1 THEN np.CropType ELSE NULL END AS 'Crop Type',
+                    --CASE WHEN np.rn = 1 THEN np.CropQuantity ELSE NULL END AS 'Crop Qty (kg)',
+                    --CASE WHEN np.rn = 1 THEN np.LivestockType ELSE NULL END AS 'Livestock Type',
+                    --CASE WHEN np.rn = 1 THEN np.LivestockQuantity ELSE NULL END AS 'Livestock Qty (kg)',
+                    --CASE WHEN np.rn = 1 THEN np.ForageQuantity ELSE NULL END AS 'Forage Qty (kg)',
+                    np.CropType AS 'Crop Type',
+                    np.CropQuantity AS 'Crop Qty (kg)',
+                    np.LivestockType AS 'Livestock Type',
+                    np.LivestockQuantity AS 'Livestock Qty(kg)',
+                    np.ForageQuantity AS 'Forage Qty (kg)',
 					
                     (SELECT Label_English FROM Translation_EN_LA WHERE FormName='form_1bact6' AND ItemCode=np.ACRegistered LIMIT 1) AS 'AC Registered',
                     (SELECT Label_English FROM Translation_EN_LA WHERE FormName='form_1bact6' AND ItemCode=np.GrantReceived LIMIT 1) AS 'Grant Received',
                     
-                    CASE WHEN np.rn = 1 THEN np.IFAD ELSE NULL END AS IFAD,
-                    CASE WHEN np.rn = 1 THEN np.MAF ELSE NULL END AS MAF,
-                    CASE WHEN np.rn = 1 THEN np.WFP ELSE NULL END AS WFP,
-                    CASE WHEN np.rn = 1 THEN np.GoL ELSE NULL END AS GoL,
-                    CASE WHEN np.rn = 1 THEN np.Ben ELSE NULL END AS Ben,
-                    CASE WHEN np.rn = 1 THEN np.OtherFund ELSE NULL END AS 'Other Fund'
+                    --CASE WHEN np.rn = 1 THEN np.IFAD ELSE NULL END AS IFAD,
+                    --CASE WHEN np.rn = 1 THEN np.MAF ELSE NULL END AS MAF,
+                    --CASE WHEN np.rn = 1 THEN np.WFP ELSE NULL END AS WFP,
+                    --CASE WHEN np.rn = 1 THEN np.GoL ELSE NULL END AS GoL,
+                    --CASE WHEN np.rn = 1 THEN np.Ben ELSE NULL END AS Ben,
+                    --CASE WHEN np.rn = 1 THEN np.OtherFund ELSE NULL END AS 'Other Fund'
+                    np.IFAD AS IFAD,
+                    np.MAF AS MAF,
+                    np.WFP AS WFP,
+                    np.GoL AS GoL,
+                    np.Ben AS Ben,
+                    np.OtherFund AS 'Other Fund'
                 FROM NumberedParticipants np
                 ORDER BY np.Id DESC, np.rn;
             `;
@@ -784,10 +806,10 @@ function buildForm1BAct6SubmissionXML(submission, participants) {
 
     // Group: Agricultural support
     xml.push(`  <_foodcroptype>${escapeXML(submission.CropType)}</_foodcroptype>`);
-    xml.push(`  <_foodcropamount>${submission.CropQuantity || 0}</_foodcropamount>`);
+    xml.push(`  <_foodcropamount>${submission.CropQuantity || ''}</_foodcropamount>`);
     xml.push(`  <_livestocktype>${escapeXML(submission.LivestockType)}</_livestocktype>`);
-    xml.push(`  <_livestockamount>${submission.LivestockQuantity || 0}</_livestockamount>`);
-    xml.push(`  <_forageamount>${submission.ForageQuantity || 0}</_forageamount>`);
+    xml.push(`  <_livestockamount>${submission.LivestockQuantity || ''}</_livestockamount>`);
+    xml.push(`  <_forageamount>${submission.ForageQuantity || ''}</_forageamount>`);
 
     xml.push(`  <_ac_regis>${escapeXML(submission.ACRegistered)}</_ac_regis>`);
     xml.push(`  <_grant_receive>${escapeXML(submission.GrantReceived)}</_grant_receive>`);
@@ -817,12 +839,12 @@ function buildForm1BAct6SubmissionXML(submission, participants) {
 
     // Group: Contributions
     xml.push(`  <group_wz1ah68>`);
-    xml.push(`    <_IFAD_>${submission.IFAD || 0}</_IFAD_>`);
-    xml.push(`    <_MAF_>${submission.MAF || 0}</_MAF_>`);
-    xml.push(`    <_WFP_>${submission.WFP || 0}</_WFP_>`);
-    xml.push(`    <_GoL_>${submission.GoL || 0}</_GoL_>`);
-    xml.push(`    <_Ben_>${submission.Ben || 0}</_Ben_>`);
-    xml.push(`    <integer_oz4sh88>${submission.OtherFund || 0}</integer_oz4sh88>`);
+    xml.push(`    <_IFAD_>${submission.IFAD || ''}</_IFAD_>`);
+    xml.push(`    <_MAF_>${submission.MAF || ''}</_MAF_>`);
+    xml.push(`    <_WFP_>${submission.WFP || ''}</_WFP_>`);
+    xml.push(`    <_GoL_>${submission.GoL || ''}</_GoL_>`);
+    xml.push(`    <_Ben_>${submission.Ben || ''}</_Ben_>`);
+    xml.push(`    <integer_oz4sh88>${submission.OtherFund || ''}</integer_oz4sh88>`);
     xml.push(`  </group_wz1ah68>`);
 
     // Meta
@@ -881,20 +903,20 @@ const normalizeKeys = (data) => {
         CBOEstablish: data.CBOEstablish || data["CBO Established"] || data["ມີການຈັດຕັ້ງກຸ່ມຜະລິດບໍ"] || null,
         Conducted_by: data.Conducted_by || data["Conducted By"] || data["ຈັດຕັ້ງປະຕິບັດໂດຍ"] || null,
         CropType: data.CropType || data["Crop Type"] || data["ປະເພດພືດອາຫານ"] || null,
-        CropQuantity: parseFloat(data.CropQuantity || data["Crop Qty (kg)"] || data["ປະລິມານພືດ (ກິໂລ)"] || 0),
+        CropQuantity: isNaN(parseFloat(data.CropQuantity || data["Crop Qty (kg)"] || data["ປະລິມານພືດ (ກິໂລ)"])) ? null : parseFloat(data.CropQuantity || data["Crop Qty (kg)"] || data["ປະລິມານພືດ (ກິໂລ)"]),
         LivestockType: data.LivestockType || data["Livestock Type"] || data["ປະເພດສັດ"] || null,
-        LivestockQuantity: parseFloat(data.LivestockQuantity || data["Livestock Qty (kg)"] || data["ປະລິມານສັດ (ກິໂລ)"] || 0),
-        ForageQuantity: parseFloat(data.ForageQuantity || data["Forage Qty (kg)"] || data["ພືດອາຫານສັດ (ກິໂລ)"] || 0),
+        LivestockQuantity: isNaN(parseFloat(data.LivestockQuantity || data["Livestock Qty (kg)"] || data["ປະລິມານສັດ (ກິໂລ)"])) ? null : parseFloat(data.LivestockQuantity || data["Livestock Qty (kg)"] || data["ປະລິມານສັດ (ກິໂລ)"]),
+        ForageQuantity: isNaN(parseFloat(data.ForageQuantity || data["Forage Qty (kg)"] || data["ພືດອາຫານສັດ (ກິໂລ)"]) ? null : parseFloat(data.ForageQuantity || data["Forage Qty (kg)"] || data["ພືດອາຫານສັດ (ກິໂລ)"])),
         ACRegistered: data.ACRegistered || data["AC Registered"] || null,
         GrantReceived: data.GrantReceived || data["Grant Received"] || null,
 
         // Contribution values
-        IFAD: parseFloat(data.IFAD || 0),
-        MAF: parseFloat(data.MAF || 0),
-        WFP: parseFloat(data.WFP || 0),
-        GoL: parseFloat(data.GoL || 0),
-        Ben: parseFloat(data.Ben || 0),
-        OtherFund: parseFloat(data.OtherFund || data.Other || data["Other Fund"] || 0),
+        IFAD: isNaN(parseFloat(data.IFAD)) ? null : parseFloat(data.IFAD),
+        MAF: isNaN(parseFloat(data.MAF)) ? null : parseFloat(data.MAF),
+        WFP: isNaN(parseFloat(data.WFP)) ? null : parseFloat(data.WFP),
+        GoL: isNaN(parseFloat(data.GoL)) ? null : parseFloat(data.GoL),
+        Ben: isNaN(parseFloat(data.Ben)) ? null : parseFloat(data.Ben),
+        OtherFund: isNaN(parseFloat(data.OtherFund || data.Other || data["Other Fund"])) ? null : parseFloat(data.OtherFund || data.Other || data["Other Fund"])
 
     };
 };

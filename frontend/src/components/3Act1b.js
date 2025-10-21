@@ -14,7 +14,7 @@ export default function Form3Act1b({ refreshTrigger }) {
     const [language, setLanguage] = useState('LA'); // default language
     const [loading, setLoading] = useState(false);
     const [defaultFilterResultLimit, setDefaultFilterResultLimit] = useState(800); // limit the result to 800 records by default. if want to change this value then need to change on refresh button below as well.
-
+    const financialFields = ['IFAD', 'MAF', 'WFP', 'GoL', 'Ben', 'Other Fund'];
 
 
     // add new
@@ -516,7 +516,7 @@ export default function Form3Act1b({ refreshTrigger }) {
                                 >
                                     {Object.entries(row).map(([col, value], colIdx) => (
                                         <td key={col}>
-                                            {(colIdx >= 17 && colIdx <= 22 && !isNaN(value))
+                                            {(colIdx >= 17 && colIdx <= 22 && value != null && value != '' && !isNaN(value))
                                                 ? Number(value).toLocaleString()
                                                 : value}
                                         </td>
@@ -658,7 +658,8 @@ export default function Form3Act1b({ refreshTrigger }) {
                                             {modalData.length > 0 && (
                                                 <tr>
                                                     {Object.keys(modalData[0]).map((col) => (
-                                                        <th key={col}>{col}</th>
+                                                        //<th key={col}>{col}</th>
+                                                        financialFields.includes(col) ? null : <th key={col}>{col}</th>
                                                     ))}
                                                 </tr>
                                             )}
@@ -672,11 +673,13 @@ export default function Form3Act1b({ refreshTrigger }) {
                                                     style={{ cursor: 'pointer' }}
                                                 >
                                                     {Object.entries(row).map(([col, value], colIdx) => (
+                                                        financialFields.includes(col) ? null : (
                                                         <td key={col}>
-                                                            {(colIdx >= 18 && colIdx <= 23 && !isNaN(value))
+                                                            {(colIdx >= 18 && colIdx <= 23 && value != null && value != '' && !isNaN(value))
                                                                 ? Number(value).toLocaleString()
                                                                 : value}
                                                         </td>
+                                                        )
                                                     ))}
                                                 </tr>
                                             ))}
