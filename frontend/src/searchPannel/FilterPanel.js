@@ -3,11 +3,12 @@ import 'bootstrap/dist/css/bootstrap.min.css';
 
 const columnOptions = [
   { label: 'SubmissionID', value: 's.Id' },
+  { label: 'ລະຫັດຄົວເຮືອນ', value: 'p.HHId' },
   { label: 'ວັນເລີ່ມ', value: 's.Start' },
   { label: 'ໄລຍະເວລາລາຍງານ', value: 's.Reporting_period' },
-  { label: 'ແຂວງ', value: 's.Province' },
-  { label: 'ເມືອງ', value: 's.District' },
-  { label: 'ບ້ານ', value: 's.Village' }
+  { label: 'ລະຫັດແຂວງ', value: 's.Province' },
+  { label: 'ລະຫັດເມືອງ', value: 's.District' },
+  { label: 'ລະຫັດບ້ານ', value: 's.Village' }
 ];
 
 const conditionOptions = [
