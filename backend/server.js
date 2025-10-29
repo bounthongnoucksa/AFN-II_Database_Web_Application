@@ -1380,13 +1380,25 @@ app.get('/api/form1A2/getParticipantData', async (req, res) => {
     try {
         // Optional: language query parameter (default to LA)
         const language = req.query.lang || 'LA';
+        const page = req.query.page;
         const limit = req.query.limit; // Limit the result send to frontend. Can be undefined, empty string, or a number string
 
         if (!language) {
             return res.status(400).json({ success: false, message: 'Language is required' });
         }
 
-        const data = await getForm1A2ParticipantData(language, limit);
+        // Parse filters param
+        let filters = [];
+        if (req.query.filters) {
+            try {
+                filters = JSON.parse(req.query.filters);
+            } catch (error) {
+                console.warn('Failed to parse filters:', error);
+                filters = [];
+            }
+        }
+
+        const data = await getForm1A2ParticipantData(language, page, limit, filters);
         res.json({ success: true, data });
     } catch (error) {
         console.error('Error fetching Form 1A2 data:', error);
@@ -1430,7 +1442,15 @@ app.get('/api/form1A2/exportToExcel', async (req, res) => {
     const templatePath = path.join(__dirname, 'templates/Form_1A2_Export_Template.xlsx');
 
     try {
-        const rows = await getForm1A2ParticipantData(language);
+        //const rows = await getForm1A2ParticipantData(language);
+        const response = await getForm1A2ParticipantData(language);
+        const rows = response?.data; //extract data from the response object
+
+        if (!rows.length) {
+            res.status(404).send('No data available to export');
+            return;
+        }
+        ///////////////////////////////////////////////////////////
 
         const workbook = new ExcelJS.Workbook();
         await workbook.xlsx.readFile(templatePath);
@@ -5041,7 +5061,7 @@ app.post('/api/form3Act1b/updateParticipantAndSubmissionData', async (req, res) 
         //Submit new submission data from local database to Kobo
         const { submission, participants } = await getRawForm3Act1bSubmissionAndParticipantsData(data.SubmissionID);
 
-        const xmlData = buildForm3Act1bSubmissionXML(submission, participants);      
+        const xmlData = buildForm3Act1bSubmissionXML(submission, participants);
         await submitNewForm3Act1bSubmissionToKobo(xmlData); //submit the updated submission to KoboToolbox
         res.json({ success: true, message: 'Participant and submission data updated successfully' });
 

@@ -66,6 +66,12 @@ node -e "console.log(require('crypto').randomBytes(32).toString('hex'))"
 (In production we can autogenerate using a NodeJS function and save to database with status column active/inactive)
 
 
+==================================
+Electron build:
+==================================
+inside Electron folder:
+npm run build
+
 
 ====================================
 How to buil and publish the update:

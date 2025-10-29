@@ -5,8 +5,8 @@
     "gender": "Male",
     "baseline": 0,
     "indicator": "Males",
-    "midTerm": 33600,
-    "endTarget": 84000
+    "midTerm": 21500,
+    "endTarget": 43000
   },
   "Outreach_Females": {
     "hierarchy": "Outreach",
@@ -14,8 +14,8 @@
     "gender": "Female",
     "baseline": 0,
     "indicator": "Females",
-    "midTerm": 33600,
-    "endTarget": 84000
+    "midTerm": 21500,
+    "endTarget": 43000
   },
   "Outreach_Young_people": {
     "hierarchy": "Outreach",
@@ -24,8 +24,8 @@
     "maxAge": "35",
     "baseline": 0,
     "indicator": "Young people",
-    "midTerm": 16800,
-    "endTarget": 42000
+    "midTerm": 10750,
+    "endTarget": 21500
   },
   "Outreach_Indigenous_people": {
     "hierarchy": "Outreach",
@@ -33,16 +33,16 @@
     "ethnic": "'_e01', '_e02', '_e03', '_e04', '_e05', '_e06', '_e07', '_e08'",
     "baseline": 0,
     "indicator": "Indigenous people",
-    "midTerm": 47040,
-    "endTarget": 117600
+    "midTerm": 32250,
+    "endTarget": 64500
   },
   "Outreach_persons_received_services": {
     "hierarchy": "Outreach",
     "indicatorGroup": "1 Persons receiving services promoted or supported by the project",
     "baseline": 0,
     "indicator": "Total number of persons receiving services",
-    "midTerm": 67200,
-    "endTarget": 168000
+    "midTerm": 43000,
+    "endTarget": 86000
   },
   "Outreach_pwd_number": {
     "hierarchy": "Outreach",
@@ -50,8 +50,8 @@
     "pwd": "yes",
     "baseline": 0,
     "indicator": "Persons with disabilities",
-    "midTerm": 1344,
-    "endTarget": 3360
+    "midTerm": 560,
+    "endTarget": 1400
   },
   "Outreach_Households": {
     "hierarchy": "Outreach",

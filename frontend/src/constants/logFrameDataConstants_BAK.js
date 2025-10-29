@@ -6,8 +6,8 @@ export const logFrameData = [
         indicatorGroup: '1 Persons receiving services promoted or supported by the project',
         indicator: "Males",
         baseline: 0,
-        midTerm: 33600,
-        endTarget: 84000,
+        midTerm: 21500,
+        endTarget: 43000,
         yearlyData: {
             2023: { target: 0, result: 120, cumulative: 120 },
             2024: { target: 9000, result: 4564, cumulative: 4684 },
