@@ -572,12 +572,24 @@ app.get('/api/cbForStaff/getParticipantData', async (req, res) => {
     try {
         // Optional: language query parameter (default to LA)
         const language = req.query.lang || 'LA';
+        const page = req.query.page;
         const limit = req.query.limit; // Limit the result send to frontend. Can be undefined, empty string, or a number string
         if (!language) {
             return res.status(400).json({ success: false, message: 'Language is required' });
         }
 
-        const data = await getCBStaffParticipantData(language, limit);
+        // Parse filters param
+        let filters = [];
+        if (req.query.filters) {
+            try {
+                filters = JSON.parse(req.query.filters);
+            } catch (error) {
+                console.warn('Failed to parse filters:', error);
+                filters = [];
+            }
+        }
+
+        const data = await getCBStaffParticipantData(language, page, limit, filters);
         res.json({ success: true, data });
     } catch (error) {
         console.error('Error fetching CB Staff data:', error);
@@ -621,7 +633,15 @@ app.get('/api/cbForStaff/exportToExcel', async (req, res) => {
     const templatePath = path.join(__dirname, 'templates/CB_for_staff_Export_Template.xlsx');
 
     try {
-        const rows = await getCBStaffParticipantData(language);
+        //const rows = await getCBStaffParticipantData(language);
+        const response = await getCBStaffParticipantData(language);
+        const rows = response?.data; //extract data from the response object
+
+        if (!rows.length) {
+            res.status(404).send('No data available to export');
+            return;
+        }
+        ///////////////////////////////////////////////////////////
 
         const workbook = new ExcelJS.Workbook();
         await workbook.xlsx.readFile(templatePath);

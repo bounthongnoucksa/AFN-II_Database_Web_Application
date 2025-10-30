@@ -383,7 +383,6 @@ function getForm1A2ParticipantData(language, page, limit, filters = []) {
                     });
                 }
             });
-            //console.log({ finalQuery, queryParams})
         });
     });
 }
