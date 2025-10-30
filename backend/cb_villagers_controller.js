@@ -144,12 +144,48 @@ function runQuery(db, sql, params = []) {
 
 
 // ############################ Function to get CB Villagers participant data ############################
-function getCBVillagerParticipantData(language, limit) {
+function getCBVillagerParticipantData(language, page, limit, filters = []) {
     return new Promise((resolve, reject) => {
 
         const db = getDBConnection(); // Get the database connection
 
         const queryParams = [];
+
+        const isPaginated = page && limit && !isNaN(page) && !isNaN(limit);
+        const offset = isPaginated ? (Number(page) - 1) * Number(limit) : 0;
+
+        // Start building WHERE clauses from filters
+        const whereClauses = [];
+        filters.forEach((filter) => {
+            // Map your filter conditions to SQL
+            let sqlCond;
+            switch (filter.condition) {
+                case 'equals':
+                    sqlCond = `${filter.column} = ?`;
+                    queryParams.push(filter.value);
+                    break;
+                case 'contains':
+                    sqlCond = `${filter.column} LIKE ?`;
+                    queryParams.push(`%${filter.value}%`);
+                    break;
+                case 'gt':
+                    sqlCond = `${filter.column} > ?`;
+                    queryParams.push(filter.value);
+                    break;
+                case 'lt':
+                    sqlCond = `${filter.column} < ?`;
+                    queryParams.push(filter.value);
+                    break;
+                default:
+                    return; // skip invalid condition
+            }
+            whereClauses.push(sqlCond);
+        });
+        // Add WHERE clause to your existing query
+        let whereSQL = '';
+        if (whereClauses.length > 0) {
+            whereSQL = 'WHERE ' + whereClauses.join(' AND ');
+        }
 
         // Construct the base query based on language
         let query = '';
@@ -191,6 +227,7 @@ function getCBVillagerParticipantData(language, limit) {
                             ROW_NUMBER() OVER (PARTITION BY p.SubmissionId ORDER BY p.Id) AS rn
                         FROM tb_CB_for_Villagers_Participant p
                         JOIN tb_CB_for_Villagers_Submission s ON p.SubmissionId = s.Id
+                        ${whereSQL ? 'WHERE ' + whereClauses.join(' AND ') : ''}
                     )
                     SELECT
                         np.Id AS SubmissionID,
@@ -262,6 +299,7 @@ function getCBVillagerParticipantData(language, limit) {
                                 ROW_NUMBER() OVER (PARTITION BY p.SubmissionId ORDER BY p.Id) AS rn
                             FROM tb_CB_for_Villagers_Participant p
                             JOIN tb_CB_for_Villagers_Submission s ON p.SubmissionId = s.Id
+                            ${whereSQL ? 'WHERE ' + whereClauses.join(' AND ') : ''}
                         )
                         SELECT
                             np.Id AS SubmissionID,
@@ -296,24 +334,43 @@ function getCBVillagerParticipantData(language, limit) {
             `;
         }
         // If limit is provided and valid, append LIMIT clause
+        // let finalQuery = query;
+        // if (limit && !isNaN(limit)) {
+        //     finalQuery += `LIMIT ?`;
+        //     queryParams.push(Number(limit))
+        // }
         let finalQuery = query;
-        if (limit && !isNaN(limit)) {
-            finalQuery += `LIMIT ?`;
-            queryParams.push(Number(limit))
+        if (isPaginated) {
+            finalQuery += `LIMIT ? OFFSET ?`;
+            queryParams.push(Number(limit), offset);
         }
 
-        //db.all(query, [], (err, rows) => {
-        db.all(finalQuery, queryParams, (err, rows) => {
-            db.close();
+        // First: Get total count (needed for frontend)
+        const countQuery = `SELECT COUNT(*) as total FROM tb_CB_for_Villagers_Participant`;
+        db.get(countQuery, [], (err, countRow) => {
             if (err) {
-
-                reject(err);
-            } else {
-
-                // Add row number column
-                const dataWithNo = rows.map((row, index) => ({ No: index + 1, ...row }));
-                resolve(dataWithNo);
+                db.close();
+                return reject(err);
             }
+
+            //db.all(query, [], (err, rows) => {
+            db.all(finalQuery, queryParams, (err, rows) => {
+                db.close();
+                if (err) {
+
+                    reject(err);
+                } else {
+
+                    // Add row number column
+                    const dataWithNo = rows.map((row, index) => ({ No: (isPaginated ? offset + index + 1 : index + 1), ...row }));
+                    resolve({
+                        data: dataWithNo,
+                        total: countRow.total,
+                        page: isPaginated ? Number(page) : undefined,
+                        limit: isPaginated ? Number(limit) : undefined
+                    });
+                }
+            });
         });
     });
 }
@@ -750,7 +807,7 @@ function buildCBVillagerSubmissionXML(submission, participants) {
 
         if (p.HaveHHId === "hhidyes") {
             xml.push(`    <select_one_mainNameAndSurname>${escapeXML(p.NameAndSurname)}</select_one_mainNameAndSurname>`);
-        }else{
+        } else {
             xml.push(`    <_namenohhid>${escapeXML(p.NameAndSurname)}</_namenohhid>`);
         }
 
