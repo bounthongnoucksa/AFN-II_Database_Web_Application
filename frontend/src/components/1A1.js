@@ -6,7 +6,7 @@ import 'bootstrap/dist/css/bootstrap.min.css';
 import { Modal, Spinner, Button } from 'react-bootstrap'; // Import React Bootstrap components for modal message and buttons
 import '../App.css'; // Import custom CSS for sticky header
 import { APP_API_URL } from '../constants/appURLConstrants';
-import FilterPanel from '../searchPannel/FilterPanel_v2'
+import FilterPanel from '../searchPannel/FilterPanel_v2';
 
 
 
