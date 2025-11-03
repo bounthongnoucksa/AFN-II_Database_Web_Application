@@ -3365,12 +3365,24 @@ app.get('/api/form1BAct7/getParticipantData', async (req, res) => {
     try {
         // Optional: language query parameter (default to LA)
         const language = req.query.lang || 'LA';
+        const page = req.query.page;
         const limit = req.query.limit; // Limit the result send to frontend. Can be undefined, empty string, or a number string
         if (!language) {
             return res.status(400).json({ success: false, message: 'Language is required' });
         }
 
-        const data = await getForm1BAct7ParticipantData(language, limit);
+        // Parse filters param
+        let filters = [];
+        if (req.query.filters) {
+            try {
+                filters = JSON.parse(req.query.filters);
+            } catch (error) {
+                console.warn('Failed to parse filters:', error);
+                filters = [];
+            }
+        }
+
+        const data = await getForm1BAct7ParticipantData(language, page, limit, filters);
         res.json({ success: true, data });
     } catch (error) {
         console.error('Error fetching Form 1BAct7 data:', error);
@@ -3414,7 +3426,14 @@ app.get('/api/form1BAct7/exportToExcel', async (req, res) => {
     const templatePath = path.join(__dirname, 'templates/Form_1BAct7_Export_Template.xlsx');
 
     try {
-        const rows = await getForm1BAct7ParticipantData(language);
+        const response = await getForm1BAct7ParticipantData(language);
+        const rows = response?.data; //extract data from the response object
+
+        if (!rows.length) {
+            res.status(404).send('No data available to export');
+            return;
+        }
+        ///////////////////////////////////////////////////////////
 
         const workbook = new ExcelJS.Workbook();
         await workbook.xlsx.readFile(templatePath);

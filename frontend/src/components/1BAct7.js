@@ -6,6 +6,7 @@ import 'bootstrap/dist/css/bootstrap.min.css';
 import { Modal, Spinner, Button } from 'react-bootstrap'; // Import React Bootstrap components for modal message and buttons
 import '../App.css'; // Import custom CSS for sticky header
 import { APP_API_URL } from '../constants/appURLConstrants';
+import FilterPanel from '../searchPannel/FilterPanel'
 
 
 
@@ -13,7 +14,13 @@ export default function Form1BAct7({ refreshTrigger }) {
     const [data, setData] = useState([]);
     const [language, setLanguage] = useState('LA'); // default language
     const [loading, setLoading] = useState(false);
-    const [defaultFilterResultLimit, setDefaultFilterResultLimit] = useState(800); // limit the result to 800 records by default. if want to change this value then need to change on refresh button below as well.
+    const [pageSize, setpageSize] = useState(200); // limit the result to 200 records by default. if want to change this value then need to change on refresh button below as well.
+    const [total, setTotal] = useState(0);        // total records
+    const [page, setPage] = useState(1);          // current page
+    const totalPages = Math.ceil(total / pageSize);
+
+    const [filters, setFilters] = useState([]); //for filter function
+    const [showFilterPanel, setShowFilterPanel] = useState(false); //for filter function
     const financialFields = ['IFAD', 'MAF', 'WFP', 'GoL', 'Ben', 'Other Fund'];
 
 
@@ -34,14 +41,29 @@ export default function Form1BAct7({ refreshTrigger }) {
     const [showSuccessModalMessage, setShowSuccessModalMessage] = useState(false);
 
     // Fetch main table data
-    const fetchData = async (lang, limit = defaultFilterResultLimit) => {
+    const fetchData = async (lang, pageNumber = page, limit = pageSize, filters = []) => {
         setLoading(true);
         try {
-            const res = await axios.get(APP_API_URL + `/api/form1BAct7/getParticipantData?lang=${lang}&limit=${limit}`);
+            //const res = await axios.get(APP_API_URL + `/api/form1BAct7/getParticipantData?lang=${lang}&limit=${limit}`);
+            // Convert filters to JSON string for query param
+            const filtersParam = JSON.stringify(filters);
+
+            const res = await axios.get(`${APP_API_URL}/api/form1BAct7/getParticipantData`, {
+                params: {
+                    lang,
+                    page: pageNumber,
+                    limit,
+                    filters: filtersParam
+                }
+            });
             if (res.data.success) {
-                setData(res.data.data);
+                setData(res.data.data.data);
+                setTotal(res.data.data.total);
+                setPage(res.data.data.page);
             } else {
                 setData([]);
+                setTotal(0);
+                setPage(1);
             }
         } catch (error) {
             console.error('Error fetching form 1BAct6 data:', error);
@@ -87,8 +109,8 @@ export default function Form1BAct7({ refreshTrigger }) {
     //     fetchData(language);
     // }, [language, refreshTrigger]);
     useEffect(() => {
-        fetchData(language, defaultFilterResultLimit);
-    }, [language, refreshTrigger, defaultFilterResultLimit]);
+        fetchData(language, page, pageSize, filters);
+    }, [language, refreshTrigger, page, pageSize, filters]);
 
     //Langauge toggle function
     const toggleLanguage = () => {
@@ -446,12 +468,18 @@ export default function Form1BAct7({ refreshTrigger }) {
 
             {/* Buttons */}
             <div className="d-flex justify-content-between mb-2">
-                <div>
+                <div className="d-flex align-items-center flex-wrap">
                     {/*<button className='btn btn-primary btn-sm me-2 ' style={{ width: '120px' }} onClick={() => fetchData(language)} title='To reload data from application database'>Refresh</button>*/}
-                    <button className='btn btn-primary btn-sm me-2 ' style={{ width: '120px' }} onClick={() => { setDefaultFilterResultLimit(800); }} title='To reload data from application database'>Refresh</button>
-                    <button className='btn btn-primary btn-sm me-2' style={{ width: '120px' }} onClick={() => { setDefaultFilterResultLimit(''); }} title='Show all records of existing data for this activity (can be slow)'> Show all data</button>
+                    {/* <button className='btn btn-primary btn-sm me-2 ' style={{ width: '120px' }} onClick={() => { setpageSize(800); }} title='To reload data from application database'>Refresh</button> */}
+                    <button className='btn btn-primary btn-sm me-2' style={{ width: '120px' }} onClick={() => { setpageSize(''); }} title='Show all records of existing data for this activity (can be slow)'> Show all data</button>
                     <button className='btn btn-primary btn-sm me-2' style={{ width: '120px' }} onClick={handleDownloadForm1BAct7bDataFromKobo} title='To cleanup application database and reload new data from KoboToolbox online database'>Load new data</button>
-                    <button className='btn btn-primary btn-sm' style={{ width: '120px' }} onClick={handleExcelExport} title='To export the data to Excel template file' >Export</button>
+                    <button className='btn btn-primary btn-sm me-2' style={{ width: '120px' }} onClick={handleExcelExport} title='To export the data to Excel template file' >Export</button>
+                    <button className='btn btn-primary btn-sm' style={{ width: '120px' }} onClick={() => setShowFilterPanel(!showFilterPanel)} title='To show or hide filter for the search result' >Filter</button>
+                    {showFilterPanel && (
+                        <div className="ms-2">
+                            <FilterPanel filters={filters} setFilters={setFilters} />
+                        </div>
+                    )}
                 </div>
             </div>
 
@@ -491,6 +519,7 @@ export default function Form1BAct7({ refreshTrigger }) {
             {loading ? (
                 <div>Loading...</div>
             ) : (
+                <div>
                 <div className="table-responsive" style={{ overflowX: 'auto', overflowY: 'auto', maxHeight: '616px' }}>
                     <table className="table table-bordered table-hover table-sm text-nowrap">
                         <thead className="table-success sticky-header">
@@ -524,6 +553,44 @@ export default function Form1BAct7({ refreshTrigger }) {
                             ))}
                         </tbody>
                     </table>
+                </div>
+                <div>
+                        {total > 0 && (
+                            <div className="d-flex justify-content-between align-items-center mt-3">
+                                <div>
+                                    Showing page {Number.isInteger(page) ? page : 1} of {Number.isFinite(totalPages) ? totalPages : 1} ({total} records)
+                                </div>
+
+                                <div className="btn-group">
+                                    <button
+                                        className="btn btn-sm btn-outline-secondary"
+                                        disabled={page <= 1 || page === undefined}
+                                        onClick={() => {
+                                            const newPage = page - 1;
+                                            setPage(newPage);
+                                            fetchData(language, newPage, pageSize);
+
+                                        }}
+                                    >
+                                        Previous
+                                    </button>
+
+                                    <button
+                                        className="btn btn-sm btn-outline-secondary"
+                                        disabled={page >= totalPages || page === undefined}
+                                        onClick={() => {
+                                            const newPage = page + 1;
+                                            setPage(newPage);
+                                            fetchData(language, newPage, pageSize);
+
+                                        }}
+                                    >
+                                        Next
+                                    </button>
+                                </div>
+                            </div>
+                        )}
+                    </div>
                 </div>
 
             )}
@@ -673,11 +740,11 @@ export default function Form1BAct7({ refreshTrigger }) {
                                                 >
                                                     {Object.entries(row).map(([col, value], colIdx) => (
                                                         financialFields.includes(col) ? null : (
-                                                        <td key={col}>
-                                                            {(colIdx >= 21 && colIdx <= 25 && value != null && value != '' && !isNaN(value))
-                                                                ? Number(value).toLocaleString()
-                                                                : value}
-                                                        </td>
+                                                            <td key={col}>
+                                                                {(colIdx >= 21 && colIdx <= 25 && value != null && value != '' && !isNaN(value))
+                                                                    ? Number(value).toLocaleString()
+                                                                    : value}
+                                                            </td>
                                                         )
                                                     ))}
                                                 </tr>
