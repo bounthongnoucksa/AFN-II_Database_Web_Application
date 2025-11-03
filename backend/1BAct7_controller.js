@@ -316,7 +316,7 @@ function getForm1BAct7ParticipantData(language, page, limit, filters = []) {
         }
 
         // First: Get total count (needed for frontend)
-        const countQuery = `SELECT COUNT(*) as total FROM tb_Form_1A2_Participant`;
+        const countQuery = `SELECT COUNT(*) as total FROM tb_Form_1BAct7_Participant`;
         db.get(countQuery, [], (err, countRow) => {
             if (err) {
                 db.close();
