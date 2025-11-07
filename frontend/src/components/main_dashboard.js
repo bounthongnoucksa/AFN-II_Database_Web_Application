@@ -24,6 +24,7 @@ export default function MainDashboard({ refreshTrigger }) {
     const [chartDataForm1BAct7, setchartDataForm1BAct7] = useState([]);
     const [chartDataForm1BAct8, setchartDataForm1BAct8] = useState([]);
     const [chartDataForm1BAct8_2, setchartDataForm1BAct8_2] = useState([]);
+    const [chartDataForm2Act1, setchartDataForm2Act1] = useState([]);
 
 
     const [chartDataForm3Act1a, setchartDataForm3Act1a] = useState([]);
@@ -185,6 +186,14 @@ export default function MainDashboard({ refreshTrigger }) {
         { name: '#Women participant', value: d.Women_Participants_Irrigation, fill: '#00a14b' }
     ];
     // Formatter function for Form 2Act1 data
+    const formatForm2Act1ChartData = (d) => [
+        { name: '#MSME participated', value: d.Num_MSME_Participated, fill: '#85006eff' },
+        { name: '#Existing MSME', value: d.Existing_MSME_Supported, fill: '#85006eff' },
+        { name: '#New MSME', value: d.Newly_Created_MSME, fill: '#85006eff' },
+        { name: '#MSME (SUN BN)', value: d.MSME_SUN_Member, fill: '#85006eff' },
+        { name: '#New partnership BN', value: d.New_Partnership_Businesses, fill: '#85006eff' },
+        { name: '#APG member engaged', value: d.Num_APG_Members_Engaged, fill: '#85006eff' }
+    ];
     // Formatter function for Form 2Act2 data
     // Formatter function for Form 2Act3 data
 
@@ -233,6 +242,7 @@ export default function MainDashboard({ refreshTrigger }) {
             loadChartData(APP_API_URL + '/api/form1BAct7/getDashboardData', setchartDataForm1BAct7, formatForm1BAct7ChartData),
             loadChartData(APP_API_URL + '/api/form1BAct8/getDashboardData', setchartDataForm1BAct8, formatForm1BAct8ChartData),
             loadChartData(APP_API_URL + '/api/form1BAct8/getDashboardData', setchartDataForm1BAct8_2, formatForm1BAct8_2ChartData),
+            loadChartData(APP_API_URL + '/api/form2Act1/getDashboardData', setchartDataForm2Act1, formatForm2Act1ChartData),
 
 
             loadChartData(APP_API_URL + '/api/form3Act1a/getDashboardData', setchartDataForm3Act1a, formatForm3Act1aChartData),
@@ -262,6 +272,7 @@ export default function MainDashboard({ refreshTrigger }) {
         { title: '(1B.Act7) Agriculture/Rural Advisory Service Improved', data: chartDataForm1BAct7 },
         { title: '(1B.Act8) Climate Change Adaptation Infrastructures (MUS)', data: chartDataForm1BAct8 },
         { title: '(1B.Act8) Climate Change Adaptation Infrastructures (Irrigation)', data: chartDataForm1BAct8_2 },
+        { title: '(2Act1) Support to MSME in food supply chains', data: chartDataForm2Act1 },
 
 
         { title: '(3Act1a) Village Development Planning', data: chartDataForm3Act1a },

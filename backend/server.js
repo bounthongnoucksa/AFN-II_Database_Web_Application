@@ -14,7 +14,7 @@ import { fileURLToPath } from 'url';
 
 // Import your controller functions using ES module syntax
 //Import statistics data for chart
-import { getCBForStaffStatics, getCBForVillagersStatics, getForm1A1Statics, getForm1A2Statics, getForm1A3aStatics, getForm1A3bStatics, getForm1A4Statics, getForm1A5aStatics, getForm1A5bStatics, getForm1BAct6Statics, getForm1BAct7Statics, getForm1BAct8Statics, getForm3Act1aStatics, getForm3Act1bStatics } from './main_dashboard_controller.js';
+import { getCBForStaffStatics, getCBForVillagersStatics, getForm1A1Statics, getForm1A2Statics, getForm1A3aStatics, getForm1A3bStatics, getForm1A4Statics, getForm1A5aStatics, getForm1A5bStatics, getForm1BAct6Statics, getForm1BAct7Statics, getForm1BAct8Statics, getForm2Act1Statics, getForm3Act1aStatics, getForm3Act1bStatics } from './main_dashboard_controller.js';
 
 //Import outreach report functions
 import { get1A1OutreachData, get1A4OutreachData, get1BAct6OutreachData, get1BAct8OutreachData, get2Act1OutreachData, get2Act2OutreachData, get2Act3OutreachData, get3Act2OutreachData } from './outreach_controller.js';
@@ -619,9 +619,16 @@ app.get('/api/form1BAct8/getDashboardData', async (req, res) => {
         res.status(500).json({ error: 'Internal Server Error' });
     }
 });
+app.get('/api/form2Act1/getDashboardData', async (req, res) => {
+    try {
+        const data = await getForm2Act1Statics();
+        res.json(data); // send result data to frontend
 
-//Get Form 2Act1 Statistics
-//** To be contineu when activity data is available**/
+    } catch (err) {
+        console.err('rror getting Form 2Act1 dashboard data', err);
+        res.status(500).json({ error: 'Internal Server Error' });
+    }
+});
 
 //Get Form 2Act2 Statistics
 //** To be contineu when activity data is available**/

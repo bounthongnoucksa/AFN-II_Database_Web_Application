@@ -819,7 +819,56 @@ function getForm1BAct8Statics() {
 }
 
 //Get Form 2Act1 Statistics
-//** To be contineu when activity data is available**/
+function getForm2Act1Statics() {
+    return new Promise((resolve, reject) => {
+        const db = getDBConnection(); // Get the database connection
+        const query = `
+                    WITH 
+                        -- Unique MSME records
+                        AllMSMEs AS (
+                            SELECT DISTINCT
+                                p.EstablishmentDate,
+                                p.NameOfMSME_Owner,
+                                p.Gender,
+                                p.Existing,
+                                p.SUN_Member,
+                                p.ContactWithOther,
+                                p.AmountMSME_APGmembers
+                            FROM tb_Form_2Act1_Participant p
+                            JOIN tb_Form_2Act1_Submission s ON p.SubmissionId = s.Id
+                            WHERE p.NameOfMSME_Owner IS NOT NULL AND TRIM(p.NameOfMSME_Owner) <> ''
+                        )
+
+                        SELECT
+                            -- 1️ Number of MSMEs participated
+                            (SELECT COUNT(*) FROM AllMSMEs) AS Num_MSME_Participated,
+
+                            -- 2️ Existing MSMEs supported
+                            (SELECT COUNT(*) FROM AllMSMEs WHERE Existing = 'e') AS Existing_MSME_Supported,
+
+                            -- 3️ Newly created MSMEs (AFNII Supported)
+                            (SELECT COUNT(*) FROM AllMSMEs WHERE Existing = 'n') AS Newly_Created_MSME,
+
+                            -- 4️ MSMEs with SUN BN Membership
+                            (SELECT COUNT(*) FROM AllMSMEs WHERE SUN_Member = 'sun_yes') AS MSME_SUN_Member,
+
+                            -- 5️ New partnership businesses (proposal for matching grants)
+                            (SELECT COUNT(*) FROM AllMSMEs WHERE ContactWithOther = 'con_yes') AS New_Partnership_Businesses,
+
+                            -- 6️ APG members engaged in partnership contracts
+                            (SELECT SUM(AmountMSME_APGmembers) FROM AllMSMEs) AS Num_APG_Members_Engaged;                
+        `;
+        db.get(query, [], (err, row) => {
+            db.close();
+            if (err) {
+                reject(err);
+            } else {
+                resolve(row);
+            }
+        });
+
+    })
+}
 
 //Get Form 2Act2 Statistics
 //** To be contineu when activity data is available**/
@@ -957,6 +1006,7 @@ export {
     getForm1BAct6Statics,
     getForm1BAct7Statics,
     getForm1BAct8Statics,
+    getForm2Act1Statics,
 
     getForm3Act1aStatics,
     getForm3Act1bStatics
