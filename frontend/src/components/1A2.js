@@ -110,10 +110,19 @@ export default function Form1A2({ refreshTrigger }) {
 
     // Load data on mount and when language changes
     // useEffect(() => {
-    //     fetchData(language);
-    // }, [language, refreshTrigger]);
+    //     fetchData(language, page, pageSize, filters);
+    // }, [language, refreshTrigger, page, pageSize, filters]);
     useEffect(() => {
-        fetchData(language, page, pageSize, filters);
+        // If filters are active, show all data (disable pagination)
+        if (filters && filters.length > 0) {
+            // Always reset page to 1
+            setPage(1);
+            // Pass a very large limit or empty string to fetch all
+            fetchData(language, 1, 9999999, filters);
+        } else {
+            // Normal paginated mode
+            fetchData(language, page, pageSize, []);
+        }
     }, [language, refreshTrigger, page, pageSize, filters]);
 
 
@@ -560,7 +569,7 @@ export default function Form1A2({ refreshTrigger }) {
 
                     </div>
                     <div>
-                        {total > 0 && (
+                        {total > 0 && filters.length === 0 && (
                             <div className="d-flex justify-content-between align-items-center mt-3">
                                 <div>
                                     Showing page {Number.isInteger(page) ? page : 1} of {Number.isFinite(totalPages) ? totalPages : 1} ({total} records)

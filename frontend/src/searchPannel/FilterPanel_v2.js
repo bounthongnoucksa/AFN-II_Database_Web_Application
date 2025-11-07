@@ -4,7 +4,6 @@ import 'bootstrap/dist/css/bootstrap.min.css';
 const columnOptions = [
   { label: 'SubmissionID', value: 's.Id' },
   { label: 'ລະຫັດຄົວເຮືອນ', value: 'p.HHId' },
-  { label: 'ວັນເລີ່ມ', value: 's.Start' },
   { label: 'ໄລຍະເວລາລາຍງານ', value: 's.ReportingPeriod' },
   { label: 'ລະຫັດແຂວງ', value: 's.Province' },
   { label: 'ລະຫັດເມືອງ', value: 's.District' },
@@ -20,7 +19,7 @@ const conditionOptions = [
 
 function FilterPanel({ filters, setFilters }) {   // 👈 function starts
   const [newFilter, setNewFilter] = useState({
-    column: 's.Reporting_period',
+    column: 'p.HHId',
     condition: 'contains',
     value: ''
   });
@@ -28,7 +27,7 @@ function FilterPanel({ filters, setFilters }) {   // 👈 function starts
   const addFilter = () => {
     if (newFilter.value.trim()) {
       setFilters([...filters, newFilter]);
-      setNewFilter({ column: 's.Reporting_period', condition: 'contains', value: '' });
+      setNewFilter({ column: 'p.HHId', condition: 'contains', value: '' });
     }
   };
 
