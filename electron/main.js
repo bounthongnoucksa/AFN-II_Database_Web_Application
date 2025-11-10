@@ -1,6 +1,6 @@
 //electron/main.js
 
-const { app, BrowserWindow } = require('electron');
+const { app, BrowserWindow, screen } = require('electron');
 const path = require('path');
 const { spawn } = require('child_process');
 const waitOn = require('wait-on');
@@ -25,6 +25,9 @@ const backendPath = isDev
 //     : path.join(__dirname, 'backend', 'server.js')
 
 function createWindow() {
+    // Get the primary display's scale factor
+    const scaleFactor = screen.getPrimaryDisplay().scaleFactor;
+
     mainWindow = new BrowserWindow({
         width: 1024,
         height: 768,
@@ -33,6 +36,11 @@ function createWindow() {
             contextIsolation: true,
         },
         autoHideMenuBar: true,
+    });
+
+    // Adjust zoom factor to counteract Windows DPI scaling
+    mainWindow.webContents.on('did-finish-load', () => {
+        mainWindow.webContents.setZoomFactor(1 / scaleFactor);
     });
 
     mainWindow.maximize();
