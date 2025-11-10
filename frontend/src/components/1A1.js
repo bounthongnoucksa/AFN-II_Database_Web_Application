@@ -37,6 +37,7 @@ export default function Form1A1({ refreshTrigger }) {
 
     // modal message box state
     const [loadingModalMessage, setLoadingModalMessage] = useState(false);
+    const [loadingModalExcelExportMessage, setloadingModalExcelExportMessage] = useState(false); // for modal loading pop state during excel export
     const [modalMessage, setModalMessage] = useState(''); // Message to display in the modal message box as a pop up showing
     const [showSuccessModalMessage, setShowSuccessModalMessage] = useState(false);
 
@@ -219,6 +220,7 @@ export default function Form1A1({ refreshTrigger }) {
     //cb for staff export to Excel
     const handleExcelExport = async () => {
         try {
+            setloadingModalExcelExportMessage(true); //for modal Exporting pop state
             const response = await axios.get(APP_API_URL + `/api/form1A1/exportToExcel?lang=${language}`, {
                 responseType: 'blob',
             });
@@ -227,12 +229,17 @@ export default function Form1A1({ refreshTrigger }) {
             const link = document.createElement('a');
             link.href = url;
             link.setAttribute('download', 'Form_1A1_Exported_Report.xlsx');
+
             document.body.appendChild(link);
+
             link.click();
             link.remove();
+
         } catch (error) {
             console.error('Export failed', error);
             alert('Form 1A1 Export failed');
+        } finally {
+            setloadingModalExcelExportMessage(false); //for modal Exporting pop state
         }
     };
 
@@ -523,6 +530,15 @@ export default function Form1A1({ refreshTrigger }) {
                 </Modal.Footer>
             </Modal>
 
+            {/* Modal Message for exporting excel file wait progresss with spinner*/}
+            <Modal show={loadingModalExcelExportMessage} centered backdrop="static">
+                <Modal.Body className="text-center">
+                    <Spinner animation="border" role="status" className="mb-2">
+                        <span className="visually-hidden">Exporting...</span>
+                    </Spinner>
+                    <div>Exporting data to Excel file...</div>
+                </Modal.Body>
+            </Modal>
 
 
 

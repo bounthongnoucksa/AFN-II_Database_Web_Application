@@ -37,6 +37,7 @@ export default function Form3Act1a({ refreshTrigger }) {
 
     // modal message box state
     const [loadingModalMessage, setLoadingModalMessage] = useState(false);
+    const [loadingModalExcelExportMessage, setloadingModalExcelExportMessage] = useState(false); // for modal loading pop state during excel export
     const [modalMessage, setModalMessage] = useState(''); // Message to display in the modal message box as a pop up showing
     const [showSuccessModalMessage, setShowSuccessModalMessage] = useState(false);
 
@@ -219,6 +220,7 @@ export default function Form3Act1a({ refreshTrigger }) {
     //cb for staff export to Excel
     const handleExcelExport = async () => {
         try {
+            setloadingModalExcelExportMessage(true); //for modal Exporting pop state
             const response = await axios.get(APP_API_URL + `/api/form3Act1a/exportToExcel?lang=${language}`, {
                 responseType: 'blob',
             });
@@ -232,7 +234,9 @@ export default function Form3Act1a({ refreshTrigger }) {
             link.remove();
         } catch (error) {
             console.error('Export failed', error);
-            alert('Form 3Act1a Export to Export failed');
+            alert('Form 3Act1a Export to Excel failed');
+        }finally {
+            setloadingModalExcelExportMessage(false); //for modal Exporting pop state
         }
     };
 
@@ -521,6 +525,16 @@ export default function Form3Act1a({ refreshTrigger }) {
                         OK
                     </Button>
                 </Modal.Footer>
+            </Modal>
+
+            {/* Modal Message for exporting excel file wait progresss with spinner*/}
+            <Modal show={loadingModalExcelExportMessage} centered backdrop="static">
+                <Modal.Body className="text-center">
+                    <Spinner animation="border" role="status" className="mb-2">
+                        <span className="visually-hidden">Exporting...</span>
+                    </Spinner>
+                    <div>Exporting data to Excel file...</div>
+                </Modal.Body>
             </Modal>
 
 

@@ -234,7 +234,7 @@ export default function CBForStaff({ refreshTrigger }) {
             link.remove();
         } catch (error) {
             console.error('Export failed', error);
-            alert('CB Staff Export to Export failed');
+            alert('CB Staff Export to Excel failed');
         }
     };
 

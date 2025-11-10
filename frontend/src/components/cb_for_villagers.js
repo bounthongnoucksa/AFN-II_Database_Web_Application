@@ -234,7 +234,7 @@ export default function CBForVillagers({ refreshTrigger }) {
             link.remove();
         } catch (error) {
             console.error('Export failed', error);
-            alert('CB Villagers Export to Export failed');
+            alert('CB Villagers Export to Excel failed');
         }
     };
 

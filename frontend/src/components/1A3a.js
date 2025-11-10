@@ -29,6 +29,7 @@ export default function Form1A3a({ refreshTrigger }) {
 
     // modal message box state
     const [loadingModalMessage, setLoadingModalMessage] = useState(false);
+    const [loadingModalExcelExportMessage, setloadingModalExcelExportMessage] = useState(false); // for modal loading pop state during excel export
     const [modalMessage, setModalMessage] = useState(''); // Message to display in the modal message box as a pop up showing
     const [showSuccessModalMessage, setShowSuccessModalMessage] = useState(false);
 
@@ -182,6 +183,7 @@ export default function Form1A3a({ refreshTrigger }) {
     //cb for staff export to Excel
     const handleExcelExport = async () => {
         try {
+            setloadingModalExcelExportMessage(true); //for modal Exporting pop state
             const response = await axios.get(APP_API_URL + `/api/form1A3a/exportToExcel?lang=${language}`, {
                 responseType: 'blob',
             });
@@ -195,7 +197,9 @@ export default function Form1A3a({ refreshTrigger }) {
             link.remove();
         } catch (error) {
             console.error('Export failed', error);
-            alert('Form 1A3a Export to Export failed');
+            alert('Form 1A3a Export to Excel failed');
+        }finally {
+            setloadingModalExcelExportMessage(false); //for modal Exporting pop state
         }
     };
 
