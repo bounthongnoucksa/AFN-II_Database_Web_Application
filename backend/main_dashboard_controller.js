@@ -992,6 +992,106 @@ function getForm3Act1bStatics() {
 
     })
 }
+//Get Form 3Act2 Statistics
+function getForm3Act2Statics() {
+    return new Promise((resolve, reject) => {
+        const db = getDBConnection(); // Get the database connection
+        const query = `
+                    WITH 
+                        -- 1️ Unique CSOs approved
+                        UniqueCSOApproved AS (
+                            SELECT DISTINCT
+                                Province,
+                                District,
+                                CSO_Head_Name,
+                                CSO_approved_date
+                            FROM tb_Form_3Act2_Submission
+                            WHERE CSO_Head_Name IS NOT NULL
+                                AND TRIM(CSO_Head_Name) <> ''
+                                AND CSO_approved_date IS NOT NULL
+                                AND TRIM(CSO_approved_date) <> ''
+                        ),
+
+                        -- 2️ Unique Challenge Events / Sub-Activities Conducted
+                        UniqueSubActivities AS (
+                            SELECT DISTINCT
+                                Province,
+                                District,
+                                SubActivity,
+                                CSO_Head_Name,
+                                CSO_approved_date
+                            FROM tb_Form_3Act2_Submission
+                            WHERE SubActivity IS NOT NULL
+                                AND TRIM(SubActivity) <> ''
+                        ),
+
+                        -- 3️ Unique Fund Grants (for sum)
+                        UniqueFunds AS (
+                            SELECT DISTINCT
+                                Province,
+                                District,
+                                CSO_Head_Name,
+                                CSO_approved_date,
+                                COALESCE(MAF, 0) AS MAF,
+                                COALESCE(CSO_contribution, 0) AS CSO_contribution,
+                                COALESCE(CSO_cash, 0) AS CSO_cash,
+                                COALESCE(OtherFund, 0) AS OtherFund
+                            FROM tb_Form_3Act2_Submission
+                            WHERE CSO_Head_Name IS NOT NULL
+                                AND TRIM(CSO_Head_Name) <> ''
+                        ),
+
+                        -- 4️ Villagers supported by CSO (join participants)
+                        VillagersSupported AS (
+                            SELECT DISTINCT
+                                s.Province,
+                                s.District,
+                                s.Village,
+                                p.HHId,
+                                p.NameOfAPG AS NameAndSurname
+                            FROM tb_Form_3Act2_Participant p
+                            JOIN tb_Form_3Act2_Submission s ON p.Submission_id = s.Id
+                            WHERE p.HHId IS NOT NULL
+                                AND TRIM(p.HHId) <> ''
+                        ),
+
+                        -- 5️ Unique APGs supported
+                        UniqueAPGsSupported AS (
+                            SELECT DISTINCT
+                                APGs_Received_Support_From_CSO
+                            FROM tb_Form_3Act2_Submission
+                            WHERE APGs_Received_Support_From_CSO IS NOT NULL
+                                AND TRIM(APGs_Received_Support_From_CSO) <> ''
+                        )
+
+                    SELECT
+                        -- 1️ Total number of CSOs approved
+                        (SELECT COUNT(*) FROM UniqueCSOApproved) AS Total_CSOs_Approved,
+
+                        -- 2️ Total challenge events / sub-activities conducted
+                        (SELECT COUNT(*) FROM UniqueSubActivities) AS Total_SubActivities_Conducted,
+
+                        -- 3️ Total amount of challenge funds granted
+                        (SELECT SUM(MAF + CSO_contribution + CSO_cash + OtherFund) FROM UniqueFunds) AS Total_Challenge_Funds_Granted,
+
+                        -- 4️ Total villagers supported by CSO
+                        (SELECT COUNT(*) FROM VillagersSupported) AS Total_Villagers_Supported,
+
+                        -- 5️ Total number of POs/APGs supported by CSO
+                        (SELECT COUNT(*) FROM UniqueAPGsSupported) AS Total_APGs_Supported;
+                 
+        `;
+        db.get(query, [], (err, row) => {
+            db.close();
+            if (err) {
+                reject(err);
+            } else {
+                resolve(row);
+            }
+        });
+
+    })
+}
 
 export {
     getCBForStaffStatics,
@@ -1009,5 +1109,6 @@ export {
     getForm2Act1Statics,
 
     getForm3Act1aStatics,
-    getForm3Act1bStatics
+    getForm3Act1bStatics,
+    getForm3Act2Statics
 };

@@ -29,6 +29,7 @@ export default function MainDashboard({ refreshTrigger }) {
 
     const [chartDataForm3Act1a, setchartDataForm3Act1a] = useState([]);
     const [chartDataForm3Act1b, setchartDataForm3Act1b] = useState([]);
+    const [chartDataForm3Act2, setchartDataForm3Act2] = useState([]);
     const [loading, setLoading] = useState(false);
 
     /**
@@ -212,6 +213,14 @@ export default function MainDashboard({ refreshTrigger }) {
         { name: '#Total participant', value: d.Total_Participants, fill: '#ece800ff' },
         { name: '#Female participant', value: d.Female_Participants, fill: '#ece800ff' }
     ];
+    // Formatter function for Form 3Act2 data
+    const formatForm3Act2ChartData = (d) => [
+        { name: '#Total CSO Approved', value: d.Total_CSOs_Approved, fill: '#5acf5aff' },
+        { name: '#Activities conducted', value: d.Total_SubActivities_Conducted, fill: '#5acf5aff' },
+        { name: '#Total villager supported', value: d.Total_Villagers_Supported, fill: '#5acf5aff' }, 
+        { name: '#POs, APGs supported', value: d.Total_APGs_Supported, fill: '#5acf5aff' },
+        { name: '#Amt. funds granted', value: d.Total_Challenge_Funds_Granted, fill: '#5acf5aff' }
+    ];
 
 
 
@@ -246,7 +255,8 @@ export default function MainDashboard({ refreshTrigger }) {
 
 
             loadChartData(APP_API_URL + '/api/form3Act1a/getDashboardData', setchartDataForm3Act1a, formatForm3Act1aChartData),
-            loadChartData(APP_API_URL + '/api/form3Act1b/getDashboardData', setchartDataForm3Act1b, formatForm3Act1bChartData)
+            loadChartData(APP_API_URL + '/api/form3Act1b/getDashboardData', setchartDataForm3Act1b, formatForm3Act1bChartData),
+            loadChartData(APP_API_URL + '/api/form3Act2/getDashboardData', setchartDataForm3Act2, formatForm3Act2ChartData)
         ]);
         setLoading(false);
     }, []);
@@ -277,6 +287,7 @@ export default function MainDashboard({ refreshTrigger }) {
 
         { title: '(3Act1a) Village Development Planning', data: chartDataForm3Act1a },
         { title: '(3Act1b) DNC Supports', data: chartDataForm3Act1b },
+        { title: '(3Act2) Partnership with CSO', data: chartDataForm3Act2 },
         // Add more charts if needed
     ];
 
