@@ -175,6 +175,7 @@ db.serialize(() => {
             Module_3 TEXT,
             Module_4 TEXT,
             Receive_Grant TEXT,  	--g_receive_Yes_No
+            UseGrantFor TEXT,
             GrantUseFor TEXT,		--select_one_qg7ja17
             IFAD INTEGER,
             MAF INTEGER,

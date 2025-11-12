@@ -79,8 +79,8 @@ async function downloadForm1A2SubmissionDataFromKoboToolbox() {
                             INSERT INTO tb_Form_1A2_Participant 
                             (SubmissionId, HaveHH_id, HHId, NameAndSurname, Age, Gender, PWBWStatus, 
                              Ethnicity, Poverty_level, Pwd_status, Module_1, Module_2, Module_3, Module_4,
-                             Receive_Grant, GrantUseFor, IFAD, MAF, WFP, GoL, Ben, OtherFund)
-                            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+                             Receive_Grant, UseGrantFor, GrantUseFor, IFAD, MAF, WFP, GoL, Ben, OtherFund)
+                            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
                         `, [
                             submissionId,
                             p["group_wi0we41/doyouhavehh_id"] || null,
@@ -97,6 +97,7 @@ async function downloadForm1A2SubmissionDataFromKoboToolbox() {
                             p["group_wi0we41/module_3"] || null,
                             p["group_wi0we41/module_4"] || null,
                             p["group_wi0we41/g_receive_Yes_No"] || null,
+                            p["group_wi0we41/_usedGrantFor"] || null,
                             p["group_wi0we41/select_one_qg7ja17"] || null,
                             parseInt(p["group_wi0we41/group_wz1ah68/_IFAD_"] || null),
                             parseInt(p["group_wi0we41/group_wz1ah68/_MAF_"] || null),
@@ -109,6 +110,22 @@ async function downloadForm1A2SubmissionDataFromKoboToolbox() {
                 }
             }
         }
+
+        // User requested to change GrantUseFor(SelectOne data type) field to UseGrantFor(Multi select data type)
+        //since we cannot change data directly in KoboToolbox, we will do data manipulation here
+        let queryUpdateGrantUseFor = `UPDATE tb_Form_1A2_Participant
+                                        SET UseGrantFor = CASE GrantUseFor
+                                            WHEN '_' THEN 'veget'
+                                            WHEN '__1' THEN 'mushroom'
+                                            WHEN '__2' THEN 'fish'
+                                            WHEN '__3' THEN 'frog'
+                                            WHEN '__4' THEN 'poultry'
+                                            WHEN '__5' THEN 'Integrated'
+                                            ELSE UseGrantFor  -- keep existing value if none of the conditions match
+                                        END;
+                                        `;
+        await runQuery(db, queryUpdateGrantUseFor);
+        //End of data manipulation
 
         console.log("✅ Form 1A2 submission data downloaded and saved to the database successfully.");
 
@@ -211,7 +228,8 @@ function getForm1A2ParticipantData(language, page, limit, filters = []) {
                             p.Module_3,
                             p.Module_4,
                             p.Receive_Grant,
-                            p.GrantUseFor,
+                            p.UseGrantFor,
+                            --p.GrantUseFor,
                             p.IFAD,
                             p.MAF,
                             p.WFP,
@@ -249,7 +267,46 @@ function getForm1A2ParticipantData(language, page, limit, filters = []) {
                         (SELECT Label_Lao FROM Translation_EN_LA WHERE FormName='form_1a2' AND ItemCode=np.Module_4 LIMIT 1) AS 'Module 4',
 
                         (SELECT Label_Lao FROM Translation_EN_LA WHERE FormName='form_1a2' AND ItemCode=np.Receive_Grant LIMIT 1) AS 'ໄດ້ຮັບທຶນສວນຄົວບໍ',
-                        (SELECT Label_Lao FROM Translation_EN_LA WHERE FormName='form_1a2' AND ItemCode=np.GrantUseFor LIMIT 1) AS 'ນຳໃຊ້ທຶນເຮັດກິດຈະກຳຫຍັງ',
+                        
+                        LTRIM(
+                            RTRIM(
+                                (
+                                    (CASE WHEN np.UseGrantFor LIKE '%veget%' 
+                                        THEN (SELECT Label_Lao FROM Translation_EN_LA 
+                                            WHERE FormName = 'form_1a2' AND ItemCode = 'veget') || ', '
+                                        ELSE '' END) ||
+
+                                    (CASE WHEN np.UseGrantFor LIKE '%mushroom%' 
+                                        THEN (SELECT Label_Lao FROM Translation_EN_LA 
+                                            WHERE FormName = 'form_1a2' AND ItemCode = 'mushroom') || ', '
+                                        ELSE '' END) ||
+
+                                    (CASE WHEN np.UseGrantFor LIKE '%fish%' 
+                                        THEN (SELECT Label_Lao FROM Translation_EN_LA 
+                                            WHERE FormName = 'form_1a2' AND ItemCode = 'fish') || ', '
+                                        ELSE '' END) ||
+
+                                    (CASE WHEN np.UseGrantFor LIKE '%frog%' 
+                                        THEN (SELECT Label_Lao FROM Translation_EN_LA 
+                                            WHERE FormName = 'form_1a2' AND ItemCode = 'frog') || ', '
+                                        ELSE '' END) ||
+
+                                    (CASE WHEN np.UseGrantFor LIKE '%poultry%' 
+                                        THEN (SELECT Label_Lao FROM Translation_EN_LA 
+                                            WHERE FormName = 'form_1a2' AND ItemCode = 'poultry') || ', '
+                                        ELSE '' END) ||
+
+                                    (CASE WHEN np.UseGrantFor LIKE '%Integrated%' 
+                                        THEN (SELECT Label_Lao FROM Translation_EN_LA 
+                                            WHERE FormName = 'form_1a2' AND ItemCode = 'Integrated') || ', '
+                                        ELSE '' END)
+                                ),
+                                ', '  -- trim trailing comma and space
+                            ),
+                            ', '      -- trim leading comma and space
+                        ) AS 'ນຳໃຊ້ທຶນເຮັດກິດຈະກຳຫຍັງ',                        
+
+                        --(SELECT Label_Lao FROM Translation_EN_LA WHERE FormName='form_1a2' AND ItemCode=np.GrantUseFor LIMIT 1) AS 'ນຳໃຊ້ທຶນເຮັດກິດຈະກຳຫຍັງ',
 
                         np.IFAD AS 'IFAD',
                         np.MAF AS 'MAF',
@@ -294,7 +351,8 @@ function getForm1A2ParticipantData(language, page, limit, filters = []) {
                                 p.Module_3,
                                 p.Module_4,
                                 p.Receive_Grant,
-                                p.GrantUseFor,
+                                p.UseGrantFor,
+                                --p.GrantUseFor,
                                 p.IFAD,
                                 p.MAF,
                                 p.WFP,
@@ -330,7 +388,47 @@ function getForm1A2ParticipantData(language, page, limit, filters = []) {
                             (SELECT Label_Lao FROM Translation_EN_LA WHERE FormName='form_1a2' AND ItemCode=np.Module_2 LIMIT 1) AS 'Module 3',
                             (SELECT Label_Lao FROM Translation_EN_LA WHERE FormName='form_1a2' AND ItemCode=np.Module_4 LIMIT 1) AS 'Module 4',
                             (SELECT Label_English FROM Translation_EN_LA WHERE FormName='form_1a2' AND ItemCode=np.Receive_Grant LIMIT 1) AS 'Received Grant',
-                            (SELECT Label_English FROM Translation_EN_LA WHERE FormName='form_1a2' AND ItemCode=np.GrantUseFor LIMIT 1) AS 'IHHG Activities',
+
+                            LTRIM(
+                                RTRIM(
+                                    (
+                                        (CASE WHEN np.UseGrantFor LIKE '%veget%' 
+                                            THEN (SELECT Label_English FROM Translation_EN_LA 
+                                                WHERE FormName = 'form_1a2' AND ItemCode = 'veget') || ', '
+                                            ELSE '' END) ||
+
+                                        (CASE WHEN np.UseGrantFor LIKE '%mushroom%' 
+                                            THEN (SELECT Label_English FROM Translation_EN_LA 
+                                                WHERE FormName = 'form_1a2' AND ItemCode = 'mushroom') || ', '
+                                            ELSE '' END) ||
+
+                                        (CASE WHEN np.UseGrantFor LIKE '%fish%' 
+                                            THEN (SELECT Label_English FROM Translation_EN_LA 
+                                                WHERE FormName = 'form_1a2' AND ItemCode = 'fish') || ', '
+                                            ELSE '' END) ||
+
+                                        (CASE WHEN np.UseGrantFor LIKE '%frog%' 
+                                            THEN (SELECT Label_English FROM Translation_EN_LA 
+                                                WHERE FormName = 'form_1a2' AND ItemCode = 'frog') || ', '
+                                            ELSE '' END) ||
+
+                                        (CASE WHEN np.UseGrantFor LIKE '%poultry%' 
+                                            THEN (SELECT Label_English FROM Translation_EN_LA 
+                                                WHERE FormName = 'form_1a2' AND ItemCode = 'poultry') || ', '
+                                            ELSE '' END) ||
+
+                                        (CASE WHEN np.UseGrantFor LIKE '%Integrated%' 
+                                            THEN (SELECT Label_English FROM Translation_EN_LA 
+                                                WHERE FormName = 'form_1a2' AND ItemCode = 'Integrated') || ', '
+                                            ELSE '' END)
+                                    ),
+                                    ', '  -- trim trailing comma and space
+                                ),
+                                ', '      -- trim leading comma and space
+                            ) AS 'IHHG Activities',
+
+
+                            --(SELECT Label_English FROM Translation_EN_LA WHERE FormName='form_1a2' AND ItemCode=np.GrantUseFor LIMIT 1) AS 'IHHG Activities',
 
                             np.IFAD AS 'IFAD',
                             np.MAF AS 'MAF',
@@ -428,7 +526,8 @@ function getForm1A2ParticipantDataBySID(SubmissionId, language) {
                             p.Module_3,
                             p.Module_4,
                             p.Receive_Grant,
-                            p.GrantUseFor,
+                            p.UseGrantFor,
+                            --p.GrantUseFor,
                             p.IFAD,
                             p.MAF,
                             p.WFP,
@@ -468,7 +567,46 @@ function getForm1A2ParticipantDataBySID(SubmissionId, language) {
                         (SELECT Label_Lao FROM Translation_EN_LA WHERE FormName='form_1a2' AND ItemCode=np.Module_4 LIMIT 1) AS 'Module 4',
 
                         (SELECT Label_Lao FROM Translation_EN_LA WHERE FormName='form_1a2' AND ItemCode=np.Receive_Grant LIMIT 1) AS 'ໄດ້ຮັບທຶນສວນຄົວບໍ',
-                        (SELECT Label_Lao FROM Translation_EN_LA WHERE FormName='form_1a2' AND ItemCode=np.GrantUseFor LIMIT 1) AS 'ນຳໃຊ້ທຶນເຮັດກິດຈະກຳຫຍັງ',
+
+                        LTRIM(
+                            RTRIM(
+                                (
+                                    (CASE WHEN np.UseGrantFor LIKE '%veget%' 
+                                        THEN (SELECT Label_Lao FROM Translation_EN_LA 
+                                            WHERE FormName = 'form_1a2' AND ItemCode = 'veget') || ', '
+                                        ELSE '' END) ||
+
+                                    (CASE WHEN np.UseGrantFor LIKE '%mushroom%' 
+                                        THEN (SELECT Label_Lao FROM Translation_EN_LA 
+                                            WHERE FormName = 'form_1a2' AND ItemCode = 'mushroom') || ', '
+                                        ELSE '' END) ||
+
+                                    (CASE WHEN np.UseGrantFor LIKE '%fish%' 
+                                        THEN (SELECT Label_Lao FROM Translation_EN_LA 
+                                            WHERE FormName = 'form_1a2' AND ItemCode = 'fish') || ', '
+                                        ELSE '' END) ||
+
+                                    (CASE WHEN np.UseGrantFor LIKE '%frog%' 
+                                        THEN (SELECT Label_Lao FROM Translation_EN_LA 
+                                            WHERE FormName = 'form_1a2' AND ItemCode = 'frog') || ', '
+                                        ELSE '' END) ||
+
+                                    (CASE WHEN np.UseGrantFor LIKE '%poultry%' 
+                                        THEN (SELECT Label_Lao FROM Translation_EN_LA 
+                                            WHERE FormName = 'form_1a2' AND ItemCode = 'poultry') || ', '
+                                        ELSE '' END) ||
+
+                                    (CASE WHEN np.UseGrantFor LIKE '%Integrated%' 
+                                        THEN (SELECT Label_Lao FROM Translation_EN_LA 
+                                            WHERE FormName = 'form_1a2' AND ItemCode = 'Integrated') || ', '
+                                        ELSE '' END)
+                                ),
+                                ', '  -- trim trailing comma and space
+                            ),
+                            ', '      -- trim leading comma and space
+                        ) AS 'ນຳໃຊ້ທຶນເຮັດກິດຈະກຳຫຍັງ',
+
+                        --(SELECT Label_Lao FROM Translation_EN_LA WHERE FormName='form_1a2' AND ItemCode=np.GrantUseFor LIMIT 1) AS 'ນຳໃຊ້ທຶນເຮັດກິດຈະກຳຫຍັງ',
 
                         np.IFAD AS 'IFAD',
                         np.MAF AS 'MAF',
@@ -514,7 +652,8 @@ function getForm1A2ParticipantDataBySID(SubmissionId, language) {
                                 p.Module_3,
                                 p.Module_4,
                                 p.Receive_Grant,
-                                p.GrantUseFor,
+                                p.UseGrantFor,
+                                --p.GrantUseFor,
                                 p.IFAD,
                                 p.MAF,
                                 p.WFP,
@@ -552,7 +691,46 @@ function getForm1A2ParticipantDataBySID(SubmissionId, language) {
                             (SELECT Label_Lao FROM Translation_EN_LA WHERE FormName='form_1a2' AND ItemCode=np.Module_2 LIMIT 1) AS 'Module 3',
                             (SELECT Label_Lao FROM Translation_EN_LA WHERE FormName='form_1a2' AND ItemCode=np.Module_4 LIMIT 1) AS 'Module 4',
                             (SELECT Label_English FROM Translation_EN_LA WHERE FormName='form_1a2' AND ItemCode=np.Receive_Grant LIMIT 1) AS 'Received Grant',
-                            (SELECT Label_English FROM Translation_EN_LA WHERE FormName='form_1a2' AND ItemCode=np.GrantUseFor LIMIT 1) AS 'IHHG Activities',
+
+                            LTRIM(
+                                RTRIM(
+                                    (
+                                        (CASE WHEN np.UseGrantFor LIKE '%veget%' 
+                                            THEN (SELECT Label_English FROM Translation_EN_LA 
+                                                WHERE FormName = 'form_1a2' AND ItemCode = 'veget') || ', '
+                                            ELSE '' END) ||
+
+                                        (CASE WHEN np.UseGrantFor LIKE '%mushroom%' 
+                                            THEN (SELECT Label_English FROM Translation_EN_LA 
+                                                WHERE FormName = 'form_1a2' AND ItemCode = 'mushroom') || ', '
+                                            ELSE '' END) ||
+
+                                        (CASE WHEN np.UseGrantFor LIKE '%fish%' 
+                                            THEN (SELECT Label_English FROM Translation_EN_LA 
+                                                WHERE FormName = 'form_1a2' AND ItemCode = 'fish') || ', '
+                                            ELSE '' END) ||
+
+                                        (CASE WHEN np.UseGrantFor LIKE '%frog%' 
+                                            THEN (SELECT Label_English FROM Translation_EN_LA 
+                                                WHERE FormName = 'form_1a2' AND ItemCode = 'frog') || ', '
+                                            ELSE '' END) ||
+
+                                        (CASE WHEN np.UseGrantFor LIKE '%poultry%' 
+                                            THEN (SELECT Label_English FROM Translation_EN_LA 
+                                                WHERE FormName = 'form_1a2' AND ItemCode = 'poultry') || ', '
+                                            ELSE '' END) ||
+
+                                        (CASE WHEN np.UseGrantFor LIKE '%Integrated%' 
+                                            THEN (SELECT Label_English FROM Translation_EN_LA 
+                                                WHERE FormName = 'form_1a2' AND ItemCode = 'Integrated') || ', '
+                                            ELSE '' END)
+                                    ),
+                                    ', '  -- trim trailing comma and space
+                                ),
+                                ', '      -- trim leading comma and space
+                            ) AS 'IHHG Activities',
+
+                            --(SELECT Label_English FROM Translation_EN_LA WHERE FormName='form_1a2' AND ItemCode=np.GrantUseFor LIMIT 1) AS 'IHHG Activities',
 
                             np.IFAD AS 'IFAD',
                             np.MAF AS 'MAF',
@@ -846,6 +1024,7 @@ function buildForm1A2SubmissionXML(submission, participants) {
 
         // Grant
         xml.push(`    <g_receive_Yes_No>${escapeXML(p.Receive_Grant)}</g_receive_Yes_No>`);
+        xml.push(`    <_usedGrantFor>${escapeXML(p.UseGrantFor)}</_usedGrantFor>`);
         xml.push(`    <select_one_qg7ja17>${escapeXML(p.GrantUseFor)}</select_one_qg7ja17>`);
 
         // Contribution group
