@@ -194,7 +194,8 @@ async function fetchIndicatorData() {
         if (queryObj) {
           let { query, getParams } = queryObj;
 
-          if (indicatorKey === 'Outreach_Indigenous_people' || indicatorKey === '1A1_Indigenous_people') {
+          if (indicatorKey === 'Outreach_Indigenous_people' || indicatorKey === '1A1_Indigenous_people'
+            || indicatorKey === 'cb_villagers_Crop_Indigenous_People' || indicatorKey === 'cb_villagers_Livestock_Indigenous_People') {
             const ethnicCodes = meta.ethnic;  // e.g. "'_e01','_e02',..."
             //console.log('Ethnic Codes:', ethnicCodes);
             query = query.replace(/\?\?/g, ethnicCodes);
@@ -203,7 +204,7 @@ async function fetchIndicatorData() {
           }
 
           const params = getParams({ ...meta, gender: meta.gender, minAge: meta.minAge, maxAge: meta.maxAge, startDate, endDate });
-                    const resultRow = await new Promise((resolve, reject) => {
+          const resultRow = await new Promise((resolve, reject) => {
             db.get(query, params, (err, row) => {
               if (err) reject(err);
               else resolve(row);

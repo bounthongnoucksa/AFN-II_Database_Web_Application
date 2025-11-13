@@ -83,15 +83,15 @@ function getCBForVillagersStatics() {
         const query = `
                         WITH UniqueParticipants AS (
                             SELECT
-                                COALESCE(HHId, '') AS HHId,
-                                NameAndSurname,
+                                COALESCE(TRIM(HHId), '') AS HHId,
+                                TRIM(NameAndSurname) AS NameAndSurname,
                                 MAX(Age) AS Age,
                                 MAX(Gender) AS Gender,
                                 MAX(Ethnicity) AS Ethnicity,
                                 MAX(PWD) AS PWD,
                                 MAX(APGMember) AS APGMember
                             FROM tb_CB_for_Villagers_Participant
-                            GROUP BY COALESCE(HHId, ''), NameAndSurname
+                            GROUP BY COALESCE(TRIM(HHId), ''), TRIM(NameAndSurname)
                         )
                         SELECT
                             COUNT(*) AS Total_Farmers_Participants,

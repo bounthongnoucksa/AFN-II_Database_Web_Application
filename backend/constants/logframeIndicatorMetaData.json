@@ -77,33 +77,33 @@
 
 
   "1A1_Total_Persons": {
-    "hierarchy": "18,000 households provided with targeted support to improve their nutrition",
+    "hierarchy": "2.1 |  18,000 households provided with targeted support to improve their nutrition",
     "indicatorGroup": "1.1.8 Households provided with targeted support to improve their nutrition",
     "baseline": 0,
     "indicator": "Total persons participating",
-    "midTerm": 43200,
-    "endTarget": 108000
+    "midTerm": 17000,
+    "endTarget": 34000
   },
   "1A1_Males": {
-    "hierarchy": "18,000 households provided with targeted support to improve their nutrition",
+    "hierarchy": "2.1 |  18,000 households provided with targeted support to improve their nutrition",
     "indicatorGroup": "1.1.8 Households provided with targeted support to improve their nutrition",
     "gender": "Male",
     "baseline": 0,
     "indicator": "Males",
-    "midTerm": 21600,
-    "endTarget": 54000
+    "midTerm": 8500,
+    "endTarget": 17000
   },
   "1A1_Females": {
-    "hierarchy": "18,000 households provided with targeted support to improve their nutrition",
+    "hierarchy": "2.1 |  18,000 households provided with targeted support to improve their nutrition",
     "indicatorGroup": "1.1.8 Households provided with targeted support to improve their nutrition",
     "gender": "Female",
     "baseline": 0,
     "indicator": "Females",
-    "midTerm": 21600,
-    "endTarget": 54000
+    "midTerm": 8500,
+    "endTarget": 17000
   },
   "1A1_Households": {
-    "hierarchy": "18,000 households provided with targeted support to improve their nutrition",
+    "hierarchy": "2.1 |  18,000 households provided with targeted support to improve their nutrition",
     "indicatorGroup": "1.1.8 Households provided with targeted support to improve their nutrition",
     "baseline": 0,
     "indicator": "Households",
@@ -111,7 +111,7 @@
     "endTarget": 18000
   },
 "1A1_persons_received_services": {
-    "hierarchy": "18,000 households provided with targeted support to improve their nutrition",
+    "hierarchy": "2.1 |  18,000 households provided with targeted support to improve their nutrition",
     "indicatorGroup": "1.1.8 Households provided with targeted support to improve their nutrition",
     "baseline": 0,
     "indicator": "Total number Household members benefitted",
@@ -119,31 +119,247 @@
     "endTarget": 108000
   },
 "1A1_Indigenous_people": {
-    "hierarchy": "18,000 households provided with targeted support to improve their nutrition",
+    "hierarchy": "2.1 |  18,000 households provided with targeted support to improve their nutrition",
     "indicatorGroup": "1.1.8 Households provided with targeted support to improve their nutrition",
     "ethnic": "'_e01', '_e02', '_e03', '_e04', '_e05', '_e06', '_e07', '_e08'",
     "baseline": 0,
     "indicator": "Indigenous people",
-    "midTerm": 30240,
-    "endTarget": 75600
+    "midTerm": 12750,
+    "endTarget": 25500
   },
 "1A1_Young_people": {
-    "hierarchy": "18,000 households provided with targeted support to improve their nutrition",
+    "hierarchy": "2.1 |  18,000 households provided with targeted support to improve their nutrition",
     "indicatorGroup": "1.1.8 Households provided with targeted support to improve their nutrition",
     "minAge": "15",
     "maxAge": "35",
     "baseline": 0,
     "indicator": "Young people",
-    "midTerm": 10800,
-    "endTarget": 27000
+    "midTerm": 4250,
+    "endTarget": 8500
   },
 "1A1_Women_headed_households": {
-    "hierarchy": "18,000 households provided with targeted support to improve their nutrition",
+    "hierarchy": "2.1 |  18,000 households provided with targeted support to improve their nutrition",
     "indicatorGroup": "1.1.8 Households provided with targeted support to improve their nutrition",
     "gender": "Female",
     "baseline": 0,
     "indicator": "Women-headed households - Households",
-    "midTerm": 144,
-    "endTarget": 360
+    "midTerm": 259,
+    "endTarget": 648
+  },
+
+
+
+
+
+
+
+
+  "1A2_Total_Persons": {
+    "hierarchy": "2.2 | 15,000 people benefiting from cash or food-based transfers",
+    "indicatorGroup": "Persons benefiting from cash or food-based transfers",
+    "baseline": 0,
+    "indicator": "Total",
+    "midTerm": 6600,
+    "endTarget": 15000
+  },
+  "1A2_Males": {
+    "hierarchy": "2.2 | 15,000 people benefiting from cash or food-based transfers",
+    "indicatorGroup": "Persons benefiting from cash or food-based transfers",
+    "gender": "Male",
+    "baseline": 0,
+    "indicator": "Males",
+    "midTerm": 600,
+    "endTarget": 1500
+  },
+  "1A2_Females": {
+    "hierarchy": "2.2 | 15,000 people benefiting from cash or food-based transfers",
+    "indicatorGroup": "Persons benefiting from cash or food-based transfers",
+    "gender": "Female",
+    "baseline": 0,
+    "indicator": "Females",
+    "midTerm": 6000,
+    "endTarget": 13500
+  },
+  "1A2_Females_Percent": {
+    "hierarchy": "2.2 | 15,000 people benefiting from cash or food-based transfers",
+    "indicatorGroup": "Persons benefiting from cash or food-based transfers",
+    "baseline": 0,
+    "indicator": "Females (%)",
+    "midTerm": 40,
+    "endTarget": 90
+  },
+"1A2_Young_people": {
+    "hierarchy": "2.2 | 15,000 people benefiting from cash or food-based transfers",
+    "indicatorGroup": "Persons benefiting from cash or food-based transfers",
+    "minAge": "15",
+    "maxAge": "35",
+    "baseline": 0,
+    "indicator": "Young people",
+    "midTerm": 1500,
+    "endTarget": 3750
+  },
+
+
+
+
+
+
+  
+
+
+
+
+  "cb_villagers_Total_Persons": {
+    "hierarchy": "2.3 | 22,400 persons trained in production practices and/or technologies",
+    "indicatorGroup": "1.1.4 Persons trained in production practices and/or technologies",
+    "baseline": 0,
+    "indicator": "Total number of persons trained",
+    "midTerm": 8960,
+    "endTarget": 22400
+  },
+  "cb_villagers_Crop_Males": {
+    "hierarchy": "2.3 | 22,400 persons trained in production practices and/or technologies",
+    "indicatorGroup": "1.1.4 Persons trained in production practices and/or technologies",
+    "gender": "Male",
+    "baseline": 0,
+    "indicator": "Men trained in crop",
+    "midTerm": 2240,
+    "endTarget": 5600
+  },
+  "cb_villagers_Crop_Females": {
+    "hierarchy": "2.3 | 22,400 persons trained in production practices and/or technologies",
+    "indicatorGroup": "1.1.4 Persons trained in production practices and/or technologies",
+    "gender": "Female",
+    "baseline": 0,
+    "indicator": "Women trained in crop",
+    "midTerm": 2240,
+    "endTarget": 5600
+  },
+  "cb_villagers_Crop_Young_People": {
+    "hierarchy": "2.3 | 22,400 persons trained in production practices and/or technologies",
+    "indicatorGroup": "1.1.4 Persons trained in production practices and/or technologies",
+    "minAge": "15",
+    "maxAge": "35",
+    "baseline": 0,
+    "indicator": "Young people trained in crop",
+    "midTerm": 1120,
+    "endTarget": 2800
+  },
+  "cb_villagers_Crop_Indigenous_People": {
+    "hierarchy": "2.3 | 22,400 persons trained in production practices and/or technologies",
+    "indicatorGroup": "1.1.4 Persons trained in production practices and/or technologies",
+    "ethnic": "'_e01', '_e02', '_e03', '_e04', '_e05', '_e06', '_e07', '_e08'",
+    "baseline": 0,
+    "indicator": "Indigenous people trained in crop",
+    "midTerm": 3136,
+    "endTarget": 7840
+  },
+  "cb_villagers_Livestock_Males": {
+    "hierarchy": "2.3 | 22,400 persons trained in production practices and/or technologies",
+    "indicatorGroup": "1.1.4 Persons trained in production practices and/or technologies",
+    "gender": "Male",
+    "baseline": 0,
+    "indicator": "Men trained in livestock",
+    "midTerm": 2240,
+    "endTarget": 5600
+  },
+  "cb_villagers_Livestock_Females": {
+    "hierarchy": "2.3 | 22,400 persons trained in production practices and/or technologies",
+    "indicatorGroup": "1.1.4 Persons trained in production practices and/or technologies",
+    "gender": "Female",
+    "baseline": 0,
+    "indicator": "Women trained in livestock",
+    "midTerm": 2240,
+    "endTarget": 5600
+  },
+  "cb_villagers_Livestock_Young_People": {
+    "hierarchy": "2.3 | 22,400 persons trained in production practices and/or technologies",
+    "indicatorGroup": "1.1.4 Persons trained in production practices and/or technologies",
+    "minAge": "15",
+    "maxAge": "35",
+    "baseline": 0,
+    "indicator": "Young people trained in livestock",
+    "midTerm": 1120,
+    "endTarget": 2800
+  },
+  "cb_villagers_Livestock_Indigenous_People": {
+    "hierarchy": "2.3 | 22,400 persons trained in production practices and/or technologies",
+    "indicatorGroup": "1.1.4 Persons trained in production practices and/or technologies",
+    "ethnic": "'_e01', '_e02', '_e03', '_e04', '_e05', '_e06', '_e07', '_e08'",
+    "baseline": 0,
+    "indicator": "Indigenous people trained in livestock",
+    "midTerm": 3136,
+    "endTarget": 7840
+  },
+  "cb_villagers_Total_Crop_Trained": {
+    "hierarchy": "2.3 | 22,400 persons trained in production practices and/or technologies",
+    "indicatorGroup": "1.1.4 Persons trained in production practices and/or technologies",
+    "baseline": 0,
+    "indicator": "Total persons trained in crop",
+    "midTerm": 4480,
+    "endTarget": 11200
+  },
+  "cb_villagers_Total_Livestock_Trained": {
+    "hierarchy": "2.3 | 22,400 persons trained in production practices and/or technologies",
+    "indicatorGroup": "1.1.4 Persons trained in production practices and/or technologies",
+    "baseline": 0,
+    "indicator": "Total persons trained in livestock",
+    "midTerm": 4480,
+    "endTarget": 11200
+  },
+
+
+
+
+
+
+
+
+
+
+
+  "1BAct7_Males": {
+    "hierarchy": "2.4 | 10,000 farmers receiving inputs or services on climate resilient or sustainable agriculture practices",
+    "indicatorGroup": "Number of farmers receiving inputs or services on climate resilient or sustainable agriculture practices (GAFSP Tier 2 indicator #13)",
+    "gender": "Male",
+    "baseline": 0,
+    "indicator": "Males",
+    "midTerm": 2400,
+    "endTarget": 6000
+  },
+  "1BAct7_Females": {
+    "hierarchy": "2.4 | 10,000 farmers receiving inputs or services on climate resilient or sustainable agriculture practices",
+    "indicatorGroup": "Number of farmers receiving inputs or services on climate resilient or sustainable agriculture practices (GAFSP Tier 2 indicator #13)",
+    "gender": "Female",
+    "baseline": 0,
+    "indicator": "Females",
+    "midTerm": 1600,
+    "endTarget": 4000
+  },
+  "1BAct7_Males_Percentage": {
+    "hierarchy": "2.4 | 10,000 farmers receiving inputs or services on climate resilient or sustainable agriculture practices",
+    "indicatorGroup": "Number of farmers receiving inputs or services on climate resilient or sustainable agriculture practices (GAFSP Tier 2 indicator #13)",
+    "baseline": 0,
+    "indicator": "Males (%)",
+    "midTerm": 24,
+    "endTarget": 60
+  },
+  "1BAct7_Females_Percentage": {
+    "hierarchy": "2.4 | 10,000 farmers receiving inputs or services on climate resilient or sustainable agriculture practices",
+    "indicatorGroup": "Number of farmers receiving inputs or services on climate resilient or sustainable agriculture practices (GAFSP Tier 2 indicator #13)",
+    "baseline": 0,
+    "indicator": "Females (%)",
+    "midTerm": 16,
+    "endTarget": 40
   }
+
+
+  
+
+
+
+
+
+
+
 }

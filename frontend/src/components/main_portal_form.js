@@ -53,7 +53,7 @@ export default function MainPortalForm() {
         fontWeight: activeTab === tabId ? '600' : '500',
         boxShadow: activeTab === tabId ? '0 4px 8px rgba(0,0,0,0.15)' : 'none',
         transition: 'all 0.3s ease',
-        minWidth: '80px',
+        minWidth: '65px',
         padding: '4px 8px', // slightly smaller padding
         fontSize: '12px',
         textAlign: 'center',

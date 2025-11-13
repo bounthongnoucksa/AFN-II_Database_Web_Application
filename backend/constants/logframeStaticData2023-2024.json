@@ -69,5 +69,108 @@
   "1A1_Women_headed_households": {
     "2023": 0,
     "2024-Current": 0
+  },
+
+
+
+
+
+  "1A2_Total_Persons": {
+    "2023": 0,
+    "2024-Current": 0
+  },
+  "1A2_Males": {
+    "2023": 0,
+    "2024-Current": 0
+  },
+  "1A2_Females": {
+    "2023": 0,
+    "2024-Current": 0
+  },
+  "1A2_Females_Percent": {
+    "2023": 0,
+    "2024-Current": 0
+  },
+  "1A2_Young_people": {
+    "2023": 0,
+    "2024-Current": 0
+  },
+
+
+
+
+
+  
+  "cb_villagers_Total_Persons": {
+    "2023": 0,
+    "2024-Current": 0
+  },
+  "cb_villagers_Crop_Males": {
+    "2023": 0,
+    "2024-Current": 0
+  },
+  "cb_villagers_Crop_Females": {
+    "2023": 0,
+    "2024-Current": 0
+  },
+  "cb_villagers_Crop_Young_People": {
+    "2023": 0,
+    "2024-Current": 0
+  },
+  "cb_villagers_Crop_Indigenous_People": {
+    "2023": 0,
+    "2024-Current": 0
+  },
+  "cb_villagers_Livestock_Males": {
+    "2023": 0,
+    "2024-Current": 0
+  },
+  "cb_villagers_Livestock_Females": {
+    "2023": 0,
+    "2024-Current": 0
+  },
+  "cb_villagers_Livestock_Young_People": {
+    "2023": 0,
+    "2024-Current": 0
+  },
+  "cb_villagers_Livestock_Indigenous_People": {
+    "2023": 0,
+    "2024-Current": 0
+  },
+  "cb_villagers_Total_Crop_Trained": {
+    "2023": 0,
+    "2024-Current": 0
+  },
+  "cb_villagers_Total_Livestock_Trained": {
+    "2023": 0,
+    "2024-Current": 0
+  },
+
+
+
+
+
+
+
+
+
+
+
+  "1BAct7_Males_Number": {
+    "2023": 0,
+    "2024-Current": 0
+  },
+  "1BAct7_Females_Number": {
+    "2023": 0,
+    "2024-Current": 0
+  },
+  "1BAct7_Males_Percentage": {
+    "2023": 0,
+    "2024-Current": 0
+  },
+  "1BAct7_Females_Percentage": {
+    "2023": 0,
+    "2024-Current": 0
   }
+
 }

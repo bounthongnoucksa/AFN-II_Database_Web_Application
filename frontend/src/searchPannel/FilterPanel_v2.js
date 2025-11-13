@@ -1,20 +1,29 @@
 import React, { useState } from 'react';
 import 'bootstrap/dist/css/bootstrap.min.css';
 
+// const columnOptions = [
+//   { label: 'SubmissionID', value: 's.Id' },
+//   { label: 'ລະຫັດຄົວເຮືອນ', value: 'p.HHId' },
+//   { label: 'ໄລຍະເວລາລາຍງານ', value: 's.ReportingPeriod' },
+//   { label: 'ລະຫັດແຂວງ', value: 's.Province' },
+//   { label: 'ລະຫັດເມືອງ', value: 's.District' },
+//   { label: 'ລະຫັດບ້ານ', value: 's.Village' }
+// ];
 const columnOptions = [
   { label: 'SubmissionID', value: 's.Id' },
-  { label: 'ລະຫັດຄົວເຮືອນ', value: 'p.HHId' },
-  { label: 'ໄລຍະເວລາລາຍງານ', value: 's.ReportingPeriod' },
-  { label: 'ລະຫັດແຂວງ', value: 's.Province' },
-  { label: 'ລະຫັດເມືອງ', value: 's.District' },
-  { label: 'ລະຫັດບ້ານ', value: 's.Village' }
+  { label: 'HH-ID', value: 'p.HHId' },
+  { label: 'ReportingPeriod', value: 's.ReportingPeriod' }
 ];
 
+// const conditionOptions = [
+//   { label: 'Equals', value: 'equals' },
+//   { label: 'Contains', value: 'contains' },
+//   { label: 'Greater than', value: 'gt' },
+//   { label: 'Less than', value: 'lt' }
+// ];
 const conditionOptions = [
   { label: 'Equals', value: 'equals' },
-  { label: 'Contains', value: 'contains' },
-  { label: 'Greater than', value: 'gt' },
-  { label: 'Less than', value: 'lt' }
+  { label: 'Contains', value: 'contains' }
 ];
 
 function FilterPanel({ filters, setFilters }) {   // 👈 function starts

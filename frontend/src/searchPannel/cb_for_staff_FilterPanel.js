@@ -1,18 +1,28 @@
 import React, { useState } from 'react';
 import 'bootstrap/dist/css/bootstrap.min.css';
 
+// const columnOptions = [
+//   { label: 'SubmissionID', value: 's.Id' },
+//   { label: 'ຊື່', value: 'p.Name' },
+//   { label: 'ໜ້າທີຮັບຜິດຊອບ', value: 'p.Responsibility' },
+//   { label: 'ຫ້ອງການ', value: 'p.Office' }
+// ];
 const columnOptions = [
   { label: 'SubmissionID', value: 's.Id' },
-  { label: 'ຊື່', value: 'p.Name' },
-  { label: 'ໜ້າທີຮັບຜິດຊອບ', value: 'p.Responsibility' },
-  { label: 'ຫ້ອງການ', value: 'p.Office' }
+  { label: 'Name', value: 'p.Name' },
+  { label: 'Responsibility', value: 'p.Responsibility' },
+  { label: 'Office', value: 'p.Office' }
 ];
 
+// const conditionOptions = [
+//   { label: 'Equals', value: 'equals' },
+//   { label: 'Contains', value: 'contains' },
+//   { label: 'Greater than', value: 'gt' },
+//   { label: 'Less than', value: 'lt' }
+// ];
 const conditionOptions = [
   { label: 'Equals', value: 'equals' },
-  { label: 'Contains', value: 'contains' },
-  { label: 'Greater than', value: 'gt' },
-  { label: 'Less than', value: 'lt' }
+  { label: 'Contains', value: 'contains' }
 ];
 
 function FilterPanel({ filters, setFilters }) {   // 👈 function starts

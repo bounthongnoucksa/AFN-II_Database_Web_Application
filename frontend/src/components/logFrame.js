@@ -62,7 +62,7 @@ export default function LogFrame() {
             </div>
 
             <div>
-                <div style={{ overflowX: 'auto', overflowY: 'auto', maxHeight: '650px' }}>
+                <div style={{ overflowX: 'auto', overflowY: 'auto', maxHeight: '670px' }}>
                     <table bordered hover className=" align-middle table table-sm table-bordered table-hover fs-7">
                         <thead className=" sticky-header-log-for-frame text-center align-middle">
                             <tr className='table-success'>
