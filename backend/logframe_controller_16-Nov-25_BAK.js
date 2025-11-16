@@ -1,4 +1,5 @@
 // logframe_controller.js
+//Backup before remove 2023 and 2024-Current from staticResults and indicatorMeta as requested by M&E team
 import { getDBConnection } from './getDBConnection.js';
 import fs from 'fs';
 import path from 'path';
@@ -169,55 +170,64 @@ async function fetchIndicatorData() {
     const resultsForIndicator = staticResults[indicatorKey] || {};
     const queryObj = indicatorQueryMap[indicatorKey];
 
-    const orderedYears = ['2024', '2025', '2026', '2027', '2028', '2029', '2030'];
+    const orderedYears = ['2023', '2024-current', '2024', '2025', '2026', '2027', '2028', '2029', '2030'];
 
     let cumulative = 0;
+    let cumulative_2024_current = 0;
     let yearlyData = {};
 
     for (const yearStr of orderedYears) {
       let result = 0;
       let target = yearlyTargets[yearStr] || 0;
 
-      const year = parseInt(yearStr);
-      const startDate = `${year}-01-01`;
-      const endDate = `${year}-12-31`;
+      if (yearStr === '2023') {
+        result = resultsForIndicator['2023'] || 0;
+        cumulative = result;
+      } else if (yearStr === '2024-current') {
+        result = resultsForIndicator['2024-Current'] || 0;
+        cumulative += result;
+        cumulative_2024_current = cumulative; // Save for later years
+      } else {
+        const year = parseInt(yearStr);
+        const startDate = `${year}-01-01`;
+        const endDate = `${year}-12-31`;
 
-      const queryObj = indicatorQueryMap[indicatorKey];
+        if (queryObj) {
+          let { query, getParams } = queryObj;
 
-      if (queryObj) {
-        let { query, getParams } = queryObj;
+          if (indicatorKey === 'Outreach_Indigenous_people' || indicatorKey === '1A1_Indigenous_people'
+            || indicatorKey === 'cb_villagers_Crop_Indigenous_People' || indicatorKey === 'cb_villagers_Livestock_Indigenous_People') {
+            const ethnicCodes = meta.ethnic;  // e.g. "'_e01','_e02',..."
+            //console.log('Ethnic Codes:', ethnicCodes);
+            query = query.replace(/\?\?/g, ethnicCodes);
+            //console.log('Modified Query:', query);
 
-        // Indigenous People modifications
-        if (indicatorKey === 'Outreach_Indigenous_people' ||
-          indicatorKey === '1A1_Indigenous_people' ||
-          indicatorKey === 'cb_villagers_Crop_Indigenous_People' ||
-          indicatorKey === 'cb_villagers_Livestock_Indigenous_People') {
+          }
 
-          query = query.replace(/\?\?/g, meta.ethnic);
+          const params = getParams({ ...meta, gender: meta.gender, minAge: meta.minAge, maxAge: meta.maxAge, startDate, endDate });
+          const resultRow = await new Promise((resolve, reject) => {
+            db.get(query, params, (err, row) => {
+              if (err) reject(err);
+              else resolve(row);
+            });
+          });
+
+          // console.log(`\n--- indicator: ${indicatorKey} | year: ${yearStr} ---`);
+          // console.log('Query:', query);
+          // console.log('Params:', params);
+
+          // console.log(`Result for ${indicatorKey} in ${yearStr}:`, resultRow);
+
+          result = resultRow?.count || 0;
+        } else {
+          console.warn(`No query found for ${indicatorKey}`);
         }
 
-        const params = getParams({
-          ...meta,
-          startDate,
-          endDate
-        });
-
-        const resultRow = await new Promise((resolve, reject) => {
-          db.get(query, params, (err, row) => {
-            if (err) reject(err);
-            else resolve(row);
-          });
-        });
-
-        result = resultRow?.count || 0;
+        cumulative = yearStr === '2025' ? (cumulative_2024_current + result) : (cumulative + result);
       }
-
-      // New cumulative logic
-      cumulative += result;
 
       yearlyData[yearStr] = { target, result, cumulative };
     }
-
 
 
 

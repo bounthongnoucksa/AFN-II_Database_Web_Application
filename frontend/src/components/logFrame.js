@@ -6,7 +6,7 @@ import '../App.css'; // Import custom CSS for sticky header
 import { APP_API_URL } from '../constants/appURLConstrants';
 
 export default function LogFrame() {
-    
+
     const [data, setData] = useState([]);
 
     // const fetchData = () => {
@@ -15,7 +15,7 @@ export default function LogFrame() {
 
     const fetchData = async () => {
         try {
-            const response = await fetch(APP_API_URL +'/api/all/getLogframeData'); // Updated endpoint
+            const response = await fetch(APP_API_URL + '/api/all/getLogframeData'); // Updated endpoint
             setData(await response.json());
         } catch (error) {
             console.error('Error fetching logframe data:', error);
@@ -29,7 +29,8 @@ export default function LogFrame() {
     if (!data || data.length === 0) return <p>Loading...</p>;
 
     //const years = Object.keys(data[0]?.yearlyData ?? {}).sort(); // auto-detect years from data
-    const years = ["2023", "2024-current", "2024", "2025", "2026", "2027", "2028", "2029", "2030"]; // Manually set years to match modified data structure as requested by user
+    //const years = ["2023", "2024-current", "2024", "2025", "2026", "2027", "2028", "2029", "2030"]; // Manually set years to match modified data structure as requested by user
+    const years = ["2024", "2025", "2026", "2027", "2028", "2029", "2030"]; // (Removed 2023 and 2024-current) Manually set years to match modified data structure as requested by user
     const totalColumns = 6 + years.length * 3; // 6 fixed columns + 3 per year
 
     // Group by indicatorGroup
@@ -82,9 +83,9 @@ export default function LogFrame() {
                                     let label = `Project Yr ${index + 1}`;
 
                                     // Append custom suffixes for specific columns
-                                    if (index === 1) label += ' (Current)';
-                                    if (index === 2) label = 'Project Yr 2 (Updated)'; // Keep number same
-                                    if (index >= 3) label = `Project Yr ${index}`; // Shift subsequent years back by 1
+                                    // if (index === 1) label += ' (Current)';
+                                    // if (index === 2) label = 'Project Yr 2 (Updated)'; // Keep number same
+                                    // if (index >= 3) label = `Project Yr ${index}`; // Shift subsequent years back by 1
 
                                     return (
                                         <th
@@ -128,17 +129,17 @@ export default function LogFrame() {
                                     </tr>
 
                                     {rows.map((row, rowIndex) => (
-                                        
+
                                         <tr key={`row-${groupIndex}-${rowIndex}`}>
-                                            
+
                                             {/* Render the 'hierarchy' cell only for the first row in the group */}
-                                            {rowIndex === 0 && (<td rowSpan={rows.length} className='row-header-sticky-col-1'>{row.hierarchy}</td>)} 
-                                                                                       
+                                            {rowIndex === 0 && (<td rowSpan={rows.length} className='row-header-sticky-col-1'>{row.hierarchy}</td>)}
+
                                             <td className='row-header-sticky-col-2 text-start'>{row.indicator}</td>
                                             <td className='row-header-sticky-col-3'>{row.baseline}</td>
                                             <td className='row-header-sticky-col-4'>{row.midTerm.toLocaleString()}</td>
                                             <td className='row-header-sticky-col-5'>{row.endTarget.toLocaleString()}</td>
-                                            
+
                                             {years.map((year) => (
                                                 <React.Fragment key={`data-${rowIndex}-${year}`}>
                                                     <td className="table-info">{(row.yearlyData[year]?.target.toLocaleString() ?? '-')}</td>
