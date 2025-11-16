@@ -562,7 +562,7 @@ export default function CBForStaff({ refreshTrigger }) {
                                     >
                                         {Object.entries(row).map(([col, value], colIdx) => (
                                             <td key={col}>
-                                                {(colIdx >= 14 && colIdx <= 18 && value != null && value != '' && !isNaN(value))
+                                                {(colIdx >= 14 && colIdx <= 18 && value !== null && value !== '' && !isNaN(value))
                                                     ? Number(value).toLocaleString()
                                                     : value ?? ''}
                                             </td>
@@ -762,7 +762,7 @@ export default function CBForStaff({ refreshTrigger }) {
                                                     {Object.entries(row).map(([col, value], colIdx) => (
                                                         financialFields.includes(col) ? null : (
                                                             <td key={col}>
-                                                                {(colIdx >= 15 && colIdx <= 19 && value != null && value != '' && !isNaN(value))
+                                                                {(colIdx >= 15 && colIdx <= 19 && value !== null && value !== '' && !isNaN(value))
                                                                     ? Number(value).toLocaleString()
                                                                     : value}
                                                             </td>

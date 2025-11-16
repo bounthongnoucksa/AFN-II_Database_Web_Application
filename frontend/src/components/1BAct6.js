@@ -569,7 +569,7 @@ export default function Form1BAct6({ refreshTrigger }) {
                                     >
                                         {Object.entries(row).map(([col, value], colIdx) => (
                                             <td key={col}>
-                                                {(((colIdx === 21 || colIdx === 23 || colIdx === 24) && value != null && value != '' && !isNaN(value)) || (colIdx >= 27 && colIdx <= 32 && value != null && value != '' && !isNaN(value)))
+                                                {(((colIdx === 21 || colIdx === 23 || colIdx === 24) && value !== null && value !== '' && !isNaN(value)) || (colIdx >= 27 && colIdx <= 32 && value !== null && value !== '' && !isNaN(value)))
                                                     ? Number(value).toLocaleString()
                                                     : value ?? ''}
                                             </td>

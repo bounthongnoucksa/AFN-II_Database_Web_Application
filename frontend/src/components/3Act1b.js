@@ -569,7 +569,7 @@ export default function Form3Act1b({ refreshTrigger }) {
                                     >
                                         {Object.entries(row).map(([col, value], colIdx) => (
                                             <td key={col}>
-                                                {(colIdx >= 17 && colIdx <= 22 && value != null && value != '' && !isNaN(value))
+                                                {(colIdx >= 17 && colIdx <= 22 && value !== null && value !== '' && !isNaN(value))
                                                     ? Number(value).toLocaleString()
                                                     : value}
                                             </td>
@@ -768,7 +768,7 @@ export default function Form3Act1b({ refreshTrigger }) {
                                                     {Object.entries(row).map(([col, value], colIdx) => (
                                                         financialFields.includes(col) ? null : (
                                                             <td key={col}>
-                                                                {(colIdx >= 18 && colIdx <= 23 && value != null && value != '' && !isNaN(value))
+                                                                {(colIdx >= 18 && colIdx <= 23 && value !== null && value !== '' && !isNaN(value))
                                                                     ? Number(value).toLocaleString()
                                                                     : value}
                                                             </td>

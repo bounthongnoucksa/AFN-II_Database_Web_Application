@@ -313,7 +313,7 @@ export default function MainDashboard({ refreshTrigger }) {
 
     //Custom label for bar value to have thousand separator
     const CustomLabel = ({ x, y, width, value }) => {
-        const displayValue = value != null ? value.toLocaleString() : '-'; // fallback if null
+        const displayValue = value !== null ? value.toLocaleString() : '-'; // fallback if null
         return (
             <text
                 x={x + width + 3} // move 3px to the right of the bar

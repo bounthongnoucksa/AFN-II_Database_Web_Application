@@ -566,7 +566,7 @@ export default function Form1A5a({ refreshTrigger }) {
                                     >
                                         {Object.entries(row).map(([col, value], colIdx) => (
                                             <td key={col}>
-                                                {(colIdx >= 18 && colIdx <= 23 && value != null && value != '' && !isNaN(value))
+                                                {(colIdx >= 18 && colIdx <= 23 && value !== null && value !== '' && !isNaN(value))
                                                     ? Number(value).toLocaleString()
                                                     : value ?? ''}
                                             </td>
@@ -761,7 +761,7 @@ export default function Form1A5a({ refreshTrigger }) {
                                                 >
                                                     {Object.entries(row).map(([col, value], colIdx) => (
                                                         <td key={col}>
-                                                            {(colIdx >= 19 && colIdx <= 24 && value != null && value != '' && !isNaN(value))
+                                                            {(colIdx >= 19 && colIdx <= 24 && value !== null && value !== '' && !isNaN(value))
                                                                 ? Number(value).toLocaleString()
                                                                 : value ?? ''}
                                                         </td>

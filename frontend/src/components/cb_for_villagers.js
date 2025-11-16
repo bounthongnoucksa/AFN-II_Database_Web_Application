@@ -557,7 +557,7 @@ export default function CBForVillagers({ refreshTrigger }) {
                                     >
                                         {Object.entries(row).map(([col, value], colIdx) => (
                                             <td key={col}>
-                                                {(colIdx >= 23 && colIdx <= 26 && value != null && value != '' && !isNaN(value))
+                                                {(colIdx >= 23 && colIdx <= 26 && value !== null && value !== '' && !isNaN(value))
                                                     ? Number(value).toLocaleString()
                                                     : value}
                                             </td>
@@ -755,7 +755,7 @@ export default function CBForVillagers({ refreshTrigger }) {
                                                     {Object.entries(row).map(([col, value], colIdx) => (
                                                         financialFields.includes(col) ? null : (
                                                             <td key={col}>
-                                                                {(colIdx >= 24 && colIdx <= 27 && value != null && value != '' && !isNaN(value))
+                                                                {(colIdx >= 24 && colIdx <= 27 && value !== null && value !== '' && !isNaN(value))
                                                                     ? Number(value).toLocaleString()
                                                                     : value}
                                                             </td>
