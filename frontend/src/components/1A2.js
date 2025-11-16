@@ -15,7 +15,7 @@ export default function Form1A2({ refreshTrigger }) {
     const [data, setData] = useState([]);
     const [language, setLanguage] = useState('LA'); // default language
     const [loading, setLoading] = useState(false);
-    const [pageSize, setpageSize] = useState(200); // limit the result to 200 records by default. if want to change this value then need to change on refresh button below as well.
+    const [pageSize, setpageSize] = useState(100); // limit the result to 200 records by default. if want to change this value then need to change on refresh button below as well.
     const [total, setTotal] = useState(0);        // total records
     const [page, setPage] = useState(1);          // current page
     const totalPages = Math.ceil(total / pageSize);
