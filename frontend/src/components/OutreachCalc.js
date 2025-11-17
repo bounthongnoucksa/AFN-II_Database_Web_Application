@@ -189,7 +189,7 @@ export default function OutreachCalc() {
             const d3A2 = res8.data.data[0] || {};
             setSummary([
                 (
-                    Number(d1A1.Count_1A1_All_Participants || '0') +
+                    Number(d1A1.Count_cb_for_villagers_And_1A1_All_Participants || '0') +
                     Number(d1A4.Count_1A4_All_Participants || '0') +
                     Number(d1B6.Count_1BAct6_All_Participants || '0') +
                     Number(d1B8.Count_1BAct8_All_Participants || '0') +
@@ -202,7 +202,7 @@ export default function OutreachCalc() {
                 '',
 
                 (
-                    Number(d1A1.Count_1A1_All_Participants || '0') +
+                    Number(d1A1.Count_cb_for_villagers_And_1A1_All_Participants || '0') +
                     Number((d1A4.Count_1A4_All_Participants || '0') * 2) +
                     Number((d1B6.Count_1BAct6_All_Participants || '0') * 2) +
                     Number((d1B8.Count_1BAct8_All_Participants || '0') * 2) +
@@ -213,7 +213,7 @@ export default function OutreachCalc() {
                 ).toLocaleString(),
 
                 (
-                    Number(d1A1.Count_1A1_Unique_HH_ID || '0') +
+                    Number(d1A1.Count_cb_for_villagers_And_1A1_Unique_HH_ID || '0') +
                     Number(d1A4.Count_1A4_Unique_HH_ID || '0') +
                     Number(d1B6.Count_1BAct6_Unique_HH_ID || '0') +
                     Number(d1B8.Count_1BAct8_Unique_HH_ID || '0') +
@@ -224,7 +224,7 @@ export default function OutreachCalc() {
                 ).toLocaleString(),
 
                 (
-                    Number((d1A1.Count_1A1_Unique_HH_ID || '0') * AVERAGE_HOUSEHOLD_SIZE) +
+                    Number((d1A1.Count_cb_for_villagers_And_1A1_Unique_HH_ID || '0') * AVERAGE_HOUSEHOLD_SIZE) +
                     Number((d1A4.Count_1A4_Unique_HH_ID || '0') * AVERAGE_HOUSEHOLD_SIZE) +
                     Number((d1B6.Count_1BAct6_Unique_HH_ID || '0') * AVERAGE_HOUSEHOLD_SIZE) +
                     Number((d1B8.Count_1BAct8_Unique_HH_ID || '0') * AVERAGE_HOUSEHOLD_SIZE) +
@@ -380,11 +380,11 @@ export default function OutreachCalc() {
                                 <td>1. Actual number of FNS attendees </td>
                                 <td>Corresponding number of actual HH by HH ID of FNS members</td>
                                 <td>Target households (1.a)×Average HH size  ({AVERAGE_HOUSEHOLD_SIZE})</td>
-                                <td className="table-info" title='1A.1: Count all Participant HH-ID + Name'>{(reportData1A1[0]?.Count_1A1_All_Participants || '0').toLocaleString()}</td>
+                                <td className="table-info" title='1A.1: Count all Participant HH-ID + Name'>{(reportData1A1[0]?.Count_cb_for_villagers_And_1A1_All_Participants || '0').toLocaleString()}</td>
                                 <td>{ACTIVITY_OVERLAPS.fns}%</td>
-                                <td className="table-info" title='1A.1: Count all Participant HH-ID + Name'>{(reportData1A1[0]?.Count_1A1_All_Participants || '0').toLocaleString()}</td>
-                                <td className="table-info" title='1A.1: Count unique number of HH-ID'>{(reportData1A1[0]?.Count_1A1_Unique_HH_ID || '0').toLocaleString()}</td>
-                                <td className="table-info" title='1A.1: (Count unique number of HH-ID) x 6'>{((reportData1A1[0]?.Count_1A1_Unique_HH_ID || '0') * AVERAGE_HOUSEHOLD_SIZE).toLocaleString()}</td>
+                                <td className="table-info" title='1A.1: Count all Participant HH-ID + Name'>{(reportData1A1[0]?.Count_cb_for_villagers_And_1A1_All_Participants || '0').toLocaleString()}</td>
+                                <td className="table-info" title='1A.1: Count unique number of HH-ID'>{(reportData1A1[0]?.Count_cb_for_villagers_And_1A1_Unique_HH_ID || '0').toLocaleString()}</td>
+                                <td className="table-info" title='1A.1: (Count unique number of HH-ID) x 6'>{((reportData1A1[0]?.Count_cb_for_villagers_And_1A1_Unique_HH_ID || '0') * AVERAGE_HOUSEHOLD_SIZE).toLocaleString()}</td>
                             </tr>
                             {/* Component 1 Activity 2*/}
                             <tr>

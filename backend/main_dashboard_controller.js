@@ -77,32 +77,67 @@ function getCBForStaffStatics() {
 
 
 //CB for villagers dashboard
+// function getCBForVillagersStatics() {
+//     return new Promise((resolve, reject) => {
+//         const db = getDBConnection(); // Get the database connection
+//         const query = `
+//                         WITH UniqueParticipants AS (
+//                             SELECT
+//                                 COALESCE(TRIM(HHId), '') AS HHId,
+//                                 TRIM(NameAndSurname) AS NameAndSurname,
+//                                 MAX(Age) AS Age,
+//                                 MAX(Gender) AS Gender,
+//                                 MAX(Ethnicity) AS Ethnicity,
+//                                 MAX(PWD) AS PWD,
+//                                 MAX(APGMember) AS APGMember
+//                             FROM tb_CB_for_Villagers_Participant
+//                             GROUP BY COALESCE(TRIM(HHId), ''), TRIM(NameAndSurname)
+//                         )
+//                         SELECT
+//                             COUNT(*) AS Total_Farmers_Participants,
+//                             SUM(CASE WHEN Gender = 'Female' THEN 1 ELSE 0 END) AS Women_Farmers_Participants,
+//                             SUM(CASE WHEN Gender = 'Male' THEN 1 ELSE 0 END) AS Men_Farmer_Participants,
+//                             SUM(CASE WHEN Age BETWEEN 15 AND 35 THEN 1 ELSE 0 END) AS Youth_Farmer_Participants,
+//                             SUM(CASE WHEN Ethnicity NOT IN ('_e01','_e02','_e03','_e04','_e05','_e06','_e07','_e08') THEN 1 ELSE 0 END) AS Ethnic_Farmer_Participants,
+//                             SUM(CASE WHEN PWD = 'yes' THEN 1 ELSE 0 END) AS PWD_Participants,
+//                             SUM(CASE WHEN APGMember = 'yes' THEN 1 ELSE 0 END) AS APG_Member_Trained
+
+//                         FROM UniqueParticipants;
+//         `;
 function getCBForVillagersStatics() {
     return new Promise((resolve, reject) => {
         const db = getDBConnection(); // Get the database connection
         const query = `
                         WITH UniqueParticipants AS (
-                            SELECT
-                                COALESCE(TRIM(HHId), '') AS HHId,
-                                TRIM(NameAndSurname) AS NameAndSurname,
-                                MAX(Age) AS Age,
-                                MAX(Gender) AS Gender,
-                                MAX(Ethnicity) AS Ethnicity,
-                                MAX(PWD) AS PWD,
-                                MAX(APGMember) AS APGMember
-                            FROM tb_CB_for_Villagers_Participant
-                            GROUP BY COALESCE(TRIM(HHId), ''), TRIM(NameAndSurname)
-                        )
-                        SELECT
-                            COUNT(*) AS Total_Farmers_Participants,
-                            SUM(CASE WHEN Gender = 'Female' THEN 1 ELSE 0 END) AS Women_Farmers_Participants,
-                            SUM(CASE WHEN Gender = 'Male' THEN 1 ELSE 0 END) AS Men_Farmer_Participants,
-                            SUM(CASE WHEN Age BETWEEN 15 AND 35 THEN 1 ELSE 0 END) AS Youth_Farmer_Participants,
-                            SUM(CASE WHEN Ethnicity NOT IN ('_e01','_e02','_e03','_e04','_e05','_e06','_e07','_e08') THEN 1 ELSE 0 END) AS Ethnic_Farmer_Participants,
-                            SUM(CASE WHEN PWD = 'yes' THEN 1 ELSE 0 END) AS PWD_Participants,
-                            SUM(CASE WHEN APGMember = 'yes' THEN 1 ELSE 0 END) AS APG_Member_Trained
-                            
-                        FROM UniqueParticipants;
+                                                    SELECT
+                                                        COALESCE(TRIM(p.HHId), '') AS HHId,
+                                                        TRIM(p.NameAndSurname) AS NameAndSurname,
+                                                        s.ReportingPeriod,
+                                                        s.SpecializedTopic,
+                                                        MAX(p.Age) AS Age,
+                                                        MAX(p.Gender) AS Gender,
+                                                        MAX(p.Ethnicity) AS Ethnicity,
+                                                        MAX(p.PWD) AS PWD,
+                                                        MAX(p.APGMember) AS APGMember
+                                                    FROM tb_CB_for_Villagers_Participant p
+                                                    INNER JOIN tb_CB_for_Villagers_Submission s
+                                                        ON p.SubmissionId = s.Id
+                                                    GROUP BY 
+                                                        COALESCE(TRIM(p.HHId), ''),
+                                                        TRIM(p.NameAndSurname),
+                                                        s.ReportingPeriod,
+                                                        s.SpecializedTopic
+                                                )
+
+                                                SELECT
+                                                    COUNT(*) AS Total_Farmers_Participants,
+                                                    SUM(CASE WHEN Gender = 'Female' THEN 1 ELSE 0 END) AS Women_Farmers_Participants,
+                                                    SUM(CASE WHEN Gender = 'Male' THEN 1 ELSE 0 END) AS Men_Farmer_Participants,
+                                                    SUM(CASE WHEN Age BETWEEN 15 AND 35 THEN 1 ELSE 0 END) AS Youth_Farmer_Participants,
+                                                    SUM(CASE WHEN Ethnicity NOT IN ('_e01','_e02','_e03','_e04','_e05','_e06','_e07','_e08') THEN 1 ELSE 0 END) AS Ethnic_Farmer_Participants,
+                                                    SUM(CASE WHEN PWD = 'yes' THEN 1 ELSE 0 END) AS PWD_Participants,
+                                                    SUM(CASE WHEN APGMember = 'yes' THEN 1 ELSE 0 END) AS APG_Member_Trained
+                                                FROM UniqueParticipants;
         `;
 
 

@@ -8,12 +8,28 @@ export const indicatorQueryMap = {
                     SELECT SUM(count) AS count 
                         FROM (
                             -- 1A1
-                            SELECT 
-                                COUNT(DISTINCT COALESCE(TRIM(P.HHId), '') || '_' || COALESCE(TRIM(P.NameAndSurname), '')) AS count
-                            FROM tb_Form_1A1_Participant P
-                            JOIN tb_Form_1A1_Submission S ON P.SubmissionId = S.Id
-                            WHERE P.Gender = ? 
-                            AND date(S.ReportingPeriod) BETWEEN date(?) AND date(?)
+                            --It was requested to combine counts from Form 1A.1 and CB for Villagers for indicator 1A.1 from M&E team
+                            SELECT
+                                A.Count_1A1_All_Participants + B.Count_cb_for_villagers_All_Participants AS count
+                            FROM
+                            (
+                                SELECT 
+                                    COUNT(DISTINCT COALESCE(TRIM(P.HHId), '') || '_' || COALESCE(TRIM(P.NameAndSurname), '') || '_' || COALESCE(TRIM(S.ReportingPeriod), '')|| '_' || COALESCE(TRIM(S.Subactivity), '')) AS Count_1A1_All_Participants                                    
+                                FROM tb_Form_1A1_Participant P
+                                JOIN tb_Form_1A1_Submission S ON P.SubmissionId = S.Id
+                                WHERE P.Gender = ?
+                                And date(S.ReportingPeriod) BETWEEN date(?) AND date(?)
+                            ) A
+                            CROSS JOIN
+                            (
+                                SELECT 
+                                    COUNT(DISTINCT COALESCE(TRIM(P.HHId), '') || '_' || COALESCE(TRIM(P.NameAndSurname), '') || '_' || COALESCE(TRIM(S.ReportingPeriod), '') || '_' || COALESCE(TRIM(S.SpecializedTopic), '')) AS Count_cb_for_villagers_All_Participants                                    
+                                FROM tb_CB_for_Villagers_Participant P
+                                JOIN tb_CB_for_Villagers_Submission S ON P.SubmissionId = S.Id
+                                WHERE S.ActivityCode = '1A.1'
+                                And P.Gender = ?
+                                AND date(S.ReportingPeriod) BETWEEN date(?) AND date(?)
+                            ) B
                             
                             UNION ALL
                             
@@ -92,7 +108,7 @@ export const indicatorQueryMap = {
         //getParams: ({ gender, startDate, endDate }) => [gender, startDate, endDate],
         getParams: ({ gender, startDate, endDate }) => {
             const params = [];
-            for (let i = 0; i < 8; i++) {
+            for (let i = 0; i < 9; i++) {
                 params.push(gender, startDate, endDate);
             }
             return params;
@@ -104,12 +120,28 @@ export const indicatorQueryMap = {
             SELECT SUM(count) AS count
             FROM (
                 -- 1A1
-                SELECT 
-                    COUNT(DISTINCT COALESCE(TRIM(P.HHId), '') || '_' || COALESCE(TRIM(P.NameAndSurname), '')) AS count
-                FROM tb_Form_1A1_Participant P
-                JOIN tb_Form_1A1_Submission S ON P.SubmissionId = S.Id
-                WHERE P.Gender = ? 
-                AND date(S.ReportingPeriod) BETWEEN date(?) AND date(?)
+                --It was requested to combine counts from Form 1A.1 and CB for Villagers for indicator 1A.1 from M&E team
+                            SELECT
+                                A.Count_1A1_All_Participants + B.Count_cb_for_villagers_All_Participants AS count
+                            FROM
+                            (
+                                SELECT 
+                                    COUNT(DISTINCT COALESCE(TRIM(P.HHId), '') || '_' || COALESCE(TRIM(P.NameAndSurname), '') || '_' || COALESCE(TRIM(S.ReportingPeriod), '')|| '_' || COALESCE(TRIM(S.Subactivity), '')) AS Count_1A1_All_Participants                                    
+                                FROM tb_Form_1A1_Participant P
+                                JOIN tb_Form_1A1_Submission S ON P.SubmissionId = S.Id
+                                WHERE P.Gender = ?
+                                And date(S.ReportingPeriod) BETWEEN date(?) AND date(?)
+                            ) A
+                            CROSS JOIN
+                            (
+                                SELECT 
+                                    COUNT(DISTINCT COALESCE(TRIM(P.HHId), '') || '_' || COALESCE(TRIM(P.NameAndSurname), '') || '_' || COALESCE(TRIM(S.ReportingPeriod), '') || '_' || COALESCE(TRIM(S.SpecializedTopic), '')) AS Count_cb_for_villagers_All_Participants                                    
+                                FROM tb_CB_for_Villagers_Participant P
+                                JOIN tb_CB_for_Villagers_Submission S ON P.SubmissionId = S.Id
+                                WHERE S.ActivityCode = '1A.1'
+                                And P.Gender = ?
+                                AND date(S.ReportingPeriod) BETWEEN date(?) AND date(?)
+                            ) B
 
                 UNION ALL
 
@@ -187,7 +219,7 @@ export const indicatorQueryMap = {
         //getParams: ({ gender, startDate, endDate }) => [gender, startDate, endDate],
         getParams: ({ gender, startDate, endDate }) => {
             const params = [];
-            for (let i = 0; i < 8; i++) {
+            for (let i = 0; i < 9; i++) {
                 params.push(gender, startDate, endDate);
             }
             return params;
@@ -199,12 +231,28 @@ export const indicatorQueryMap = {
                 SELECT SUM(count) AS count
                 FROM (
                     -- 1A1
-                    SELECT 
-                        COUNT(DISTINCT COALESCE(TRIM(P.HHId), '') || '_' || COALESCE(TRIM(P.NameAndSurname), '')) AS count
-                    FROM tb_Form_1A1_Participant P
-                    JOIN tb_Form_1A1_Submission S ON P.SubmissionId = S.Id
-                    WHERE P.Age BETWEEN ? AND ?
-                    AND date(S.ReportingPeriod) BETWEEN date(?) AND date(?)
+                    --It was requested to combine counts from Form 1A.1 and CB for Villagers for indicator 1A.1 from M&E team
+                            SELECT
+                                A.Count_1A1_All_Participants + B.Count_cb_for_villagers_All_Participants AS count
+                            FROM
+                            (
+                                SELECT 
+                                    COUNT(DISTINCT COALESCE(TRIM(P.HHId), '') || '_' || COALESCE(TRIM(P.NameAndSurname), '') || '_' || COALESCE(TRIM(S.ReportingPeriod), '')|| '_' || COALESCE(TRIM(S.Subactivity), '')) AS Count_1A1_All_Participants                                    
+                                FROM tb_Form_1A1_Participant P
+                                JOIN tb_Form_1A1_Submission S ON P.SubmissionId = S.Id
+                                WHERE P.Age BETWEEN ? AND ?
+                                And date(S.ReportingPeriod) BETWEEN date(?) AND date(?)
+                            ) A
+                            CROSS JOIN
+                            (
+                                SELECT 
+                                    COUNT(DISTINCT COALESCE(TRIM(P.HHId), '') || '_' || COALESCE(TRIM(P.NameAndSurname), '') || '_' || COALESCE(TRIM(S.ReportingPeriod), '') || '_' || COALESCE(TRIM(S.SpecializedTopic), '')) AS Count_cb_for_villagers_All_Participants                                    
+                                FROM tb_CB_for_Villagers_Participant P
+                                JOIN tb_CB_for_Villagers_Submission S ON P.SubmissionId = S.Id
+                                WHERE S.ActivityCode = '1A.1'
+                                AND P.Age BETWEEN ? AND ?
+                                AND date(S.ReportingPeriod) BETWEEN date(?) AND date(?)
+                            ) B
 
                     UNION ALL
 
@@ -283,7 +331,7 @@ export const indicatorQueryMap = {
         //getParams: ({ minAge, maxAge, startDate, endDate }) => [minAge, maxAge, startDate, endDate],
         getParams: ({ minAge, maxAge, startDate, endDate }) => {
             const params = [];
-            for (let i = 0; i < 8; i++) {
+            for (let i = 0; i < 9; i++) {
                 params.push(minAge, maxAge, startDate, endDate);
             }
             return params;
@@ -295,12 +343,28 @@ export const indicatorQueryMap = {
                 SELECT SUM(count) AS count
                 FROM (
                     -- 1A1
-                    SELECT 
-                        COUNT(DISTINCT COALESCE(TRIM(P.HHId), '') || '_' || COALESCE(TRIM(P.NameAndSurname), '')) AS count
-                    FROM tb_Form_1A1_Participant P
-                    JOIN tb_Form_1A1_Submission S ON P.SubmissionId = S.Id
-                    WHERE P.Ethnicity NOT IN (${'??'})
-                    AND date(S.ReportingPeriod) BETWEEN date(?) AND date(?)
+                    --It was requested to combine counts from Form 1A.1 and CB for Villagers for indicator 1A.1 from M&E team
+                            SELECT
+                                A.Count_1A1_All_Participants + B.Count_cb_for_villagers_All_Participants AS count
+                            FROM
+                            (
+                                SELECT 
+                                    COUNT(DISTINCT COALESCE(TRIM(P.HHId), '') || '_' || COALESCE(TRIM(P.NameAndSurname), '') || '_' || COALESCE(TRIM(S.ReportingPeriod), '')|| '_' || COALESCE(TRIM(S.Subactivity), '')) AS Count_1A1_All_Participants                                    
+                                FROM tb_Form_1A1_Participant P
+                                JOIN tb_Form_1A1_Submission S ON P.SubmissionId = S.Id
+                                WHERE P.Ethnicity NOT IN (${'??'})
+                                And date(S.ReportingPeriod) BETWEEN date(?) AND date(?)
+                            ) A
+                            CROSS JOIN
+                            (
+                                SELECT 
+                                    COUNT(DISTINCT COALESCE(TRIM(P.HHId), '') || '_' || COALESCE(TRIM(P.NameAndSurname), '') || '_' || COALESCE(TRIM(S.ReportingPeriod), '') || '_' || COALESCE(TRIM(S.SpecializedTopic), '')) AS Count_cb_for_villagers_All_Participants                                    
+                                FROM tb_CB_for_Villagers_Participant P
+                                JOIN tb_CB_for_Villagers_Submission S ON P.SubmissionId = S.Id
+                                WHERE S.ActivityCode = '1A.1'
+                                AND P.Ethnicity NOT IN (${'??'})
+                                AND date(S.ReportingPeriod) BETWEEN date(?) AND date(?)
+                            ) B
 
                     UNION ALL
 
@@ -379,7 +443,7 @@ export const indicatorQueryMap = {
         //getParams: ({ ethnicCodes, startDate, endDate }) => [startDate, endDate], // Will use direct injection for codes
         getParams: ({ ethnic, startDate, endDate }) => {
             const params = [];
-            for (let i = 0; i < 8; i++) {
+            for (let i = 0; i < 9; i++) {
                 params.push(startDate, endDate);
             }
             return params;
@@ -389,10 +453,26 @@ export const indicatorQueryMap = {
         query: `
                 SELECT SUM(count) AS count
                 FROM (
-                    SELECT COUNT(DISTINCT COALESCE(P.HHId, '') || '_' || COALESCE(P.NameAndSurname, '')) AS count
-                    FROM tb_Form_1A1_Participant P
-                    JOIN tb_Form_1A1_Submission S ON P.SubmissionId = S.Id
-                    WHERE date(S.ReportingPeriod) BETWEEN date(?) AND date(?)
+                    --It was requested to combine counts from Form 1A.1 and CB for Villagers for indicator 1A.1 from M&E team
+                            SELECT
+                                A.Count_1A1_All_Participants + B.Count_cb_for_villagers_All_Participants AS count
+                            FROM
+                            (
+                                SELECT 
+                                    COUNT(DISTINCT COALESCE(TRIM(P.HHId), '') || '_' || COALESCE(TRIM(P.NameAndSurname), '') || '_' || COALESCE(TRIM(S.ReportingPeriod), '')|| '_' || COALESCE(TRIM(S.Subactivity), '')) AS Count_1A1_All_Participants                                    
+                                FROM tb_Form_1A1_Participant P
+                                JOIN tb_Form_1A1_Submission S ON P.SubmissionId = S.Id
+                                WHERE date(S.ReportingPeriod) BETWEEN date(?) AND date(?)
+                            ) A
+                            CROSS JOIN
+                            (
+                                SELECT 
+                                    COUNT(DISTINCT COALESCE(TRIM(P.HHId), '') || '_' || COALESCE(TRIM(P.NameAndSurname), '') || '_' || COALESCE(TRIM(S.ReportingPeriod), '') || '_' || COALESCE(TRIM(S.SpecializedTopic), '')) AS Count_cb_for_villagers_All_Participants                                    
+                                FROM tb_CB_for_Villagers_Participant P
+                                JOIN tb_CB_for_Villagers_Submission S ON P.SubmissionId = S.Id
+                                WHERE S.ActivityCode = '1A.1'                                
+                                AND date(S.ReportingPeriod) BETWEEN date(?) AND date(?)
+                            ) B
 
                     UNION ALL
 
@@ -450,7 +530,7 @@ export const indicatorQueryMap = {
         //getParams: ({ startDate, endDate }) => [startDate, endDate],
         getParams: ({ startDate, endDate }) => {
             const params = [];
-            for (let i = 0; i < 8; i++) {
+            for (let i = 0; i < 9; i++) {
                 params.push(startDate, endDate);
             }
             return params;
@@ -462,10 +542,27 @@ export const indicatorQueryMap = {
       -- Agree to not multyply results for PWD
                 SELECT SUM(count) AS count
                 FROM (
-                    SELECT COUNT(DISTINCT COALESCE(P.HHId,'') || '_' || COALESCE(P.NameAndSurname,'')) AS count
-                    FROM tb_Form_1A1_Participant P
-                    JOIN tb_Form_1A1_Submission S ON P.SubmissionId = S.Id
-                    WHERE P.PWD = 'yes' AND date(S.ReportingPeriod) BETWEEN date(?) AND date(?)
+                    -- 1A1
+                    --It was requested to combine counts from Form 1A.1 and CB for Villagers for indicator 1A.1 from M&E team
+                            SELECT
+                                A.Count_1A1_All_Participants + B.Count_cb_for_villagers_All_Participants AS count
+                            FROM
+                            (
+                                SELECT 
+                                    COUNT(DISTINCT COALESCE(TRIM(P.HHId), '') || '_' || COALESCE(TRIM(P.NameAndSurname), '') || '_' || COALESCE(TRIM(S.ReportingPeriod), '')|| '_' || COALESCE(TRIM(S.Subactivity), '')) AS Count_1A1_All_Participants                                    
+                                FROM tb_Form_1A1_Participant P
+                                JOIN tb_Form_1A1_Submission S ON P.SubmissionId = S.Id
+                                WHERE P.PWD = 'yes' AND date(S.ReportingPeriod) BETWEEN date(?) AND date(?)
+                            ) A
+                            CROSS JOIN
+                            (
+                                SELECT 
+                                    COUNT(DISTINCT COALESCE(TRIM(P.HHId), '') || '_' || COALESCE(TRIM(P.NameAndSurname), '') || '_' || COALESCE(TRIM(S.ReportingPeriod), '') || '_' || COALESCE(TRIM(S.SpecializedTopic), '')) AS Count_cb_for_villagers_All_Participants                                    
+                                FROM tb_CB_for_Villagers_Participant P
+                                JOIN tb_CB_for_Villagers_Submission S ON P.SubmissionId = S.Id
+                                WHERE S.ActivityCode = '1A.1'
+                                AND P.PWD = 'yes' AND date(S.ReportingPeriod) BETWEEN date(?) AND date(?)
+                            ) B
 
                     UNION ALL
 
@@ -509,7 +606,7 @@ export const indicatorQueryMap = {
         //getParams: ({ startDate, endDate }) => [startDate, endDate],
         getParams: ({ startDate, endDate }) => {
             const params = [];
-            for (let i = 0; i < 6; i++) {
+            for (let i = 0; i < 7; i++) {
                 params.push(startDate, endDate);
             }
             return params;
@@ -522,12 +619,26 @@ export const indicatorQueryMap = {
         -- Count Unique HH-ID across all relevant forms
       SELECT sum(count) AS count FROM (
             --1A1
-            SELECT 
-            --COUNT(DISTINCT P.HHId || '_' || P.NameAndSurname) AS count
-            COUNT(DISTINCT P.HHId) AS count
-            FROM tb_Form_1A1_Participant P
-            JOIN tb_Form_1A1_Submission S ON P.SubmissionId = S.Id
-            WHERE date(S.ReportingPeriod) BETWEEN date(?) AND date(?)
+            --It was requested to combine counts from Form 1A.1 and CB for Villagers for indicator 1A.1 from M&E team
+                SELECT
+                    A.Count_1A1_Unique_HH_ID + B.Count_cb_for_villagers_Unique_HH_ID AS count
+                FROM
+                (
+                    SELECT 
+                        COUNT(DISTINCT P.HHId) AS Count_1A1_Unique_HH_ID
+                    FROM tb_Form_1A1_Participant P
+                    JOIN tb_Form_1A1_Submission S ON P.SubmissionId = S.Id
+                    WHERE date(S.ReportingPeriod) BETWEEN date(?) AND date(?)
+                ) A
+                CROSS JOIN
+                (
+                    SELECT 
+                        COUNT(DISTINCT P.HHId) AS Count_cb_for_villagers_Unique_HH_ID
+                    FROM tb_CB_for_Villagers_Participant P
+                    JOIN tb_CB_for_Villagers_Submission S ON P.SubmissionId = S.Id
+                    WHERE S.ActivityCode = '1A.1'
+                    AND date(S.ReportingPeriod) BETWEEN date(?) AND date(?)
+                ) B
                     
             UNION ALL
             --1A4
@@ -600,7 +711,7 @@ export const indicatorQueryMap = {
         //getParams: ({ startDate, endDate }) => [startDate, endDate],
         getParams: ({ startDate, endDate }) => {
             const params = [];
-            for (let i = 0; i < 8; i++) {
+            for (let i = 0; i < 9; i++) {
                 params.push(startDate, endDate);
             }
             return params;
@@ -611,10 +722,26 @@ export const indicatorQueryMap = {
         -- Overall result x Average Household Size (6)
                 SELECT SUM(count) * 6 AS count FROM (
                 --1A1
-                SELECT COALESCE(COUNT(DISTINCT P.HHId), 0) AS count
-                FROM tb_Form_1A1_Participant P
-                JOIN tb_Form_1A1_Submission S ON P.SubmissionId = S.Id
-                WHERE date(S.ReportingPeriod) BETWEEN date(?) AND date(?)
+                --It was requested to combine counts from Form 1A.1 and CB for Villagers for indicator 1A.1 from M&E team
+                SELECT
+                    A.Count_1A1_Unique_HH_ID + B.Count_cb_for_villagers_Unique_HH_ID AS count
+                FROM
+                (
+                    SELECT 
+                        COUNT(DISTINCT P.HHId) AS Count_1A1_Unique_HH_ID
+                    FROM tb_Form_1A1_Participant P
+                    JOIN tb_Form_1A1_Submission S ON P.SubmissionId = S.Id
+                    WHERE date(S.ReportingPeriod) BETWEEN date(?) AND date(?)
+                ) A
+                CROSS JOIN
+                (
+                    SELECT 
+                        COUNT(DISTINCT P.HHId) AS Count_cb_for_villagers_Unique_HH_ID
+                    FROM tb_CB_for_Villagers_Participant P
+                    JOIN tb_CB_for_Villagers_Submission S ON P.SubmissionId = S.Id
+                    WHERE S.ActivityCode = '1A.1'
+                    AND date(S.ReportingPeriod) BETWEEN date(?) AND date(?)
+                ) B
                                 
                 UNION ALL
                 --1A4
@@ -672,7 +799,7 @@ export const indicatorQueryMap = {
         //getParams: ({ startDate, endDate }) => [startDate, endDate],
         getParams: ({ startDate, endDate }) => {
             const params = [];
-            for (let i = 0; i < 8; i++) {
+            for (let i = 0; i < 9; i++) {
                 params.push(startDate, endDate);
             }
             return params;
@@ -915,7 +1042,8 @@ export const indicatorQueryMap = {
     "cb_villagers_Total_Persons": {
         query: `
       SELECT 
-          COUNT(DISTINCT COALESCE(TRIM(P.HHId), '') || '_' || COALESCE(TRIM(P.NameAndSurname), '')) AS count
+          --COUNT(DISTINCT COALESCE(TRIM(P.HHId), '') || '_' || COALESCE(TRIM(P.NameAndSurname), '')) AS count
+          COUNT(DISTINCT COALESCE(TRIM(P.HHId), '') || '_' || COALESCE(TRIM(P.NameAndSurname), '') || '_' || COALESCE(TRIM(S.ReportingPeriod), '') || '_' || COALESCE(TRIM(S.SpecializedTopic), '')) AS count
       FROM tb_CB_for_Villagers_Participant P
       JOIN tb_CB_for_Villagers_Submission S ON P.SubmissionId = S.Id
       WHERE date(S.ReportingPeriod) BETWEEN date(?) AND date(?)
@@ -929,7 +1057,8 @@ export const indicatorQueryMap = {
                         ROUND(
                                 -- 100% of 2TC
                                 (SELECT 
-                                    COUNT(DISTINCT COALESCE(TRIM(P.HHId), '') || '_' || COALESCE(TRIM(P.NameAndSurname), ''))
+                                    --COUNT(DISTINCT COALESCE(TRIM(P.HHId), '') || '_' || COALESCE(TRIM(P.NameAndSurname), ''))
+                                    COUNT(DISTINCT COALESCE(TRIM(P.HHId), '') || '_' || COALESCE(TRIM(P.NameAndSurname), '') || '_' || COALESCE(TRIM(S.ReportingPeriod), '') || '_' || COALESCE(TRIM(S.SpecializedTopic), '')) AS count
                                 FROM tb_CB_for_Villagers_Participant P
                                 JOIN tb_CB_for_Villagers_Submission S ON P.SubmissionId = S.Id
                                 WHERE P.Gender = ?
@@ -940,7 +1069,8 @@ export const indicatorQueryMap = {
                                 -- 50% of 2TL+TC
                                 0.5 * (
                                     SELECT 
-                                        COUNT(DISTINCT COALESCE(TRIM(P.HHId), '') || '_' || COALESCE(TRIM(P.NameAndSurname), ''))
+                                        --COUNT(DISTINCT COALESCE(TRIM(P.HHId), '') || '_' || COALESCE(TRIM(P.NameAndSurname), ''))
+                                        COUNT(DISTINCT COALESCE(TRIM(P.HHId), '') || '_' || COALESCE(TRIM(P.NameAndSurname), '') || '_' || COALESCE(TRIM(S.ReportingPeriod), '') || '_' || COALESCE(TRIM(S.SpecializedTopic), '')) AS count
                                     FROM tb_CB_for_Villagers_Participant P
                                     JOIN tb_CB_for_Villagers_Submission S ON P.SubmissionId = S.Id
                                     WHERE P.Gender = ?
@@ -965,7 +1095,8 @@ export const indicatorQueryMap = {
                         ROUND(
                                 -- 100% of 2TC
                                 (SELECT 
-                                    COUNT(DISTINCT COALESCE(TRIM(P.HHId), '') || '_' || COALESCE(TRIM(P.NameAndSurname), ''))
+                                    --COUNT(DISTINCT COALESCE(TRIM(P.HHId), '') || '_' || COALESCE(TRIM(P.NameAndSurname), ''))
+                                    COUNT(DISTINCT COALESCE(TRIM(P.HHId), '') || '_' || COALESCE(TRIM(P.NameAndSurname), '') || '_' || COALESCE(TRIM(S.ReportingPeriod), '') || '_' || COALESCE(TRIM(S.SpecializedTopic), '')) AS count
                                 FROM tb_CB_for_Villagers_Participant P
                                 JOIN tb_CB_for_Villagers_Submission S ON P.SubmissionId = S.Id
                                 WHERE P.Gender = ?
@@ -976,7 +1107,8 @@ export const indicatorQueryMap = {
                                 -- 50% of 2TL+TC
                                 0.5 * (
                                     SELECT 
-                                        COUNT(DISTINCT COALESCE(TRIM(P.HHId), '') || '_' || COALESCE(TRIM(P.NameAndSurname), ''))
+                                        --COUNT(DISTINCT COALESCE(TRIM(P.HHId), '') || '_' || COALESCE(TRIM(P.NameAndSurname), ''))
+                                        COUNT(DISTINCT COALESCE(TRIM(P.HHId), '') || '_' || COALESCE(TRIM(P.NameAndSurname), '') || '_' || COALESCE(TRIM(S.ReportingPeriod), '') || '_' || COALESCE(TRIM(S.SpecializedTopic), '')) AS count
                                     FROM tb_CB_for_Villagers_Participant P
                                     JOIN tb_CB_for_Villagers_Submission S ON P.SubmissionId = S.Id
                                     WHERE P.Gender = ?
@@ -1001,7 +1133,8 @@ export const indicatorQueryMap = {
                 ROUND(
                     -- 100% of 2TC
                     (SELECT 
-                        COUNT(DISTINCT COALESCE(TRIM(P.HHId), '') || '_' || COALESCE(TRIM(P.NameAndSurname), ''))
+                        --COUNT(DISTINCT COALESCE(TRIM(P.HHId), '') || '_' || COALESCE(TRIM(P.NameAndSurname), ''))
+                        COUNT(DISTINCT COALESCE(TRIM(P.HHId), '') || '_' || COALESCE(TRIM(P.NameAndSurname), '') || '_' || COALESCE(TRIM(S.ReportingPeriod), '') || '_' || COALESCE(TRIM(S.SpecializedTopic), '')) AS count
                         FROM tb_CB_for_Villagers_Participant P
                         JOIN tb_CB_for_Villagers_Submission S ON P.SubmissionId = S.Id
                         WHERE P.Age BETWEEN ? AND ?
@@ -1012,7 +1145,8 @@ export const indicatorQueryMap = {
                         -- 50% of 2TL+TC
                         0.5 * (
                             SELECT 
-                                COUNT(DISTINCT COALESCE(TRIM(P.HHId), '') || '_' || COALESCE(TRIM(P.NameAndSurname), ''))
+                                --COUNT(DISTINCT COALESCE(TRIM(P.HHId), '') || '_' || COALESCE(TRIM(P.NameAndSurname), ''))
+                                COUNT(DISTINCT COALESCE(TRIM(P.HHId), '') || '_' || COALESCE(TRIM(P.NameAndSurname), '') || '_' || COALESCE(TRIM(S.ReportingPeriod), '') || '_' || COALESCE(TRIM(S.SpecializedTopic), '')) AS count
                             FROM tb_CB_for_Villagers_Participant P
                             JOIN tb_CB_for_Villagers_Submission S ON P.SubmissionId = S.Id
                             WHERE P.Age BETWEEN ? AND ?
@@ -1037,7 +1171,8 @@ export const indicatorQueryMap = {
                     ROUND(
                         -- 100% of 2TC
                         (SELECT 
-                            COUNT(DISTINCT COALESCE(TRIM(P.HHId), '') || '_' || COALESCE(TRIM(P.NameAndSurname), ''))
+                            --COUNT(DISTINCT COALESCE(TRIM(P.HHId), '') || '_' || COALESCE(TRIM(P.NameAndSurname), ''))
+                            COUNT(DISTINCT COALESCE(TRIM(P.HHId), '') || '_' || COALESCE(TRIM(P.NameAndSurname), '') || '_' || COALESCE(TRIM(S.ReportingPeriod), '') || '_' || COALESCE(TRIM(S.SpecializedTopic), '')) AS count
                         FROM tb_CB_for_Villagers_Participant P
                         JOIN tb_CB_for_Villagers_Submission S ON P.SubmissionId = S.Id
                         WHERE P.Ethnicity NOT IN (??)
@@ -1048,7 +1183,8 @@ export const indicatorQueryMap = {
                         -- 50% of 2TL+TC
                         0.5 * (
                             SELECT 
-                                COUNT(DISTINCT COALESCE(TRIM(P.HHId), '') || '_' || COALESCE(TRIM(P.NameAndSurname), ''))
+                                --COUNT(DISTINCT COALESCE(TRIM(P.HHId), '') || '_' || COALESCE(TRIM(P.NameAndSurname), ''))
+                                COUNT(DISTINCT COALESCE(TRIM(P.HHId), '') || '_' || COALESCE(TRIM(P.NameAndSurname), '') || '_' || COALESCE(TRIM(S.ReportingPeriod), '') || '_' || COALESCE(TRIM(S.SpecializedTopic), '')) AS count
                             FROM tb_CB_for_Villagers_Participant P
                             JOIN tb_CB_for_Villagers_Submission S ON P.SubmissionId = S.Id
                             WHERE P.Ethnicity NOT IN (??)
@@ -1073,7 +1209,8 @@ export const indicatorQueryMap = {
                         ROUND(
                             -- 100% of 2TL
                             (SELECT 
-                                COUNT(DISTINCT COALESCE(TRIM(P.HHId), '') || '_' || COALESCE(TRIM(P.NameAndSurname), ''))
+                                --COUNT(DISTINCT COALESCE(TRIM(P.HHId), '') || '_' || COALESCE(TRIM(P.NameAndSurname), ''))
+                                COUNT(DISTINCT COALESCE(TRIM(P.HHId), '') || '_' || COALESCE(TRIM(P.NameAndSurname), '') || '_' || COALESCE(TRIM(S.ReportingPeriod), '') || '_' || COALESCE(TRIM(S.SpecializedTopic), '')) AS count
                             FROM tb_CB_for_Villagers_Participant P
                             JOIN tb_CB_for_Villagers_Submission S ON P.SubmissionId = S.Id
                             WHERE P.Gender = ?
@@ -1084,7 +1221,8 @@ export const indicatorQueryMap = {
                             -- 50% of 2TL+TC
                             0.5 * (
                                 SELECT 
-                                    COUNT(DISTINCT COALESCE(TRIM(P.HHId), '') || '_' || COALESCE(TRIM(P.NameAndSurname), ''))
+                                    --COUNT(DISTINCT COALESCE(TRIM(P.HHId), '') || '_' || COALESCE(TRIM(P.NameAndSurname), ''))
+                                    COUNT(DISTINCT COALESCE(TRIM(P.HHId), '') || '_' || COALESCE(TRIM(P.NameAndSurname), '') || '_' || COALESCE(TRIM(S.ReportingPeriod), '') || '_' || COALESCE(TRIM(S.SpecializedTopic), '')) AS count
                                 FROM tb_CB_for_Villagers_Participant P
                                 JOIN tb_CB_for_Villagers_Submission S ON P.SubmissionId = S.Id
                                 WHERE P.Gender = ?
@@ -1109,7 +1247,8 @@ export const indicatorQueryMap = {
                         ROUND(
                             -- 100% of 2TL
                             (SELECT 
-                                COUNT(DISTINCT COALESCE(TRIM(P.HHId), '') || '_' || COALESCE(TRIM(P.NameAndSurname), ''))
+                                --COUNT(DISTINCT COALESCE(TRIM(P.HHId), '') || '_' || COALESCE(TRIM(P.NameAndSurname), ''))
+                                COUNT(DISTINCT COALESCE(TRIM(P.HHId), '') || '_' || COALESCE(TRIM(P.NameAndSurname), '') || '_' || COALESCE(TRIM(S.ReportingPeriod), '') || '_' || COALESCE(TRIM(S.SpecializedTopic), '')) AS count
                             FROM tb_CB_for_Villagers_Participant P
                             JOIN tb_CB_for_Villagers_Submission S ON P.SubmissionId = S.Id
                             WHERE P.Gender = ?
@@ -1120,7 +1259,8 @@ export const indicatorQueryMap = {
                             -- 50% of 2TL+TC
                             0.5 * (
                                 SELECT 
-                                    COUNT(DISTINCT COALESCE(TRIM(P.HHId), '') || '_' || COALESCE(TRIM(P.NameAndSurname), ''))
+                                    --COUNT(DISTINCT COALESCE(TRIM(P.HHId), '') || '_' || COALESCE(TRIM(P.NameAndSurname), ''))
+                                    COUNT(DISTINCT COALESCE(TRIM(P.HHId), '') || '_' || COALESCE(TRIM(P.NameAndSurname), '') || '_' || COALESCE(TRIM(S.ReportingPeriod), '') || '_' || COALESCE(TRIM(S.SpecializedTopic), '')) AS count
                                 FROM tb_CB_for_Villagers_Participant P
                                 JOIN tb_CB_for_Villagers_Submission S ON P.SubmissionId = S.Id
                                 WHERE P.Gender = ?
@@ -1145,7 +1285,8 @@ export const indicatorQueryMap = {
                         ROUND(
                             -- 100% of 2TL
                             (SELECT 
-                                COUNT(DISTINCT COALESCE(TRIM(P.HHId), '') || '_' || COALESCE(TRIM(P.NameAndSurname), ''))
+                                --COUNT(DISTINCT COALESCE(TRIM(P.HHId), '') || '_' || COALESCE(TRIM(P.NameAndSurname), ''))
+                                COUNT(DISTINCT COALESCE(TRIM(P.HHId), '') || '_' || COALESCE(TRIM(P.NameAndSurname), '') || '_' || COALESCE(TRIM(S.ReportingPeriod), '') || '_' || COALESCE(TRIM(S.SpecializedTopic), '')) AS count
                             FROM tb_CB_for_Villagers_Participant P
                             JOIN tb_CB_for_Villagers_Submission S ON P.SubmissionId = S.Id
                             WHERE P.Age BETWEEN ? AND ?
@@ -1156,7 +1297,8 @@ export const indicatorQueryMap = {
                             -- 50% of 2TL+TC
                             0.5 * (
                                 SELECT 
-                                    COUNT(DISTINCT COALESCE(TRIM(P.HHId), '') || '_' || COALESCE(TRIM(P.NameAndSurname), ''))
+                                    --COUNT(DISTINCT COALESCE(TRIM(P.HHId), '') || '_' || COALESCE(TRIM(P.NameAndSurname), ''))
+                                    COUNT(DISTINCT COALESCE(TRIM(P.HHId), '') || '_' || COALESCE(TRIM(P.NameAndSurname), '') || '_' || COALESCE(TRIM(S.ReportingPeriod), '') || '_' || COALESCE(TRIM(S.SpecializedTopic), '')) AS count
                                 FROM tb_CB_for_Villagers_Participant P
                                 JOIN tb_CB_for_Villagers_Submission S ON P.SubmissionId = S.Id
                                 WHERE P.Age BETWEEN ? AND ?
@@ -1181,7 +1323,8 @@ export const indicatorQueryMap = {
                         ROUND(
                             -- 100% of 2TL
                             (SELECT 
-                                COUNT(DISTINCT COALESCE(TRIM(P.HHId), '') || '_' || COALESCE(TRIM(P.NameAndSurname), ''))
+                                --COUNT(DISTINCT COALESCE(TRIM(P.HHId), '') || '_' || COALESCE(TRIM(P.NameAndSurname), ''))
+                                COUNT(DISTINCT COALESCE(TRIM(P.HHId), '') || '_' || COALESCE(TRIM(P.NameAndSurname), '') || '_' || COALESCE(TRIM(S.ReportingPeriod), '') || '_' || COALESCE(TRIM(S.SpecializedTopic), '')) AS count
                             FROM tb_CB_for_Villagers_Participant P
                             JOIN tb_CB_for_Villagers_Submission S ON P.SubmissionId = S.Id
                             WHERE P.Ethnicity NOT IN (??)
@@ -1192,7 +1335,8 @@ export const indicatorQueryMap = {
                             -- 50% of 2TL+TC
                             0.5 * (
                                 SELECT 
-                                    COUNT(DISTINCT COALESCE(TRIM(P.HHId), '') || '_' || COALESCE(TRIM(P.NameAndSurname), ''))
+                                    --COUNT(DISTINCT COALESCE(TRIM(P.HHId), '') || '_' || COALESCE(TRIM(P.NameAndSurname), ''))
+                                    COUNT(DISTINCT COALESCE(TRIM(P.HHId), '') || '_' || COALESCE(TRIM(P.NameAndSurname), '') || '_' || COALESCE(TRIM(S.ReportingPeriod), '') || '_' || COALESCE(TRIM(S.SpecializedTopic), '')) AS count
                                 FROM tb_CB_for_Villagers_Participant P
                                 JOIN tb_CB_for_Villagers_Submission S ON P.SubmissionId = S.Id
                                 WHERE P.Ethnicity NOT IN (??)
@@ -1217,7 +1361,8 @@ export const indicatorQueryMap = {
                         (
                             -- 100% of 2TC
                             (SELECT 
-                                COUNT(DISTINCT COALESCE(TRIM(P.HHId), '') || '_' || COALESCE(TRIM(P.NameAndSurname), ''))
+                                --COUNT(DISTINCT COALESCE(TRIM(P.HHId), '') || '_' || COALESCE(TRIM(P.NameAndSurname), ''))
+                                COUNT(DISTINCT COALESCE(TRIM(P.HHId), '') || '_' || COALESCE(TRIM(P.NameAndSurname), '') || '_' || COALESCE(TRIM(S.ReportingPeriod), '') || '_' || COALESCE(TRIM(S.SpecializedTopic), '')) AS count
                             FROM tb_CB_for_Villagers_Participant P
                             JOIN tb_CB_for_Villagers_Submission S ON P.SubmissionId = S.Id
                             WHERE P.Gender = 'Male'
@@ -1228,7 +1373,8 @@ export const indicatorQueryMap = {
                             -- 50% of 2TL+TC
                             ROUND(0.5 * (
                                 SELECT 
-                                    COUNT(DISTINCT COALESCE(TRIM(P.HHId), '') || '_' || COALESCE(TRIM(P.NameAndSurname), ''))
+                                    --COUNT(DISTINCT COALESCE(TRIM(P.HHId), '') || '_' || COALESCE(TRIM(P.NameAndSurname), ''))
+                                    COUNT(DISTINCT COALESCE(TRIM(P.HHId), '') || '_' || COALESCE(TRIM(P.NameAndSurname), '') || '_' || COALESCE(TRIM(S.ReportingPeriod), '') || '_' || COALESCE(TRIM(S.SpecializedTopic), '')) AS count
                                 FROM tb_CB_for_Villagers_Participant P
                                 JOIN tb_CB_for_Villagers_Submission S ON P.SubmissionId = S.Id
                                 WHERE P.Gender = 'Male'
@@ -1274,7 +1420,8 @@ export const indicatorQueryMap = {
                         (
                             -- 100% of 2TL
                             (SELECT 
-                                COUNT(DISTINCT COALESCE(TRIM(P.HHId), '') || '_' || COALESCE(TRIM(P.NameAndSurname), ''))
+                                --COUNT(DISTINCT COALESCE(TRIM(P.HHId), '') || '_' || COALESCE(TRIM(P.NameAndSurname), ''))
+                                COUNT(DISTINCT COALESCE(TRIM(P.HHId), '') || '_' || COALESCE(TRIM(P.NameAndSurname), '') || '_' || COALESCE(TRIM(S.ReportingPeriod), '') || '_' || COALESCE(TRIM(S.SpecializedTopic), '')) AS count
                             FROM tb_CB_for_Villagers_Participant P
                             JOIN tb_CB_for_Villagers_Submission S ON P.SubmissionId = S.Id
                             WHERE P.Gender = 'Male'
@@ -1285,7 +1432,8 @@ export const indicatorQueryMap = {
                             -- 50% of 2TL+TL
                             ROUND(0.5 * (
                                 SELECT 
-                                    COUNT(DISTINCT COALESCE(TRIM(P.HHId), '') || '_' || COALESCE(TRIM(P.NameAndSurname), ''))
+                                    --COUNT(DISTINCT COALESCE(TRIM(P.HHId), '') || '_' || COALESCE(TRIM(P.NameAndSurname), ''))
+                                    COUNT(DISTINCT COALESCE(TRIM(P.HHId), '') || '_' || COALESCE(TRIM(P.NameAndSurname), '') || '_' || COALESCE(TRIM(S.ReportingPeriod), '') || '_' || COALESCE(TRIM(S.SpecializedTopic), '')) AS count
                                 FROM tb_CB_for_Villagers_Participant P
                                 JOIN tb_CB_for_Villagers_Submission S ON P.SubmissionId = S.Id
                                 WHERE P.Gender = 'Male'
@@ -1295,7 +1443,8 @@ export const indicatorQueryMap = {
                             +
                             -- 100% of 2TL
                             (SELECT 
-                                COUNT(DISTINCT COALESCE(TRIM(P.HHId), '') || '_' || COALESCE(TRIM(P.NameAndSurname), ''))
+                                --COUNT(DISTINCT COALESCE(TRIM(P.HHId), '') || '_' || COALESCE(TRIM(P.NameAndSurname), ''))
+                                COUNT(DISTINCT COALESCE(TRIM(P.HHId), '') || '_' || COALESCE(TRIM(P.NameAndSurname), '') || '_' || COALESCE(TRIM(S.ReportingPeriod), '') || '_' || COALESCE(TRIM(S.SpecializedTopic), '')) AS count
                             FROM tb_CB_for_Villagers_Participant P
                             JOIN tb_CB_for_Villagers_Submission S ON P.SubmissionId = S.Id
                             WHERE P.Gender = 'Female'
@@ -1306,7 +1455,8 @@ export const indicatorQueryMap = {
                             -- 50% of 2TL+TC
                             ROUND(0.5 * (
                                 SELECT 
-                                    COUNT(DISTINCT COALESCE(TRIM(P.HHId), '') || '_' || COALESCE(TRIM(P.NameAndSurname), ''))
+                                    --COUNT(DISTINCT COALESCE(TRIM(P.HHId), '') || '_' || COALESCE(TRIM(P.NameAndSurname), ''))
+                                    COUNT(DISTINCT COALESCE(TRIM(P.HHId), '') || '_' || COALESCE(TRIM(P.NameAndSurname), '') || '_' || COALESCE(TRIM(S.ReportingPeriod), '') || '_' || COALESCE(TRIM(S.SpecializedTopic), '')) AS count
                                 FROM tb_CB_for_Villagers_Participant P
                                 JOIN tb_CB_for_Villagers_Submission S ON P.SubmissionId = S.Id
                                 WHERE P.Gender = 'Female'
