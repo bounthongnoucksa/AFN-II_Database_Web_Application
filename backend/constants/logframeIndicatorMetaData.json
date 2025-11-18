@@ -351,6 +351,25 @@
     "indicator": "Females (%)",
     "midTerm": 16,
     "endTarget": 40
+  },
+
+
+
+
+
+
+
+
+
+
+
+  "1BAct8_Total_Area": {
+    "hierarchy": "2.5 | 28,000 hectares of land brought under climate-resilient management",
+    "indicatorGroup": "3.1.4  Land brought under climate-resilient practices",
+    "baseline": 0,
+    "indicator": "Hectares of land - Area (ha)",
+    "midTerm": 14000,
+    "endTarget": 28000
   }
 
 

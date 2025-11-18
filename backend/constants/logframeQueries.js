@@ -1479,7 +1479,7 @@ export const indicatorQueryMap = {
 
 
 
-    //Part 5:
+    //Part 5: Number of farmers receiving inputs or services on climate resilient or sustainable agriculture practices (GAFSP Tier 2 indicator #13)
     "1BAct7_Males": {
     query: `
       --1BAct7
@@ -1566,6 +1566,30 @@ export const indicatorQueryMap = {
             }
             return params;
         }
+  },
+
+
+
+
+
+
+
+
+  //Part 6: 3.1.4  Land brought under climate-resilient practices
+    "1BAct8_Total_Area": {
+    query: `
+      --1BAct8
+        SELECT SUM(AreaAmount) AS TotalAreaAmount
+        FROM (
+            SELECT p.HHId, SUM(p.AreaAmount) AS AreaAmount
+            FROM tb_Form_1BAct8_Participant p
+            JOIN tb_Form_1BAct8_Submission s
+            ON p.SubmissionId = s.Id
+            WHERE date(s.Reporting_period) BETWEEN date(?) AND date(?)
+            GROUP BY p.HHId
+        ) AS UniqueHouseholds;
+    `,
+    getParams: ({ startDate, endDate }) => [startDate, endDate]
   },
 
 
