@@ -8,7 +8,7 @@ export const indicatorQueryMap = {
                     SELECT SUM(count) AS count 
                         FROM (
                             -- 1A1
-                            --It was requested to combine counts from Form 1A.1 and CB for Villagers for indicator 1A.1 from M&E team
+                            --It was requested to combine counts from Form 1A.1 and CB for Villagers for indicator 1A.1 and 1A2 from M&E team
                             SELECT
                                 A.Count_1A1_All_Participants + B.Count_cb_for_villagers_All_Participants AS count
                             FROM
@@ -26,7 +26,7 @@ export const indicatorQueryMap = {
                                     COUNT(DISTINCT COALESCE(TRIM(P.HHId), '') || '_' || COALESCE(TRIM(P.NameAndSurname), '') || '_' || COALESCE(TRIM(S.ReportingPeriod), '') || '_' || COALESCE(TRIM(S.SpecializedTopic), '')) AS Count_cb_for_villagers_All_Participants                                    
                                 FROM tb_CB_for_Villagers_Participant P
                                 JOIN tb_CB_for_Villagers_Submission S ON P.SubmissionId = S.Id
-                                WHERE S.ActivityCode = '1A.1'
+                                WHERE S.ActivityCode IN ('1A.1','1A.2')
                                 And P.Gender = ?
                                 AND date(S.ReportingPeriod) BETWEEN date(?) AND date(?)
                             ) B
@@ -35,7 +35,7 @@ export const indicatorQueryMap = {
                             
                             -- 1A4 (×2)
                             SELECT 
-                                COUNT(DISTINCT COALESCE(TRIM(P.HHId), '') || '_' || COALESCE(TRIM(P.NameAndSurname), '')) * 2 AS count
+                                COUNT(DISTINCT COALESCE(TRIM(P.HHId), '') || '_' || COALESCE(TRIM(P.NameAndSurname), '') || '_' || COALESCE(TRIM(S.Reporting_period), '') || '_' || COALESCE(TRIM(S.Subactivity), '')) * 2 AS count
                             FROM tb_Form_1A4_Participant P
                             JOIN tb_Form_1A4_Submission S ON P.SubmissionId = S.Id
                             WHERE P.Gender = ? 
@@ -45,7 +45,7 @@ export const indicatorQueryMap = {
                             
                             -- 1BAct6 (×2)
                             SELECT 
-                                COUNT(DISTINCT COALESCE(TRIM(P.HHId), '') || '_' || COALESCE(TRIM(P.NameAndSurname), '')) * 2 AS count
+                                COUNT(DISTINCT COALESCE(TRIM(P.HHId), '') || '_' || COALESCE(TRIM(P.NameAndSurname), '') || '_' || COALESCE(TRIM(S.Reporting_period), '') || '_' || COALESCE(TRIM(S.Subactivity), '')) * 2 AS count
                             FROM tb_Form_1BAct6_Participant P
                             JOIN tb_Form_1BAct6_Submission S ON P.SubmissionId = S.Id
                             WHERE P.Gender = ? 
@@ -55,7 +55,7 @@ export const indicatorQueryMap = {
                             
                             -- 1BAct8 (×2)
                             SELECT 
-                                COUNT(DISTINCT COALESCE(TRIM(P.HHId), '') || '_' || COALESCE(TRIM(P.NameAndSurname), '')) * 2 AS count
+                                COUNT(DISTINCT COALESCE(TRIM(P.HHId), '') || '_' || COALESCE(TRIM(P.NameAndSurname), '') || '_' || COALESCE(TRIM(S.Reporting_period), '') || '_' || COALESCE(TRIM(S.Subactivity), '')) * 2 AS count
                             FROM tb_Form_1BAct8_Participant P
                             JOIN tb_Form_1BAct8_Submission S ON P.SubmissionId = S.Id
                             WHERE S.Subactivity IN ('con_irr', 'recon_irr')
@@ -120,7 +120,7 @@ export const indicatorQueryMap = {
             SELECT SUM(count) AS count
             FROM (
                 -- 1A1
-                --It was requested to combine counts from Form 1A.1 and CB for Villagers for indicator 1A.1 from M&E team
+                --It was requested to combine counts from Form 1A.1 and CB for Villagers for indicator 1A.1 and 1A2 from M&E team
                             SELECT
                                 A.Count_1A1_All_Participants + B.Count_cb_for_villagers_All_Participants AS count
                             FROM
@@ -138,7 +138,7 @@ export const indicatorQueryMap = {
                                     COUNT(DISTINCT COALESCE(TRIM(P.HHId), '') || '_' || COALESCE(TRIM(P.NameAndSurname), '') || '_' || COALESCE(TRIM(S.ReportingPeriod), '') || '_' || COALESCE(TRIM(S.SpecializedTopic), '')) AS Count_cb_for_villagers_All_Participants                                    
                                 FROM tb_CB_for_Villagers_Participant P
                                 JOIN tb_CB_for_Villagers_Submission S ON P.SubmissionId = S.Id
-                                WHERE S.ActivityCode = '1A.1'
+                                WHERE S.ActivityCode IN ('1A.1','1A.2')
                                 And P.Gender = ?
                                 AND date(S.ReportingPeriod) BETWEEN date(?) AND date(?)
                             ) B
@@ -147,7 +147,7 @@ export const indicatorQueryMap = {
 
                 -- 1A4 (×2)
                 SELECT 
-                    COUNT(DISTINCT COALESCE(TRIM(P.HHId), '') || '_' || COALESCE(TRIM(P.NameAndSurname), '')) * 2 AS count
+                    COUNT(DISTINCT COALESCE(TRIM(P.HHId), '') || '_' || COALESCE(TRIM(P.NameAndSurname), '') || '_' || COALESCE(TRIM(S.Reporting_period), '') || '_' || COALESCE(TRIM(S.Subactivity), '')) * 2 AS count
                 FROM tb_Form_1A4_Participant P
                 JOIN tb_Form_1A4_Submission S ON P.SubmissionId = S.Id
                 WHERE P.Gender = ? 
@@ -157,7 +157,7 @@ export const indicatorQueryMap = {
 
                 -- 1BAct6 (×2)
                 SELECT 
-                    COUNT(DISTINCT COALESCE(TRIM(P.HHId), '') || '_' || COALESCE(TRIM(P.NameAndSurname), '')) * 2 AS count
+                    COUNT(DISTINCT COALESCE(TRIM(P.HHId), '') || '_' || COALESCE(TRIM(P.NameAndSurname), '') || '_' || COALESCE(TRIM(S.Reporting_period), '') || '_' || COALESCE(TRIM(S.Subactivity), '')) * 2 AS count
                 FROM tb_Form_1BAct6_Participant P
                 JOIN tb_Form_1BAct6_Submission S ON P.SubmissionId = S.Id
                 WHERE P.Gender = ? 
@@ -167,7 +167,7 @@ export const indicatorQueryMap = {
 
                 -- 1BAct8 (×2)
                 SELECT 
-                    COUNT(DISTINCT COALESCE(TRIM(P.HHId), '') || '_' || COALESCE(TRIM(P.NameAndSurname), '')) * 2 AS count
+                    COUNT(DISTINCT COALESCE(TRIM(P.HHId), '') || '_' || COALESCE(TRIM(P.NameAndSurname), '') || '_' || COALESCE(TRIM(S.Reporting_period), '') || '_' || COALESCE(TRIM(S.Subactivity), '')) * 2 AS count
                 FROM tb_Form_1BAct8_Participant P
                 JOIN tb_Form_1BAct8_Submission S ON P.SubmissionId = S.Id
                 WHERE S.Subactivity IN ('con_irr', 'recon_irr')
@@ -231,7 +231,7 @@ export const indicatorQueryMap = {
                 SELECT SUM(count) AS count
                 FROM (
                     -- 1A1
-                    --It was requested to combine counts from Form 1A.1 and CB for Villagers for indicator 1A.1 from M&E team
+                    --It was requested to combine counts from Form 1A.1 and CB for Villagers for indicator 1A.1 and 1A2 from M&E team
                             SELECT
                                 A.Count_1A1_All_Participants + B.Count_cb_for_villagers_All_Participants AS count
                             FROM
@@ -249,7 +249,7 @@ export const indicatorQueryMap = {
                                     COUNT(DISTINCT COALESCE(TRIM(P.HHId), '') || '_' || COALESCE(TRIM(P.NameAndSurname), '') || '_' || COALESCE(TRIM(S.ReportingPeriod), '') || '_' || COALESCE(TRIM(S.SpecializedTopic), '')) AS Count_cb_for_villagers_All_Participants                                    
                                 FROM tb_CB_for_Villagers_Participant P
                                 JOIN tb_CB_for_Villagers_Submission S ON P.SubmissionId = S.Id
-                                WHERE S.ActivityCode = '1A.1'
+                                WHERE S.ActivityCode IN ('1A.1','1A.2')
                                 AND P.Age BETWEEN ? AND ?
                                 AND date(S.ReportingPeriod) BETWEEN date(?) AND date(?)
                             ) B
@@ -258,7 +258,7 @@ export const indicatorQueryMap = {
 
                     -- 1A4 (×2)
                     SELECT 
-                        COUNT(DISTINCT COALESCE(TRIM(P.HHId), '') || '_' || COALESCE(TRIM(P.NameAndSurname), '')) * 2 AS count
+                        COUNT(DISTINCT COALESCE(TRIM(P.HHId), '') || '_' || COALESCE(TRIM(P.NameAndSurname), '') || '_' || COALESCE(TRIM(S.Reporting_period), '') || '_' || COALESCE(TRIM(S.Subactivity), '')) * 2 AS count
                     FROM tb_Form_1A4_Participant P
                     JOIN tb_Form_1A4_Submission S ON P.SubmissionId = S.Id
                     WHERE P.Age BETWEEN ? AND ?
@@ -268,7 +268,7 @@ export const indicatorQueryMap = {
 
                     -- 1BAct6 (×2)
                     SELECT 
-                        COUNT(DISTINCT COALESCE(TRIM(P.HHId), '') || '_' || COALESCE(TRIM(P.NameAndSurname), '')) * 2 AS count
+                        COUNT(DISTINCT COALESCE(TRIM(P.HHId), '') || '_' || COALESCE(TRIM(P.NameAndSurname), '') || '_' || COALESCE(TRIM(S.Reporting_period), '') || '_' || COALESCE(TRIM(S.Subactivity), '')) * 2 AS count
                     FROM tb_Form_1BAct6_Participant P
                     JOIN tb_Form_1BAct6_Submission S ON P.SubmissionId = S.Id
                     WHERE P.Age BETWEEN ? AND ?
@@ -278,7 +278,7 @@ export const indicatorQueryMap = {
 
                     -- 1BAct8 (×2)
                     SELECT 
-                        COUNT(DISTINCT COALESCE(TRIM(P.HHId), '') || '_' || COALESCE(TRIM(P.NameAndSurname), '')) * 2 AS count
+                        COUNT(DISTINCT COALESCE(TRIM(P.HHId), '') || '_' || COALESCE(TRIM(P.NameAndSurname), '') || '_' || COALESCE(TRIM(S.Reporting_period), '') || '_' || COALESCE(TRIM(S.Subactivity), '')) * 2 AS count
                     FROM tb_Form_1BAct8_Participant P
                     JOIN tb_Form_1BAct8_Submission S ON P.SubmissionId = S.Id
                     WHERE S.Subactivity IN ('con_irr', 'recon_irr')
@@ -343,7 +343,7 @@ export const indicatorQueryMap = {
                 SELECT SUM(count) AS count
                 FROM (
                     -- 1A1
-                    --It was requested to combine counts from Form 1A.1 and CB for Villagers for indicator 1A.1 from M&E team
+                    --It was requested to combine counts from Form 1A.1 and CB for Villagers for indicator 1A.1 and 1A2 from M&E team
                             SELECT
                                 A.Count_1A1_All_Participants + B.Count_cb_for_villagers_All_Participants AS count
                             FROM
@@ -361,7 +361,7 @@ export const indicatorQueryMap = {
                                     COUNT(DISTINCT COALESCE(TRIM(P.HHId), '') || '_' || COALESCE(TRIM(P.NameAndSurname), '') || '_' || COALESCE(TRIM(S.ReportingPeriod), '') || '_' || COALESCE(TRIM(S.SpecializedTopic), '')) AS Count_cb_for_villagers_All_Participants                                    
                                 FROM tb_CB_for_Villagers_Participant P
                                 JOIN tb_CB_for_Villagers_Submission S ON P.SubmissionId = S.Id
-                                WHERE S.ActivityCode = '1A.1'
+                                WHERE S.ActivityCode IN ('1A.1','1A.2')
                                 AND P.Ethnicity NOT IN (${'??'})
                                 AND date(S.ReportingPeriod) BETWEEN date(?) AND date(?)
                             ) B
@@ -370,7 +370,7 @@ export const indicatorQueryMap = {
 
                     -- 1A4 (×2)
                     SELECT 
-                        COUNT(DISTINCT COALESCE(TRIM(P.HHId), '') || '_' || COALESCE(TRIM(P.NameAndSurname), '')) * 2 AS count
+                        COUNT(DISTINCT COALESCE(TRIM(P.HHId), '') || '_' || COALESCE(TRIM(P.NameAndSurname), '') || '_' || COALESCE(TRIM(S.Reporting_period), '') || '_' || COALESCE(TRIM(S.Subactivity), '')) * 2 AS count
                     FROM tb_Form_1A4_Participant P
                     JOIN tb_Form_1A4_Submission S ON P.SubmissionId = S.Id
                     WHERE P.Ethnicity NOT IN (${'??'})
@@ -380,7 +380,7 @@ export const indicatorQueryMap = {
 
                     -- 1BAct6 (×2)
                     SELECT 
-                        COUNT(DISTINCT COALESCE(TRIM(P.HHId), '') || '_' || COALESCE(TRIM(P.NameAndSurname), '')) * 2 AS count
+                        COUNT(DISTINCT COALESCE(TRIM(P.HHId), '') || '_' || COALESCE(TRIM(P.NameAndSurname), '') || '_' || COALESCE(TRIM(S.Reporting_period), '') || '_' || COALESCE(TRIM(S.Subactivity), '')) * 2 AS count
                     FROM tb_Form_1BAct6_Participant P
                     JOIN tb_Form_1BAct6_Submission S ON P.SubmissionId = S.Id
                     WHERE P.Ethnicity NOT IN (${'??'})
@@ -390,7 +390,7 @@ export const indicatorQueryMap = {
 
                     -- 1BAct8 (×2)
                     SELECT 
-                        COUNT(DISTINCT COALESCE(TRIM(P.HHId), '') || '_' || COALESCE(TRIM(P.NameAndSurname), '')) * 2 AS count
+                        COUNT(DISTINCT COALESCE(TRIM(P.HHId), '') || '_' || COALESCE(TRIM(P.NameAndSurname), '') || '_' || COALESCE(TRIM(S.Reporting_period), '') || '_' || COALESCE(TRIM(S.Subactivity), '')) * 2 AS count
                     FROM tb_Form_1BAct8_Participant P
                     JOIN tb_Form_1BAct8_Submission S ON P.SubmissionId = S.Id
                     WHERE S.Subactivity IN ('con_irr', 'recon_irr')
@@ -453,7 +453,7 @@ export const indicatorQueryMap = {
         query: `
                 SELECT SUM(count) AS count
                 FROM (
-                    --It was requested to combine counts from Form 1A.1 and CB for Villagers for indicator 1A.1 from M&E team
+                    --It was requested to combine counts from Form 1A.1 and CB for Villagers for indicator 1A.1 and 1A2 from M&E team
                             SELECT
                                 A.Count_1A1_All_Participants + B.Count_cb_for_villagers_All_Participants AS count
                             FROM
@@ -470,27 +470,27 @@ export const indicatorQueryMap = {
                                     COUNT(DISTINCT COALESCE(TRIM(P.HHId), '') || '_' || COALESCE(TRIM(P.NameAndSurname), '') || '_' || COALESCE(TRIM(S.ReportingPeriod), '') || '_' || COALESCE(TRIM(S.SpecializedTopic), '')) AS Count_cb_for_villagers_All_Participants                                    
                                 FROM tb_CB_for_Villagers_Participant P
                                 JOIN tb_CB_for_Villagers_Submission S ON P.SubmissionId = S.Id
-                                WHERE S.ActivityCode = '1A.1'                                
+                                WHERE S.ActivityCode IN ('1A.1','1A.2')                                
                                 AND date(S.ReportingPeriod) BETWEEN date(?) AND date(?)
                             ) B
 
                     UNION ALL
 
-                    SELECT COUNT(DISTINCT COALESCE(P.HHId, '') || '_' || COALESCE(P.NameAndSurname, '')) * 2 AS count
+                    SELECT COUNT(DISTINCT COALESCE(TRIM(P.HHId), '') || '_' || COALESCE(TRIM(P.NameAndSurname), '') || '_' || COALESCE(TRIM(S.Reporting_period), '') || '_' || COALESCE(TRIM(S.Subactivity), '')) * 2 AS count
                     FROM tb_Form_1A4_Participant P
                     JOIN tb_Form_1A4_Submission S ON P.SubmissionId = S.Id
                     WHERE date(S.Reporting_period) BETWEEN date(?) AND date(?)
 
                     UNION ALL
 
-                    SELECT COUNT(DISTINCT COALESCE(P.HHId, '') || '_' || COALESCE(P.NameAndSurname, '')) * 2 AS count
+                    SELECT COUNT(DISTINCT COALESCE(TRIM(P.HHId), '') || '_' || COALESCE(TRIM(P.NameAndSurname), '') || '_' || COALESCE(TRIM(S.Reporting_period), '') || '_' || COALESCE(TRIM(S.Subactivity), '')) * 2 AS count
                     FROM tb_Form_1BAct6_Participant P
                     JOIN tb_Form_1BAct6_Submission S ON P.SubmissionId = S.Id
                     WHERE date(S.Reporting_period) BETWEEN date(?) AND date(?)
 
                     UNION ALL
 
-                    SELECT COUNT(DISTINCT COALESCE(P.HHId, '') || '_' || COALESCE(P.NameAndSurname, '')) * 2 AS count
+                    SELECT COUNT(DISTINCT COALESCE(TRIM(P.HHId), '') || '_' || COALESCE(TRIM(P.NameAndSurname), '') || '_' || COALESCE(TRIM(S.Reporting_period), '') || '_' || COALESCE(TRIM(S.Subactivity), '')) * 2 AS count
                     FROM tb_Form_1BAct8_Participant P
                     JOIN tb_Form_1BAct8_Submission S ON P.SubmissionId = S.Id
                     WHERE S.Subactivity IN ('con_irr', 'recon_irr')
@@ -543,7 +543,7 @@ export const indicatorQueryMap = {
                 SELECT SUM(count) AS count
                 FROM (
                     -- 1A1
-                    --It was requested to combine counts from Form 1A.1 and CB for Villagers for indicator 1A.1 from M&E team
+                    --It was requested to combine counts from Form 1A.1 and CB for Villagers for indicator 1A.1 and 1A2 from M&E team
                             SELECT
                                 A.Count_1A1_All_Participants + B.Count_cb_for_villagers_All_Participants AS count
                             FROM
@@ -560,27 +560,27 @@ export const indicatorQueryMap = {
                                     COUNT(DISTINCT COALESCE(TRIM(P.HHId), '') || '_' || COALESCE(TRIM(P.NameAndSurname), '') || '_' || COALESCE(TRIM(S.ReportingPeriod), '') || '_' || COALESCE(TRIM(S.SpecializedTopic), '')) AS Count_cb_for_villagers_All_Participants                                    
                                 FROM tb_CB_for_Villagers_Participant P
                                 JOIN tb_CB_for_Villagers_Submission S ON P.SubmissionId = S.Id
-                                WHERE S.ActivityCode = '1A.1'
+                                WHERE S.ActivityCode IN ('1A.1','1A.2')
                                 AND P.PWD = 'yes' AND date(S.ReportingPeriod) BETWEEN date(?) AND date(?)
                             ) B
 
                     UNION ALL
 
-                    SELECT COUNT(DISTINCT COALESCE(P.HHId,'') || '_' || COALESCE(P.NameAndSurname,'')) AS count
+                    SELECT COUNT(DISTINCT COALESCE(TRIM(P.HHId), '') || '_' || COALESCE(TRIM(P.NameAndSurname), '') || '_' || COALESCE(TRIM(S.Reporting_period), '') || '_' || COALESCE(TRIM(S.Subactivity), '')) AS count
                     FROM tb_Form_1A4_Participant P
                     JOIN tb_Form_1A4_Submission S ON P.SubmissionId = S.Id
                     WHERE P.Pwd_status = 'yes' AND date(S.Reporting_period) BETWEEN date(?) AND date(?)
 
                     UNION ALL
 
-                    SELECT COUNT(DISTINCT COALESCE(P.HHId,'') || '_' || COALESCE(P.NameAndSurname,'')) AS count
+                    SELECT COUNT(DISTINCT COALESCE(TRIM(P.HHId), '') || '_' || COALESCE(TRIM(P.NameAndSurname), '') || '_' || COALESCE(TRIM(S.Reporting_period), '') || '_' || COALESCE(TRIM(S.Subactivity), '')) AS count
                     FROM tb_Form_1BAct6_Participant P
                     JOIN tb_Form_1BAct6_Submission S ON P.SubmissionId = S.Id
                     WHERE P.Pwd_status = 'yes' AND date(S.Reporting_period) BETWEEN date(?) AND date(?)
 
                     UNION ALL
 
-                    SELECT COUNT(DISTINCT COALESCE(P.HHId,'') || '_' || COALESCE(P.NameAndSurname,'')) AS count
+                    SELECT COUNT(DISTINCT COALESCE(TRIM(P.HHId), '') || '_' || COALESCE(TRIM(P.NameAndSurname), '') || '_' || COALESCE(TRIM(S.Reporting_period), '') || '_' || COALESCE(TRIM(S.Subactivity), '')) AS count
                     FROM tb_Form_1BAct8_Participant P
                     JOIN tb_Form_1BAct8_Submission S ON P.SubmissionId = S.Id
                     WHERE S.Subactivity IN ('con_irr', 'recon_irr') 
@@ -619,7 +619,7 @@ export const indicatorQueryMap = {
         -- Count Unique HH-ID across all relevant forms
       SELECT sum(count) AS count FROM (
             --1A1
-            --It was requested to combine counts from Form 1A.1 and CB for Villagers for indicator 1A.1 from M&E team
+            --It was requested to combine counts from Form 1A.1 and CB for Villagers for indicator 1A.1 and 1A2 from M&E team
                 SELECT
                     A.Count_1A1_Unique_HH_ID + B.Count_cb_for_villagers_Unique_HH_ID AS count
                 FROM
@@ -636,7 +636,7 @@ export const indicatorQueryMap = {
                         COUNT(DISTINCT P.HHId) AS Count_cb_for_villagers_Unique_HH_ID
                     FROM tb_CB_for_Villagers_Participant P
                     JOIN tb_CB_for_Villagers_Submission S ON P.SubmissionId = S.Id
-                    WHERE S.ActivityCode = '1A.1'
+                    WHERE S.ActivityCode IN ('1A.1','1A.2')
                     AND date(S.ReportingPeriod) BETWEEN date(?) AND date(?)
                 ) B
                     
@@ -722,7 +722,7 @@ export const indicatorQueryMap = {
         -- Overall result x Average Household Size (6)
                 SELECT SUM(count) * 6 AS count FROM (
                 --1A1
-                --It was requested to combine counts from Form 1A.1 and CB for Villagers for indicator 1A.1 from M&E team
+                --It was requested to combine counts from Form 1A.1 and CB for Villagers for indicator 1A.1 and 1A2 from M&E team
                 SELECT
                     A.Count_1A1_Unique_HH_ID + B.Count_cb_for_villagers_Unique_HH_ID AS count
                 FROM
@@ -739,7 +739,7 @@ export const indicatorQueryMap = {
                         COUNT(DISTINCT P.HHId) AS Count_cb_for_villagers_Unique_HH_ID
                     FROM tb_CB_for_Villagers_Participant P
                     JOIN tb_CB_for_Villagers_Submission S ON P.SubmissionId = S.Id
-                    WHERE S.ActivityCode = '1A.1'
+                    WHERE S.ActivityCode IN ('1A.1','1A.2')
                     AND date(S.ReportingPeriod) BETWEEN date(?) AND date(?)
                 ) B
                                 
@@ -814,7 +814,7 @@ export const indicatorQueryMap = {
             SELECT 
                 COALESCE(
                     COUNT(DISTINCT 
-                        COALESCE(P.HHId, '') || '_' || COALESCE(P.NameAndSurname, '')
+                        COALESCE(P.HHId, '') || '_' || COALESCE(P.NameAndSurname, '') || '_' || COALESCE(TRIM(S.ReportingPeriod), '') || '_' || COALESCE(TRIM(S.Subactivity), '')
                     ), 
                 0) AS count
             FROM tb_Form_1A1_Participant P
@@ -831,7 +831,7 @@ export const indicatorQueryMap = {
             SELECT 
                 COALESCE(
                     COUNT(DISTINCT 
-                        COALESCE(P.HHId, '') || '_' || COALESCE(P.NameAndSurname, '')
+                        COALESCE(P.HHId, '') || '_' || COALESCE(P.NameAndSurname, '') || '_' || COALESCE(TRIM(S.ReportingPeriod), '') || '_' || COALESCE(TRIM(S.Subactivity), '')
                     ), 
                 0) AS count
             FROM tb_Form_1A1_Participant P
@@ -849,7 +849,7 @@ export const indicatorQueryMap = {
             SELECT 
                 COALESCE(
                     COUNT(DISTINCT 
-                        COALESCE(P.HHId, '') || '_' || COALESCE(P.NameAndSurname, '')
+                        COALESCE(P.HHId, '') || '_' || COALESCE(P.NameAndSurname, '') || '_' || COALESCE(TRIM(S.ReportingPeriod), '') || '_' || COALESCE(TRIM(S.Subactivity), '')
                     ), 
                 0) AS count
             FROM tb_Form_1A1_Participant P
@@ -876,12 +876,8 @@ export const indicatorQueryMap = {
     "1A1_persons_received_services": {
         query: `
         --1A1 (1A1_Households result x 6)
-            SELECT 
-                COALESCE(
-                    COUNT(DISTINCT 
-                        COALESCE(P.HHId, '') || '_' || COALESCE(P.NameAndSurname, '')
-                    ), 
-                0) * 6 AS count
+            SELECT
+            COUNT(DISTINCT P.HHId) * 6 AS count
             FROM tb_Form_1A1_Participant P
             JOIN tb_Form_1A1_Submission S ON P.SubmissionId = S.Id
             WHERE date(S.ReportingPeriod) BETWEEN date(?) AND date(?)
@@ -895,7 +891,7 @@ export const indicatorQueryMap = {
             SELECT 
                 COALESCE(
                     COUNT(DISTINCT 
-                        COALESCE(P.HHId, '') || '_' || COALESCE(P.NameAndSurname, '')
+                        COALESCE(P.HHId, '') || '_' || COALESCE(P.NameAndSurname, '') || '_' || COALESCE(TRIM(S.ReportingPeriod), '') || '_' || COALESCE(TRIM(S.Subactivity), '')
                     ), 
                 0) AS count
             FROM tb_Form_1A1_Participant P
@@ -911,7 +907,7 @@ export const indicatorQueryMap = {
             SELECT 
                 COALESCE(
                     COUNT(DISTINCT 
-                        COALESCE(P.HHId, '') || '_' || COALESCE(P.NameAndSurname, '')
+                        COALESCE(P.HHId, '') || '_' || COALESCE(P.NameAndSurname, '') || '_' || COALESCE(TRIM(S.ReportingPeriod), '') || '_' || COALESCE(TRIM(S.Subactivity), '')
                     ), 
                 0) AS count
             --,COUNT(DISTINCT P.HHId) AS Count_1A1_Unique_HH_ID
@@ -948,7 +944,7 @@ export const indicatorQueryMap = {
             SELECT 
                 COALESCE(
                     COUNT(DISTINCT 
-                        COALESCE(P.HHId, '') || '_' || COALESCE(P.NameAndSurname, '')
+                        COALESCE(P.HHId, '') || '_' || COALESCE(P.NameAndSurname, '') || '_' || COALESCE(TRIM(S.Reporting_period), '') || '_' || COALESCE(TRIM(S.Subactivity), '')
                     ), 
                 0) AS count
             --,COUNT(DISTINCT P.HHId) AS Count_1A2_Unique_HH_ID
@@ -965,7 +961,7 @@ export const indicatorQueryMap = {
             SELECT 
                 COALESCE(
                     COUNT(DISTINCT 
-                        COALESCE(P.HHId, '') || '_' || COALESCE(P.NameAndSurname, '')
+                        COALESCE(P.HHId, '') || '_' || COALESCE(P.NameAndSurname, '') || '_' || COALESCE(TRIM(S.Reporting_period), '') || '_' || COALESCE(TRIM(S.Subactivity), '')
                     ), 
                 0) AS count
             --,COUNT(DISTINCT P.HHId) AS Count_1A2_Unique_HH_ID
@@ -982,7 +978,7 @@ export const indicatorQueryMap = {
             SELECT 
                 COALESCE(
                     COUNT(DISTINCT 
-                        COALESCE(P.HHId, '') || '_' || COALESCE(P.NameAndSurname, '')
+                        COALESCE(P.HHId, '') || '_' || COALESCE(P.NameAndSurname, '') || '_' || COALESCE(TRIM(S.Reporting_period), '') || '_' || COALESCE(TRIM(S.Subactivity), '')
                     ), 
                 0) AS count
             --,COUNT(DISTINCT P.HHId) AS Count_1A2_Unique_HH_ID
@@ -1000,9 +996,9 @@ export const indicatorQueryMap = {
                 ROUND(
                     100.0 * COUNT(DISTINCT CASE 
                                 WHEN P.Gender = 'Female' 
-                                THEN COALESCE(P.HHId,'') || '_' || COALESCE(P.NameAndSurname,'') 
+                                THEN COALESCE(P.HHId, '') || '_' || COALESCE(P.NameAndSurname, '') || '_' || COALESCE(TRIM(S.Reporting_period), '') || '_' || COALESCE(TRIM(S.Subactivity), '') 
                             END)
-                    / NULLIF(COUNT(DISTINCT COALESCE(P.HHId,'') || '_' || COALESCE(P.NameAndSurname,'')), 0)
+                    / NULLIF(COUNT(DISTINCT COALESCE(P.HHId, '') || '_' || COALESCE(P.NameAndSurname, '') || '_' || COALESCE(TRIM(S.Reporting_period), '') || '_' || COALESCE(TRIM(S.Subactivity), '')), 0)
                 , 0) AS count
             FROM tb_Form_1A2_Participant P
             JOIN tb_Form_1A2_Submission S ON P.SubmissionId = S.Id
@@ -1018,7 +1014,7 @@ export const indicatorQueryMap = {
             SELECT 
                 COALESCE(
                     COUNT(DISTINCT 
-                        COALESCE(P.HHId, '') || '_' || COALESCE(P.NameAndSurname, '')
+                        COALESCE(P.HHId, '') || '_' || COALESCE(P.NameAndSurname, '') || '_' || COALESCE(TRIM(S.Reporting_period), '') || '_' || COALESCE(TRIM(S.Subactivity), '')
                     ), 
                 0) AS count
             --,COUNT(DISTINCT P.HHId) AS Count_1A2_Unique_HH_ID
@@ -1490,7 +1486,7 @@ export const indicatorQueryMap = {
       SELECT 
           COALESCE(
               COUNT(DISTINCT 
-                  COALESCE(P.HHId, '') || '_' || COALESCE(P.NameAndSurname, '')
+                  COALESCE(P.HHId, '') || '_' || COALESCE(P.NameAndSurname, '') || '_' || COALESCE(TRIM(S.Reporting_period), '') || '_' || COALESCE(TRIM(S.Subactivity), '')
               ), 
           0) AS count
       FROM tb_Form_1BAct7_Participant P
@@ -1507,7 +1503,7 @@ export const indicatorQueryMap = {
       SELECT 
           COALESCE(
               COUNT(DISTINCT 
-                  COALESCE(P.HHId, '') || '_' || COALESCE(P.NameAndSurname, '')
+                  COALESCE(P.HHId, '') || '_' || COALESCE(P.NameAndSurname, '') || '_' || COALESCE(TRIM(S.Reporting_period), '') || '_' || COALESCE(TRIM(S.Subactivity), '')
               ), 
           0) AS count
       FROM tb_Form_1BAct7_Participant P
@@ -1523,9 +1519,9 @@ export const indicatorQueryMap = {
       --1BAct7
       SELECT ROUND(
         COALESCE(
-          COUNT(DISTINCT COALESCE(P.HHId, '') || '_' || COALESCE(P.NameAndSurname, '')), 0
+          COUNT(DISTINCT COALESCE(P.HHId, '') || '_' || COALESCE(P.NameAndSurname, '') || '_' || COALESCE(TRIM(S.Reporting_period), '') || '_' || COALESCE(TRIM(S.Subactivity), '')), 0
         ) * 100.0 / 
-        (SELECT COALESCE(COUNT(DISTINCT COALESCE(P2.HHId, '') || '_' || COALESCE(P2.NameAndSurname, '')), 0)
+        (SELECT COALESCE(COUNT(DISTINCT COALESCE(P2.HHId, '') || '_' || COALESCE(P2.NameAndSurname, '') || '_' || COALESCE(TRIM(S2.Reporting_period), '') || '_' || COALESCE(TRIM(S2.Subactivity), '')), 0)
          FROM tb_Form_1BAct7_Participant P2
          JOIN tb_Form_1BAct7_Submission S2 ON P2.SubmissionId = S2.Id
          WHERE date(S2.Reporting_period) BETWEEN date(?) AND date(?)
@@ -1550,9 +1546,9 @@ export const indicatorQueryMap = {
       --1BAct7
       SELECT ROUND(
         COALESCE(
-          COUNT(DISTINCT COALESCE(P.HHId, '') || '_' || COALESCE(P.NameAndSurname, '')), 0
+          COUNT(DISTINCT COALESCE(P.HHId, '') || '_' || COALESCE(P.NameAndSurname, '') || '_' || COALESCE(TRIM(S.Reporting_period), '') || '_' || COALESCE(TRIM(S.Subactivity), '')), 0
         ) * 100.0 / 
-        (SELECT COALESCE(COUNT(DISTINCT COALESCE(P2.HHId, '') || '_' || COALESCE(P2.NameAndSurname, '')), 0)
+        (SELECT COALESCE(COUNT(DISTINCT COALESCE(P2.HHId, '') || '_' || COALESCE(P2.NameAndSurname, '') || '_' || COALESCE(TRIM(S2.Reporting_period), '') || '_' || COALESCE(TRIM(S2.Subactivity), '')), 0)
          FROM tb_Form_1BAct7_Participant P2
          JOIN tb_Form_1BAct7_Submission S2 ON P2.SubmissionId = S2.Id
          WHERE date(S2.Reporting_period) BETWEEN date(?) AND date(?)

@@ -157,21 +157,71 @@ function getCBForVillagersStatics() {
 function getForm1A1Statics() {
     return new Promise((resolve, reject) => {
         const db = getDBConnection(); // Get the database connection
+        // const query = `
+        //                 WITH UniqueVillages AS (
+        //                     SELECT DISTINCT Province, District, Village, VNCAvailable
+        //                     FROM tb_Form_1A1_Submission
+        //                 ),
+        //                 UniqueParticipants AS (
+        //                     SELECT DISTINCT
+        //                         COALESCE(HHId, '') || '_' || NameAndSurname AS ParticipantKey,
+        //                         Age,
+        //                         Gender,
+        //                         Responsibility,
+        //                         Ethnicity,
+        //                         PWBWStatus
+        //                     FROM tb_Form_1A1_Participant
+        //                 )
+        //                 SELECT
+        //                     -- Village Nutrition Centers
+        //                     COUNT(DISTINCT CASE WHEN VNCAvailable IN ('1','2') THEN Province||District||Village END) AS Total_VNC,
+        //                     COUNT(DISTINCT CASE WHEN VNCAvailable = '1' THEN Province||District||Village END) AS New_Construction,
+        //                     COUNT(DISTINCT CASE WHEN VNCAvailable = '2' THEN Province||District||Village END) AS Renovation,
+
+        //                     -- Village Facilitators
+        //                     COUNT(DISTINCT CASE WHEN Responsibility = 'vnf' THEN ParticipantKey END) AS VF_Total,
+        //                     COUNT(DISTINCT CASE WHEN Responsibility = 'vnf' AND Gender = 'Female' THEN ParticipantKey END) AS VF_Female,
+
+        //                     -- FNS Participants
+        //                     COUNT(DISTINCT ParticipantKey) AS Total_Participants,
+        //                     COUNT(DISTINCT CASE WHEN Gender = 'Female' THEN ParticipantKey END) AS Women_Participants,
+        //                     COUNT(DISTINCT CASE WHEN Age BETWEEN 15 AND 35 THEN ParticipantKey END) AS Youth_Participants,
+        //                     COUNT(DISTINCT CASE WHEN Ethnicity NOT IN ('_e01','_e02','_e03','_e04','_e05','_e06','_e07','_e08')
+        //                                         THEN ParticipantKey END) AS Ethnic_Participants,
+
+        //                     -- PW / BW / PBW
+        //                     COUNT(DISTINCT CASE WHEN PWBWStatus = 'pw' THEN ParticipantKey END) AS Pregnant_Women,
+        //                     COUNT(DISTINCT CASE WHEN PWBWStatus = 'bw' THEN ParticipantKey END) AS Breastfeeding_Women,
+        //                     COUNT(DISTINCT CASE WHEN PWBWStatus = 'pw_1' THEN ParticipantKey END) AS PBW_Women
+        //                 FROM UniqueVillages
+        //                 LEFT JOIN UniqueParticipants ON 1=1;
+
+        // `;
         const query = `
                         WITH UniqueVillages AS (
                             SELECT DISTINCT Province, District, Village, VNCAvailable
                             FROM tb_Form_1A1_Submission
                         ),
+
                         UniqueParticipants AS (
                             SELECT DISTINCT
-                                COALESCE(HHId, '') || '_' || NameAndSurname AS ParticipantKey,
-                                Age,
-                                Gender,
-                                Responsibility,
-                                Ethnicity,
-                                PWBWStatus
-                            FROM tb_Form_1A1_Participant
+                                -- Add ReportingPeriod and SubActivity to the unique key
+                                COALESCE(p.HHId, '') || '_' || p.NameAndSurname || '_' ||
+                                COALESCE(s.ReportingPeriod, '') || '_' ||
+                                COALESCE(s.SubActivity, '') AS ParticipantKey,
+
+                                p.Age,
+                                p.Gender,
+                                p.Responsibility,
+                                p.Ethnicity,
+                                p.PWBWStatus,
+                                s.ReportingPeriod,
+                                s.SubActivity
+                            FROM tb_Form_1A1_Participant p
+                            JOIN tb_Form_1A1_Submission s
+                                ON p.SubmissionId = s.Id
                         )
+
                         SELECT
                             -- Village Nutrition Centers
                             COUNT(DISTINCT CASE WHEN VNCAvailable IN ('1','2') THEN Province||District||Village END) AS Total_VNC,
@@ -193,9 +243,9 @@ function getForm1A1Statics() {
                             COUNT(DISTINCT CASE WHEN PWBWStatus = 'pw' THEN ParticipantKey END) AS Pregnant_Women,
                             COUNT(DISTINCT CASE WHEN PWBWStatus = 'bw' THEN ParticipantKey END) AS Breastfeeding_Women,
                             COUNT(DISTINCT CASE WHEN PWBWStatus = 'pw_1' THEN ParticipantKey END) AS PBW_Women
-                        FROM UniqueVillages
-                        LEFT JOIN UniqueParticipants ON 1=1;
 
+                        FROM UniqueVillages
+                        LEFT JOIN UniqueParticipants ON 1 = 1;
         `;
 
 
