@@ -647,6 +647,83 @@ function getForm1A5bStatics() {
 function getForm1BAct6Statics() {
     return new Promise((resolve, reject) => {
         const db = getDBConnection(); // Get the database connection
+        // const query = `
+        //               WITH 
+        //                 --  Unique farmers/participants
+        //                 AllParticipants AS (
+        //                     SELECT DISTINCT
+        //                         s.Province,
+        //                         s.District,
+        //                         s.Village,
+        //                         p.HHId,
+        //                         p.NameAndSurname,
+        //                         p.Gender,
+        //                         p.Age,
+        //                         p.Ethnicity,
+        //                         p.Poverty_level,
+        //                         p.MSME
+        //                     FROM tb_Form_1BAct6_Participant p
+        //                     JOIN tb_Form_1BAct6_Submission s ON p.SubmissionId = s.Id
+        //                 ),
+
+        //                 --  Unique APGs
+        //                 AllAPGs AS (
+        //                     SELECT DISTINCT
+        //                         Province,
+        //                         District,
+        //                         Village,
+        //                         CBOEstablish,
+        //                         GrantReceived,
+        //                         IFAD,
+        //                         MAF,
+        //                         WFP,
+        //                         GoL,
+        //                         Ben,
+        //                         OtherFund
+        //                     FROM tb_Form_1BAct6_Submission
+        //                     WHERE CBOEstablish IS NOT NULL AND CBOEstablish IN (1,2)
+        //                 )
+
+        //                 SELECT
+        //                     -- 1️ Number of APG formulated
+        //                     (SELECT COUNT(*) FROM AllAPGs) AS Num_APG_Formulated,
+
+        //                     -- 2️ Number of APG received funds
+        //                     (SELECT COUNT(*) FROM AllAPGs
+        //                     WHERE GrantReceived = 'grant_yes'
+        //                         OR IFAD > 0
+        //                         OR MAF > 0
+        //                         OR WFP > 0
+        //                         OR GoL > 0
+        //                         OR Ben > 0
+        //                         OR OtherFund > 0
+        //                     ) AS Num_APG_Received_Funds,
+
+        //                     -- 3️ Total farmers participants
+        //                     (SELECT COUNT(*) FROM AllParticipants) AS Total_Farmers,
+
+        //                     -- 4️ Women farmers participants
+        //                     (SELECT COUNT(*) FROM AllParticipants WHERE Gender = 'Female') AS Women_Farmers,
+
+        //                     -- 5️ Numbers of poor HHs
+        //                     (SELECT COUNT(DISTINCT Province || '|' || District || '|' || Village || '|' || HHId) 
+        //                     FROM AllParticipants WHERE Poverty_level = 'p') AS Num_Poor_HHs,
+
+        //                     -- 6️ Youth farmers participants
+        //                     (SELECT COUNT(*) FROM AllParticipants WHERE Age BETWEEN 15 AND 35) AS Youth_Farmers,
+
+        //                     -- 7️ Ethnic farmer participants
+        //                     (SELECT COUNT(*) FROM AllParticipants 
+        //                         WHERE Ethnicity NOT IN ('_e01','_e02','_e03','_e04','_e05','_e06','_e07','_e08')) AS Ethnic_Farmers,
+
+        //                     -- 8️ HHs engaged in contract with MSMEs
+        //                     (SELECT COUNT(DISTINCT Province || '|' || District || '|' || Village || '|' || HHId)
+        //                     FROM AllParticipants WHERE MSME = 'yes') AS HHs_Engaged_MSME;
+
+                     
+        // `;
+
+        //M&E team requested to change the counting logic for "Number of APG received funds" to be multiple APGs in the same village
         const query = `
                       WITH 
                         --  Unique farmers/participants
@@ -668,20 +745,21 @@ function getForm1BAct6Statics() {
 
                         --  Unique APGs
                         AllAPGs AS (
-                            SELECT DISTINCT
-                                Province,
-                                District,
-                                Village,
-                                CBOEstablish,
-                                GrantReceived,
-                                IFAD,
-                                MAF,
-                                WFP,
-                                GoL,
-                                Ben,
-                                OtherFund
-                            FROM tb_Form_1BAct6_Submission
-                            WHERE CBOEstablish IS NOT NULL AND CBOEstablish IN (1,2)
+                            SELECT
+									Province,
+									District,
+									Village,   -- Village can repeat; do not use DISTINCT
+									CBOEstablish,
+									GrantReceived,
+									IFAD,
+									MAF,
+									WFP,
+									GoL,
+									Ben,
+									OtherFund
+								FROM tb_Form_1BAct6_Submission
+								WHERE CBOEstablish IS NOT NULL
+								  AND CBOEstablish IN (1,2)
                         )
 
                         SELECT
@@ -690,8 +768,8 @@ function getForm1BAct6Statics() {
 
                             -- 2️ Number of APG received funds
                             (SELECT COUNT(*) FROM AllAPGs
-                            WHERE GrantReceived = 'grant_yes'
-                                OR IFAD > 0
+                            --WHERE GrantReceived = 'grant_yes'
+                                WHERE IFAD > 0
                                 OR MAF > 0
                                 OR WFP > 0
                                 OR GoL > 0
@@ -718,9 +796,7 @@ function getForm1BAct6Statics() {
 
                             -- 8️ HHs engaged in contract with MSMEs
                             (SELECT COUNT(DISTINCT Province || '|' || District || '|' || Village || '|' || HHId)
-                            FROM AllParticipants WHERE MSME = 'yes') AS HHs_Engaged_MSME;
-
-                     
+                            FROM AllParticipants WHERE MSME = 'yes') AS HHs_Engaged_MSME;                    
         `;
         db.get(query, [], (err, row) => {
             db.close();
