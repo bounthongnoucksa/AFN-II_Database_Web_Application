@@ -224,9 +224,9 @@ function getForm1A1Statics() {
 
                         SELECT
                             -- Village Nutrition Centers
-                            COUNT(DISTINCT CASE WHEN VNCAvailable IN ('1','2') THEN Province||District||Village END) AS Total_VNC,
-                            COUNT(DISTINCT CASE WHEN VNCAvailable = '1' THEN Province||District||Village END) AS New_Construction,
-                            COUNT(DISTINCT CASE WHEN VNCAvailable = '2' THEN Province||District||Village END) AS Renovation,
+                            COUNT(DISTINCT CASE WHEN VNCAvailable IN ('1','2') THEN Province||District||Village|| '_' || VNCAvailable END) AS Total_VNC,
+                            COUNT(DISTINCT CASE WHEN VNCAvailable = '1' THEN Province||District||Village|| '_' || VNCAvailable END) AS New_Construction,
+                            COUNT(DISTINCT CASE WHEN VNCAvailable = '2' THEN Province||District||Village|| '_' || VNCAvailable END) AS Renovation,
 
                             -- Village Facilitators
                             COUNT(DISTINCT CASE WHEN Responsibility = 'vnf' THEN ParticipantKey END) AS VF_Total,
