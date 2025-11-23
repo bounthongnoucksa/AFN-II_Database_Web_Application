@@ -807,115 +807,272 @@ export const indicatorQueryMap = {
     },
 
 
-    //Part2: 1.1.8  Households provided with targeted support to improve their nutrition
+    //Part 2: 1.1.8  Households provided with targeted support to improve their nutrition
+    //It was requested from M&E team to include 1A1, CB for Villagers with activity code 1A.1, 1A.2, and 1A3a for this indicator (23-Nov-2025)
     "1A1_Total_Persons": {
+        //     query: `
+        //     --1A1
+        //         SELECT 
+        //             COALESCE(
+        //                 COUNT(DISTINCT 
+        //                     COALESCE(P.HHId, '') || '_' || COALESCE(P.NameAndSurname, '') || '_' || COALESCE(TRIM(S.ReportingPeriod), '') || '_' || COALESCE(TRIM(S.Subactivity), '')
+        //                 ), 
+        //             0) AS count
+        //         FROM tb_Form_1A1_Participant P
+        //         JOIN tb_Form_1A1_Submission S ON P.SubmissionId = S.Id
+        //         WHERE date(S.ReportingPeriod) BETWEEN date(?) AND date(?);
+
+        // `
         query: `
         --1A1
-            SELECT 
-                COALESCE(
-                    COUNT(DISTINCT 
-                        COALESCE(P.HHId, '') || '_' || COALESCE(P.NameAndSurname, '') || '_' || COALESCE(TRIM(S.ReportingPeriod), '') || '_' || COALESCE(TRIM(S.Subactivity), '')
-                    ), 
-                0) AS count
-            FROM tb_Form_1A1_Participant P
-            JOIN tb_Form_1A1_Submission S ON P.SubmissionId = S.Id
-            WHERE date(S.ReportingPeriod) BETWEEN date(?) AND date(?);
-
+            SELECT
+                A.Count_1A1_All_Participants + B.Count_cb_for_villagers_All_Participants AS count
+            FROM
+            (
+                SELECT 
+                    COUNT(DISTINCT COALESCE(TRIM(P.HHId), '') || '_' || COALESCE(TRIM(P.NameAndSurname), '') || '_' || COALESCE(TRIM(S.ReportingPeriod), '')|| '_' || COALESCE(TRIM(S.Subactivity), '')) AS Count_1A1_All_Participants                                    
+                FROM tb_Form_1A1_Participant P
+                JOIN tb_Form_1A1_Submission S ON P.SubmissionId = S.Id
+                WHERE date(S.ReportingPeriod) BETWEEN date(?) AND date(?)
+            ) A
+            CROSS JOIN
+            (
+                SELECT 
+                    COUNT(DISTINCT COALESCE(TRIM(P.HHId), '') || '_' || COALESCE(TRIM(P.NameAndSurname), '') || '_' || COALESCE(TRIM(S.ReportingPeriod), '') || '_' || COALESCE(TRIM(S.SpecializedTopic), '')) AS Count_cb_for_villagers_All_Participants                                    
+                FROM tb_CB_for_Villagers_Participant P
+                JOIN tb_CB_for_Villagers_Submission S ON P.SubmissionId = S.Id
+                WHERE S.ActivityCode IN ('1A.1','1A.2','1A.3a')
+                AND date(S.ReportingPeriod) BETWEEN date(?) AND date(?)
+            ) B
     `,
-        getParams: ({ startDate, endDate }) => [startDate, endDate],
+        //getParams: ({ startDate, endDate }) => [startDate, endDate],
+        getParams: ({ startDate, endDate }) => {
+            const params = [];
+            for (let i = 0; i < 2; i++) {
+                params.push(startDate, endDate);
+            }
+            return params;
+        }
 
     },
     "1A1_Males": {
         query: `
         --1A1
-            SELECT 
-                COALESCE(
-                    COUNT(DISTINCT 
-                        COALESCE(P.HHId, '') || '_' || COALESCE(P.NameAndSurname, '') || '_' || COALESCE(TRIM(S.ReportingPeriod), '') || '_' || COALESCE(TRIM(S.Subactivity), '')
-                    ), 
-                0) AS count
-            FROM tb_Form_1A1_Participant P
-            JOIN tb_Form_1A1_Submission S ON P.SubmissionId = S.Id
-            WHERE P.Gender = ? 
-            AND date(S.ReportingPeriod) BETWEEN date(?) AND date(?);
+            SELECT
+                A.Count_1A1_All_Participants + B.Count_cb_for_villagers_All_Participants AS count
+            FROM
+            (
+                SELECT 
+                    COUNT(DISTINCT COALESCE(TRIM(P.HHId), '') || '_' || COALESCE(TRIM(P.NameAndSurname), '') || '_' || COALESCE(TRIM(S.ReportingPeriod), '')|| '_' || COALESCE(TRIM(S.Subactivity), '')) AS Count_1A1_All_Participants                                    
+                FROM tb_Form_1A1_Participant P
+                JOIN tb_Form_1A1_Submission S ON P.SubmissionId = S.Id
+                WHERE P.Gender = ?
+                AND date(S.ReportingPeriod) BETWEEN date(?) AND date(?)
+            ) A
+            CROSS JOIN
+            (
+                SELECT 
+                    COUNT(DISTINCT COALESCE(TRIM(P.HHId), '') || '_' || COALESCE(TRIM(P.NameAndSurname), '') || '_' || COALESCE(TRIM(S.ReportingPeriod), '') || '_' || COALESCE(TRIM(S.SpecializedTopic), '')) AS Count_cb_for_villagers_All_Participants                                    
+                FROM tb_CB_for_Villagers_Participant P
+                JOIN tb_CB_for_Villagers_Submission S ON P.SubmissionId = S.Id
+                WHERE S.ActivityCode IN ('1A.1','1A.2','1A.3a')
+                AND P.Gender = ?
+                AND date(S.ReportingPeriod) BETWEEN date(?) AND date(?)
+            ) B
 
     `,
-        getParams: ({ gender, startDate, endDate }) => [gender, startDate, endDate],
+        //getParams: ({ gender, startDate, endDate }) => [gender, startDate, endDate],
+        getParams: ({ gender, startDate, endDate }) => {
+            const params = [];
+            for (let i = 0; i < 2; i++) {
+                params.push(gender, startDate, endDate);
+            }
+            return params;
+        }
 
     },
     "1A1_Females": {
         query: `
         --1A1
-            SELECT 
-                COALESCE(
-                    COUNT(DISTINCT 
-                        COALESCE(P.HHId, '') || '_' || COALESCE(P.NameAndSurname, '') || '_' || COALESCE(TRIM(S.ReportingPeriod), '') || '_' || COALESCE(TRIM(S.Subactivity), '')
-                    ), 
-                0) AS count
-            FROM tb_Form_1A1_Participant P
-            JOIN tb_Form_1A1_Submission S ON P.SubmissionId = S.Id
-            WHERE P.Gender = ? 
-            AND date(S.ReportingPeriod) BETWEEN date(?) AND date(?);
+            SELECT
+                A.Count_1A1_All_Participants + B.Count_cb_for_villagers_All_Participants AS count
+            FROM
+            (
+                SELECT 
+                    COUNT(DISTINCT COALESCE(TRIM(P.HHId), '') || '_' || COALESCE(TRIM(P.NameAndSurname), '') || '_' || COALESCE(TRIM(S.ReportingPeriod), '')|| '_' || COALESCE(TRIM(S.Subactivity), '')) AS Count_1A1_All_Participants                                    
+                FROM tb_Form_1A1_Participant P
+                JOIN tb_Form_1A1_Submission S ON P.SubmissionId = S.Id
+                WHERE P.Gender = ?
+                AND date(S.ReportingPeriod) BETWEEN date(?) AND date(?)
+            ) A
+            CROSS JOIN
+            (
+                SELECT 
+                    COUNT(DISTINCT COALESCE(TRIM(P.HHId), '') || '_' || COALESCE(TRIM(P.NameAndSurname), '') || '_' || COALESCE(TRIM(S.ReportingPeriod), '') || '_' || COALESCE(TRIM(S.SpecializedTopic), '')) AS Count_cb_for_villagers_All_Participants                                    
+                FROM tb_CB_for_Villagers_Participant P
+                JOIN tb_CB_for_Villagers_Submission S ON P.SubmissionId = S.Id
+                WHERE S.ActivityCode IN ('1A.1','1A.2','1A.3a')
+                AND P.Gender = ?
+                AND date(S.ReportingPeriod) BETWEEN date(?) AND date(?)
+            ) B
     `,
-        getParams: ({ gender, startDate, endDate }) => [gender, startDate, endDate],
+        //getParams: ({ gender, startDate, endDate }) => [gender, startDate, endDate],
+        getParams: ({ gender, startDate, endDate }) => {
+            const params = [];
+            for (let i = 0; i < 2; i++) {
+                params.push(gender, startDate, endDate);
+            }
+            return params;
+        }
 
     },
     "1A1_Households": {
+        //     query: `
+        //     --1A1
+        //         SELECT 
+        //         --COUNT(DISTINCT P.HHId || '_' || P.NameAndSurname) AS count
+        //         COUNT(DISTINCT P.HHId) AS count
+        //         FROM tb_Form_1A1_Participant P
+        //         JOIN tb_Form_1A1_Submission S ON P.SubmissionId = S.Id
+        //         WHERE date(S.ReportingPeriod) BETWEEN date(?) AND date(?)
+        // `
         query: `
         --1A1
-            SELECT 
-            --COUNT(DISTINCT P.HHId || '_' || P.NameAndSurname) AS count
-            COUNT(DISTINCT P.HHId) AS count
-            FROM tb_Form_1A1_Participant P
-            JOIN tb_Form_1A1_Submission S ON P.SubmissionId = S.Id
-            WHERE date(S.ReportingPeriod) BETWEEN date(?) AND date(?)
+            SELECT COUNT(DISTINCT HHId) AS count
+            FROM (
+                -- Source 1
+                SELECT TRIM(P.HHId) AS HHId
+                FROM tb_Form_1A1_Participant P
+                JOIN tb_Form_1A1_Submission S ON P.SubmissionId = S.Id
+                WHERE DATE(S.ReportingPeriod) BETWEEN DATE(?) AND DATE(?)
+
+                UNION   -- UNION removes duplicates between the two tables
+
+                -- Source 2
+                SELECT TRIM(P.HHId) AS HHId
+                FROM tb_CB_for_Villagers_Participant P
+                JOIN tb_CB_for_Villagers_Submission S ON P.SubmissionId = S.Id
+                WHERE S.ActivityCode IN ('1A.1','1A.2','1A.3a')
+                AND DATE(S.ReportingPeriod) BETWEEN DATE(?) AND DATE(?)
+            ) combined;
     `,
-        getParams: ({ startDate, endDate }) => [startDate, endDate],
+        //getParams: ({ startDate, endDate }) => [startDate, endDate],
+        getParams: ({ startDate, endDate }) => {
+            const params = [];
+            for (let i = 0; i < 2; i++) {
+                params.push(startDate, endDate);
+            }
+            return params;
+        }
 
     },
     "1A1_persons_received_services": {
         query: `
         --1A1 (1A1_Households result x 6)
-            SELECT
-            COUNT(DISTINCT P.HHId) * 6 AS count
-            FROM tb_Form_1A1_Participant P
-            JOIN tb_Form_1A1_Submission S ON P.SubmissionId = S.Id
-            WHERE date(S.ReportingPeriod) BETWEEN date(?) AND date(?)
+            SELECT COUNT(DISTINCT HHId) * 6 AS count
+            FROM (
+                -- Source 1
+                SELECT TRIM(P.HHId) AS HHId
+                FROM tb_Form_1A1_Participant P
+                JOIN tb_Form_1A1_Submission S ON P.SubmissionId = S.Id
+                WHERE DATE(S.ReportingPeriod) BETWEEN DATE(?) AND DATE(?)
+
+                UNION   -- UNION removes duplicates between the two tables
+
+                -- Source 2
+                SELECT TRIM(P.HHId) AS HHId
+                FROM tb_CB_for_Villagers_Participant P
+                JOIN tb_CB_for_Villagers_Submission S ON P.SubmissionId = S.Id
+                WHERE S.ActivityCode IN ('1A.1','1A.2','1A.3a')
+                AND DATE(S.ReportingPeriod) BETWEEN DATE(?) AND DATE(?)
+            ) combined;
     `,
-        getParams: ({ startDate, endDate }) => [startDate, endDate],
+        //getParams: ({ startDate, endDate }) => [startDate, endDate],
+        getParams: ({ startDate, endDate }) => {
+            const params = [];
+            for (let i = 0; i < 2; i++) {
+                params.push(startDate, endDate);
+            }
+            return params;
+        }
 
     },
     "1A1_Indigenous_people": {
+        //     query: `
+        //     --1A1
+        //         SELECT 
+        //             COALESCE(
+        //                 COUNT(DISTINCT 
+        //                     COALESCE(P.HHId, '') || '_' || COALESCE(P.NameAndSurname, '') || '_' || COALESCE(TRIM(S.ReportingPeriod), '') || '_' || COALESCE(TRIM(S.Subactivity), '')
+        //                 ), 
+        //             0) AS count
+        //         FROM tb_Form_1A1_Participant P
+        //         JOIN tb_Form_1A1_Submission S ON P.SubmissionId = S.Id
+        //         WHERE P.Ethnicity NOT IN (${'??'}) AND date(S.ReportingPeriod) BETWEEN date(?) AND date(?)
+        // `
         query: `
         --1A1
-            SELECT 
-                COALESCE(
-                    COUNT(DISTINCT 
-                        COALESCE(P.HHId, '') || '_' || COALESCE(P.NameAndSurname, '') || '_' || COALESCE(TRIM(S.ReportingPeriod), '') || '_' || COALESCE(TRIM(S.Subactivity), '')
-                    ), 
-                0) AS count
-            FROM tb_Form_1A1_Participant P
-            JOIN tb_Form_1A1_Submission S ON P.SubmissionId = S.Id
-            WHERE P.Ethnicity NOT IN (${'??'}) AND date(S.ReportingPeriod) BETWEEN date(?) AND date(?)
+            SELECT
+                A.Count_1A1_All_Participants + B.Count_cb_for_villagers_All_Participants AS count
+            FROM
+            (
+                SELECT 
+                    COUNT(DISTINCT COALESCE(TRIM(P.HHId), '') || '_' || COALESCE(TRIM(P.NameAndSurname), '') || '_' || COALESCE(TRIM(S.ReportingPeriod), '')|| '_' || COALESCE(TRIM(S.Subactivity), '')) AS Count_1A1_All_Participants                                    
+                FROM tb_Form_1A1_Participant P
+                JOIN tb_Form_1A1_Submission S ON P.SubmissionId = S.Id
+                WHERE P.Ethnicity NOT IN (${'??'}) AND date(S.ReportingPeriod) BETWEEN date(?) AND date(?)
+            ) A
+            CROSS JOIN
+            (
+                SELECT 
+                    COUNT(DISTINCT COALESCE(TRIM(P.HHId), '') || '_' || COALESCE(TRIM(P.NameAndSurname), '') || '_' || COALESCE(TRIM(S.ReportingPeriod), '') || '_' || COALESCE(TRIM(S.SpecializedTopic), '')) AS Count_cb_for_villagers_All_Participants                                    
+                FROM tb_CB_for_Villagers_Participant P
+                JOIN tb_CB_for_Villagers_Submission S ON P.SubmissionId = S.Id
+                WHERE S.ActivityCode IN ('1A.1','1A.2','1A.3a')
+                AND P.Ethnicity NOT IN (${'??'}) AND date(S.ReportingPeriod) BETWEEN date(?) AND date(?)
+            ) B
     `,
-        getParams: ({ ethnic, startDate, endDate }) => [startDate, endDate],
+        //getParams: ({ ethnic, startDate, endDate }) => [startDate, endDate],
+        getParams: ({ ethnic, startDate, endDate }) => {
+            const params = [];
+            for (let i = 0; i < 2; i++) {
+                params.push(startDate, endDate);
+            }
+            return params;
+        }
 
     },
     "1A1_Young_people": {
         query: `
         --1A1
-            SELECT 
-                COALESCE(
-                    COUNT(DISTINCT 
-                        COALESCE(P.HHId, '') || '_' || COALESCE(P.NameAndSurname, '') || '_' || COALESCE(TRIM(S.ReportingPeriod), '') || '_' || COALESCE(TRIM(S.Subactivity), '')
-                    ), 
-                0) AS count
-            --,COUNT(DISTINCT P.HHId) AS Count_1A1_Unique_HH_ID
-            FROM tb_Form_1A1_Participant P
-            JOIN tb_Form_1A1_Submission S ON P.SubmissionId = S.Id
-            WHERE P.Age BETWEEN ? AND ? AND date(S.ReportingPeriod) BETWEEN date(?) AND date(?)
+            SELECT
+                A.Count_1A1_All_Participants + B.Count_cb_for_villagers_All_Participants AS count
+            FROM
+            (
+                SELECT 
+                    COUNT(DISTINCT COALESCE(TRIM(P.HHId), '') || '_' || COALESCE(TRIM(P.NameAndSurname), '') || '_' || COALESCE(TRIM(S.ReportingPeriod), '')|| '_' || COALESCE(TRIM(S.Subactivity), '')) AS Count_1A1_All_Participants                                    
+                FROM tb_Form_1A1_Participant P
+                JOIN tb_Form_1A1_Submission S ON P.SubmissionId = S.Id
+                WHERE P.Age BETWEEN ? AND ? AND date(S.ReportingPeriod) BETWEEN date(?) AND date(?)
+            ) A
+            CROSS JOIN
+            (
+                SELECT 
+                    COUNT(DISTINCT COALESCE(TRIM(P.HHId), '') || '_' || COALESCE(TRIM(P.NameAndSurname), '') || '_' || COALESCE(TRIM(S.ReportingPeriod), '') || '_' || COALESCE(TRIM(S.SpecializedTopic), '')) AS Count_cb_for_villagers_All_Participants                                    
+                FROM tb_CB_for_Villagers_Participant P
+                JOIN tb_CB_for_Villagers_Submission S ON P.SubmissionId = S.Id
+                WHERE S.ActivityCode IN ('1A.1','1A.2','1A.3a')
+                AND P.Age BETWEEN ? AND ? AND date(S.ReportingPeriod) BETWEEN date(?) AND date(?)
+            ) B
     `,
-        getParams: ({ minAge, maxAge, startDate, endDate }) => [minAge, maxAge, startDate, endDate],
+        //getParams: ({ minAge, maxAge, startDate, endDate }) => [minAge, maxAge, startDate, endDate],
+        getParams: ({ minAge, maxAge, startDate, endDate }) => {
+            const params = [];
+            for (let i = 0; i < 2; i++) {
+                params.push(minAge, maxAge, startDate, endDate);
+            }
+            return params;
+        }
 
     },
     "1A1_Women_headed_households": {
@@ -937,7 +1094,7 @@ export const indicatorQueryMap = {
 
 
 
-    //Part3: Persons benefiting from cash or food-based transfers
+    //Part 3: Persons benefiting from cash or food-based transfers
     "1A2_Total_Persons": {
         query: `
         --1A2
@@ -1034,7 +1191,7 @@ export const indicatorQueryMap = {
 
 
 
-    //Part4: 1.1.4  Persons trained in production practices and/or technologies
+    //Part 4: 1.1.4  Persons trained in production practices and/or technologies
     "cb_villagers_Total_Persons": {
         query: `
       SELECT 
@@ -1193,7 +1350,7 @@ export const indicatorQueryMap = {
         getParams: ({ ethnic, startDate, endDate }) => {
             const params = [];
             for (let i = 0; i < 2; i++) {
-                params.push( startDate, endDate);
+                params.push(startDate, endDate);
             }
             return params;
         }
@@ -1481,7 +1638,7 @@ export const indicatorQueryMap = {
 
     //Part 5: Number of farmers receiving inputs or services on climate resilient or sustainable agriculture practices (GAFSP Tier 2 indicator #13)
     "1BAct7_Males": {
-    query: `
+        query: `
       --1BAct7
       SELECT 
           COALESCE(
@@ -1494,11 +1651,11 @@ export const indicatorQueryMap = {
       WHERE P.Gender = ? 
       AND date(S.Reporting_period) BETWEEN date(?) AND date(?);
     `,
-    getParams: ({ gender, startDate, endDate }) => [gender, startDate, endDate]
-  },
+        getParams: ({ gender, startDate, endDate }) => [gender, startDate, endDate]
+    },
 
-  "1BAct7_Females": {
-    query: `
+    "1BAct7_Females": {
+        query: `
       --1BAct7
       SELECT 
           COALESCE(
@@ -1511,11 +1668,11 @@ export const indicatorQueryMap = {
       WHERE P.Gender = ? 
       AND date(S.Reporting_period) BETWEEN date(?) AND date(?);
     `,
-    getParams: ({ gender, startDate, endDate }) => [gender, startDate, endDate]
-  },
+        getParams: ({ gender, startDate, endDate }) => [gender, startDate, endDate]
+    },
 
-  "1BAct7_Males_Percentage": {
-    query: `
+    "1BAct7_Males_Percentage": {
+        query: `
       --1BAct7
       SELECT ROUND(
         COALESCE(
@@ -1531,18 +1688,18 @@ export const indicatorQueryMap = {
       JOIN tb_Form_1BAct7_Submission S ON P.SubmissionId = S.Id
       WHERE P.Gender = 'Male' AND date(S.Reporting_period) BETWEEN date(?) AND date(?);
     `,
-    //getParams: ({ startDate, endDate, gender }) => [startDate, endDate, startDate, endDate]
-    getParams: ({ startDate, endDate }) => {
+        //getParams: ({ startDate, endDate, gender }) => [startDate, endDate, startDate, endDate]
+        getParams: ({ startDate, endDate }) => {
             const params = [];
             for (let i = 0; i < 2; i++) {
                 params.push(startDate, endDate);
             }
             return params;
         }
-  },
+    },
 
-  "1BAct7_Females_Percentage": {
-    query: `
+    "1BAct7_Females_Percentage": {
+        query: `
       --1BAct7
       SELECT ROUND(
         COALESCE(
@@ -1558,15 +1715,15 @@ export const indicatorQueryMap = {
       JOIN tb_Form_1BAct7_Submission S ON P.SubmissionId = S.Id
       WHERE P.Gender = 'Female' AND date(S.Reporting_period) BETWEEN date(?) AND date(?);
     `,
-    //getParams: ({ startDate, endDate }) => [startDate, endDate, startDate, endDate]
-    getParams: ({ startDate, endDate }) => {
+        //getParams: ({ startDate, endDate }) => [startDate, endDate, startDate, endDate]
+        getParams: ({ startDate, endDate }) => {
             const params = [];
             for (let i = 0; i < 2; i++) {
                 params.push(startDate, endDate);
             }
             return params;
         }
-  },
+    },
 
 
 
@@ -1575,9 +1732,9 @@ export const indicatorQueryMap = {
 
 
 
-  //Part 6: 3.1.4  Land brought under climate-resilient practices
+    //Part 6: 3.1.4  Land brought under climate-resilient practices
     "1BAct8_Total_Area": {
-    query: `
+        query: `
       --1BAct8
         SELECT SUM(AreaAmount) AS TotalAreaAmount
         FROM (
@@ -1589,8 +1746,8 @@ export const indicatorQueryMap = {
             GROUP BY p.HHId
         ) AS UniqueHouseholds;
     `,
-    getParams: ({ startDate, endDate }) => [startDate, endDate]
-  },
+        getParams: ({ startDate, endDate }) => [startDate, endDate]
+    },
 
 
 
