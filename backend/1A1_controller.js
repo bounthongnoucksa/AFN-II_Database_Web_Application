@@ -41,8 +41,8 @@ async function downloadForm1A1SubmissionDataFromKoboToolbox() {
                     INSERT INTO tb_Form_1A1_Submission 
                         (Id, Uuid, Start, End, ReportingPeriod, Province, District, Village, 
                         ActivityType, SubActivity, ConductDateStart, ConductDateEnd, ConductedBy, 
-                        VNCAvailable, IFAD, MAF, WFP, GoL, Ben, OtherFund, Version, SubmissionTime)
-                        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+                        VNCAvailable, NumberOfNewVNC, NumberOfRenovatedVNC, IFAD, MAF, WFP, GoL, Ben, OtherFund, Version, SubmissionTime)
+                        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
                         ON CONFLICT(Id) DO UPDATE SET 
                             Uuid=excluded.Uuid,
                             Start=excluded.Start,
@@ -56,6 +56,8 @@ async function downloadForm1A1SubmissionDataFromKoboToolbox() {
                             ConductDateEnd=excluded.ConductDateEnd,
                             ConductedBy=excluded.ConductedBy,
                             VNCAvailable=excluded.VNCAvailable,
+                            NumberOfNewVNC=excluded.NumberOfNewVNC,
+                            NumberOfRenovatedVNC=excluded.NumberOfRenovatedVNC,
                             IFAD=excluded.IFAD,
                             MAF=excluded.MAF,
                             WFP=excluded.WFP,
@@ -79,6 +81,8 @@ async function downloadForm1A1SubmissionDataFromKoboToolbox() {
                     el["group_actconductdate_sa1oe86/date_up9xu24"] || null,
                     el["_select_one_conductedby_01"] || null,
                     el["_0_Not_1_New_2_Renovated"] || null,
+                    el["number_vnc_new"] || null,
+                    el["number_vnc_renovated"] || null,
                     parseInt(el["group_wz1ah68/_IFAD_"] || null),
                     parseInt(el["group_wz1ah68/_MAF_"] || null),
                     parseInt(el["group_wz1ah68/_WFP_"] || null),
@@ -215,6 +219,8 @@ function getForm1A1ParticipantData(language, page, limit, filters = []) {
                             s.ConductDateEnd,
                             s.ConductedBy,
                             s.VNCAvailable,
+                            s.NumberOfNewVNC,
+                            s.NumberOfRenovatedVNC,
                             s.IFAD,
                             s.MAF,
                             s.WFP,
@@ -265,6 +271,10 @@ function getForm1A1ParticipantData(language, page, limit, filters = []) {
                         (SELECT Label_Lao FROM Translation_EN_LA WHERE FormName='form_1a1' AND ItemCode=np.PWD LIMIT 1) AS 'ຜູ້ພິການບໍ',
                         (SELECT Label_Lao FROM Translation_EN_LA WHERE FormName='form_1a1' AND ItemCode=np.APGMember LIMIT 1) AS 'ເປັນສະມາຊິກກຸ່ມບໍ',
                         (SELECT Label_Lao FROM Translation_EN_LA WHERE FormName='form_1a1' AND ItemCode=np.VNCAvailable LIMIT 1) AS 'ສ້າງສູນຮຽນຮູ້ແລ້ວບໍ',
+                        --np.NumberOfNewVNC AS 'ຈຳນວນສູນໃໝ່',
+                        --np.NumberOfRenovatedVNC AS 'ຈຳນວນສູນປັບປຸງ',
+                        CASE WHEN np.rn = 1 THEN np.NumberOfNewVNC ELSE NULL END AS 'ຈຳນວນສູນໃໝ່',
+                        CASE WHEN np.rn = 1 THEN np.NumberOfRenovatedVNC ELSE NULL END AS 'ຈຳນວນສູນປັບປຸງ',
 
                         CASE WHEN np.rn = 1 THEN np.IFAD ELSE NULL END AS IFAD,
                         CASE WHEN np.rn = 1 THEN np.MAF ELSE NULL END AS MAF,
@@ -294,6 +304,8 @@ function getForm1A1ParticipantData(language, page, limit, filters = []) {
                                 s.ConductDateEnd,
                                 s.ConductedBy,
                                 s.VNCAvailable,
+                                s.NumberOfNewVNC,
+                                s.NumberOfRenovatedVNC,
                                 s.IFAD,
                                 s.MAF,
                                 s.WFP,
@@ -344,6 +356,10 @@ function getForm1A1ParticipantData(language, page, limit, filters = []) {
                             (SELECT Label_English FROM Translation_EN_LA WHERE FormName='form_1a1' AND ItemCode=np.PWD LIMIT 1) AS 'PWD',
                             (SELECT Label_English FROM Translation_EN_LA WHERE FormName='form_1a1' AND ItemCode=np.APGMember LIMIT 1) AS 'APG Member',
                             (SELECT Label_English FROM Translation_EN_LA WHERE FormName='form_1a1' AND ItemCode=np.VNCAvailable LIMIT 1) AS 'VNC Available',
+                            --np.NumberOfNewVNC AS 'New VNC',
+                            --np.NumberOfRenovatedVNC AS 'Renovated VNC',
+                            CASE WHEN np.rn = 1 THEN np.NumberOfNewVNC ELSE NULL END AS 'New VNC',
+                            CASE WHEN np.rn = 1 THEN np.NumberOfRenovatedVNC ELSE NULL END AS 'Renovated VNC',
 
                             CASE WHEN np.rn = 1 THEN np.IFAD ELSE NULL END AS IFAD,
                             CASE WHEN np.rn = 1 THEN np.MAF ELSE NULL END AS MAF,
@@ -424,6 +440,8 @@ function getForm1A1ParticipantDataBySID(SubmissionId, language) {
                             s.ConductDateEnd,
                             s.ConductedBy,
                             s.VNCAvailable,
+                            s.NumberOfNewVNC,
+                            s.NumberOfRenovatedVNC,
                             s.IFAD,
                             s.MAF,
                             s.WFP,
@@ -476,6 +494,8 @@ function getForm1A1ParticipantDataBySID(SubmissionId, language) {
                         (SELECT Label_Lao FROM Translation_EN_LA WHERE FormName='form_1a1' AND ItemCode=np.PWD LIMIT 1) AS 'ຜູ້ພິການບໍ',
                         (SELECT Label_Lao FROM Translation_EN_LA WHERE FormName='form_1a1' AND ItemCode=np.APGMember LIMIT 1) AS 'ເປັນສະມາຊິກກຸ່ມບໍ',
                         (SELECT Label_Lao FROM Translation_EN_LA WHERE FormName='form_1a1' AND ItemCode=np.VNCAvailable LIMIT 1) AS 'ສ້າງສູນຮຽນຮູ້ແລ້ວບໍ',
+                        np.NumberOfNewVNC AS 'ຈຳນວນສູນໃໝ່',
+                        np.NumberOfRenovatedVNC AS 'ຈຳນວນສູນປັບປຸງ',
 
                         --CASE WHEN np.rn = 1 THEN np.IFAD ELSE NULL END AS IFAD,
                         --CASE WHEN np.rn = 1 THEN np.MAF ELSE NULL END AS MAF,
@@ -511,6 +531,8 @@ function getForm1A1ParticipantDataBySID(SubmissionId, language) {
                                 s.ConductDateEnd,
                                 s.ConductedBy,
                                 s.VNCAvailable,
+                                s.NumberOfNewVNC,
+                                s.NumberOfRenovatedVNC,
                                 s.IFAD,
                                 s.MAF,
                                 s.WFP,
@@ -563,6 +585,8 @@ function getForm1A1ParticipantDataBySID(SubmissionId, language) {
                             (SELECT Label_English FROM Translation_EN_LA WHERE FormName='form_1a1' AND ItemCode=np.PWD LIMIT 1) AS 'PWD',
                             (SELECT Label_English FROM Translation_EN_LA WHERE FormName='form_1a1' AND ItemCode=np.APGMember LIMIT 1) AS 'APG Member',
                             (SELECT Label_English FROM Translation_EN_LA WHERE FormName='form_1a1' AND ItemCode=np.VNCAvailable LIMIT 1) AS 'VNC Available',
+                            np.NumberOfNewVNC AS 'New VNC',
+                            np.NumberOfRenovatedVNC AS 'Renovated VNC',
 
                             --CASE WHEN np.rn = 1 THEN np.IFAD ELSE NULL END AS IFAD,
                             --CASE WHEN np.rn = 1 THEN np.MAF ELSE NULL END AS MAF,
@@ -838,6 +862,8 @@ function buildForm1A1SubmissionXML(submission, participants) {
     // Other information
     xml.push(`  <_select_one_conductedby_01>${escapeXML(submission.ConductedBy)}</_select_one_conductedby_01>`);
     xml.push(`  <_0_Not_1_New_2_Renovated>${escapeXML(submission.VNCAvailable)}</_0_Not_1_New_2_Renovated>`);
+    xml.push(`  <number_vnc_new>${escapeXML(submission.NumberOfNewVNC)}</number_vnc_new>`);
+    xml.push(`  <number_vnc_renovated>${escapeXML(submission.NumberOfRenovatedVNC)}</number_vnc_renovated>`);
 
     // Participants
     participants.forEach(p => {
@@ -934,6 +960,8 @@ const normalizeKeys = (data) => {
         ConductDateEnd: data.ConductDateEnd || data["End Date"] || data["ວັນສຳເລັດ"] || null,
         ConductedBy: data.ConductedBy || data["ນຳພາຈັດຕັ້ງປະຕິບັດໂດຍ"] || data["Conducted By"] || null,
         VNCAvailable: data.VNCAvailable || data["ສ້າງສູນຮຽນຮູ້ແລ້ວບໍ"] || data["VNC Available"] || null,
+        NumberOfNewVNC: data.NumberOfNewVNC || data["ຈຳນວນສູນໃໝ່"] || data["New VNC"] || null,
+        NumberOfRenovatedVNC: data.NumberOfRenovatedVNC || data["ຈຳນວນສູນປັບປຸງ"] || data["Renovated VNC"] || null,
 
         // Financial support fields (optional chaining with fallback to 0)
         IFAD: isNaN(parseInt(data.IFAD)) ? null : parseInt(data.IFAD),
@@ -976,6 +1004,8 @@ async function editForm1A1SubmissionAndParticipants(data) {
                 ConductDateStart = ?,
                 ConductDateEnd = ?,
                 VNCAvailable = ?,
+                NumberOfNewVNC = ?,
+                NumberOfRenovatedVNC = ?,
                 IFAD = ?,
                 MAF = ?,
                 WFP = ?,
@@ -988,6 +1018,8 @@ async function editForm1A1SubmissionAndParticipants(data) {
             d.ConductDateStart,
             d.ConductDateEnd,
             d.VNCAvailable,
+            d.NumberOfNewVNC,
+            d.NumberOfRenovatedVNC,
             d.IFAD,
             d.MAF,
             d.WFP,

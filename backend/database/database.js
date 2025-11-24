@@ -102,6 +102,8 @@ db.serialize(() => {
                 ConductDateEnd    TEXT,
                 ConductedBy       TEXT,
                 VNCAvailable      TEXT,                --_0_Not_1_New_2_Renovated
+                NumberOfNewVNC    INTEGER,
+                NumberOfRenovatedVNC INTEGER,
                 IFAD              INTEGER,
                 MAF               INTEGER,
                 WFP               INTEGER,
