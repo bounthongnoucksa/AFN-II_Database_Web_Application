@@ -1,6 +1,6 @@
 {
   "name": "m-and-e-database-electron",
-  "version": "1.0.6",
+  "version": "1.0.8",
   "description": "M&E Database for AFN-II - Electron Wrapper",
   "repository": {
     "type": "git",

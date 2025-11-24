@@ -807,7 +807,7 @@ function getForm1BAct6Statics() {
                      
         // `;
 
-        //M&E team requested to change the counting logic for "Number of APG received funds" to be multiple APGs in the same village
+        //M&E team requested to change the counting logic for counting number of APG beased on group head name. 1 village can have multiple APG.
         const query = `
                       WITH 
                         --  Unique farmers/participants
@@ -829,21 +829,26 @@ function getForm1BAct6Statics() {
 
                         --  Unique APGs
                         AllAPGs AS (
-                            SELECT
-									Province,
-									District,
-									Village,   -- Village can repeat; do not use DISTINCT
-									CBOEstablish,
-									GrantReceived,
-									IFAD,
-									MAF,
-									WFP,
-									GoL,
-									Ben,
-									OtherFund
-								FROM tb_Form_1BAct6_Submission
+                            SELECT DISTINCT
+									s.Province,
+									s.District,
+									s.Village,   -- Village can repeat; do not use DISTINCT
+									s.CBOEstablish,
+									p.NameAndSurname,
+									p.PositionInGroup,
+									--s.GrantReceived,
+									s.IFAD,
+									s.MAF,
+									s.WFP,
+									s.GoL,
+									s.Ben,
+									s.OtherFund
+								FROM tb_Form_1BAct6_Participant p
+                                JOIN tb_Form_1BAct6_Submission s ON p.SubmissionId = s.Id
 								WHERE CBOEstablish IS NOT NULL
 								  AND CBOEstablish IN (1,2)
+								  AND PositionInGroup = 'g_head'
+								  ORDER by Village
                         )
 
                         SELECT
@@ -880,7 +885,7 @@ function getForm1BAct6Statics() {
 
                             -- 8️ HHs engaged in contract with MSMEs
                             (SELECT COUNT(DISTINCT Province || '|' || District || '|' || Village || '|' || HHId)
-                            FROM AllParticipants WHERE MSME = 'yes') AS HHs_Engaged_MSME;                    
+                            FROM AllParticipants WHERE MSME = 'yes') AS HHs_Engaged_MSME;                      
         `;
         db.get(query, [], (err, row) => {
             db.close();
