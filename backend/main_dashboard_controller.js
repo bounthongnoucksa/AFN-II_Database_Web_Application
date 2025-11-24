@@ -197,58 +197,142 @@ function getForm1A1Statics() {
         //                 LEFT JOIN UniqueParticipants ON 1=1;
 
         // `;
+        // const query = `
+        //                 WITH UniqueVillages AS (
+        //                     SELECT DISTINCT Province, District, Village, VNCAvailable
+        //                     FROM tb_Form_1A1_Submission
+        //                 ),
+
+        //                 UniqueParticipants AS (
+        //                     SELECT DISTINCT
+        //                         -- Add ReportingPeriod and SubActivity to the unique key
+        //                         COALESCE(p.HHId, '') || '_' || p.NameAndSurname || '_' ||
+        //                         COALESCE(s.ReportingPeriod, '') || '_' ||
+        //                         COALESCE(s.SubActivity, '') AS ParticipantKey,
+
+        //                         p.Age,
+        //                         p.Gender,
+        //                         p.Responsibility,
+        //                         p.Ethnicity,
+        //                         p.PWBWStatus,
+        //                         s.ReportingPeriod,
+        //                         s.SubActivity
+        //                     FROM tb_Form_1A1_Participant p
+        //                     JOIN tb_Form_1A1_Submission s
+        //                         ON p.SubmissionId = s.Id
+        //                 )
+
+        //                 SELECT
+        //                     -- Village Nutrition Centers
+        //                     COUNT(DISTINCT CASE WHEN VNCAvailable IN ('1','2') THEN Province||District||Village|| '_' || VNCAvailable END) AS Total_VNC,
+        //                     COUNT(DISTINCT CASE WHEN VNCAvailable = '1' THEN Province||District||Village|| '_' || VNCAvailable END) AS New_Construction,
+        //                     COUNT(DISTINCT CASE WHEN VNCAvailable = '2' THEN Province||District||Village|| '_' || VNCAvailable END) AS Renovation,
+
+        //                     -- Village Facilitators
+        //                     COUNT(DISTINCT CASE WHEN Responsibility = 'vnf' THEN ParticipantKey END) AS VF_Total,
+        //                     COUNT(DISTINCT CASE WHEN Responsibility = 'vnf' AND Gender = 'Female' THEN ParticipantKey END) AS VF_Female,
+
+        //                     -- FNS Participants
+        //                     COUNT(DISTINCT ParticipantKey) AS Total_Participants,
+        //                     COUNT(DISTINCT CASE WHEN Gender = 'Female' THEN ParticipantKey END) AS Women_Participants,
+        //                     COUNT(DISTINCT CASE WHEN Age BETWEEN 15 AND 35 THEN ParticipantKey END) AS Youth_Participants,
+        //                     COUNT(DISTINCT CASE WHEN Ethnicity NOT IN ('_e01','_e02','_e03','_e04','_e05','_e06','_e07','_e08')
+        //                                         THEN ParticipantKey END) AS Ethnic_Participants,
+
+        //                     -- PW / BW / PBW
+        //                     COUNT(DISTINCT CASE WHEN PWBWStatus = 'pw' THEN ParticipantKey END) AS Pregnant_Women,
+        //                     COUNT(DISTINCT CASE WHEN PWBWStatus = 'bw' THEN ParticipantKey END) AS Breastfeeding_Women,
+        //                     COUNT(DISTINCT CASE WHEN PWBWStatus = 'pw_1' THEN ParticipantKey END) AS PBW_Women
+
+        //                 FROM UniqueVillages
+        //                 LEFT JOIN UniqueParticipants ON 1 = 1;
+        // `;
         const query = `
-                        WITH UniqueVillages AS (
-                            SELECT DISTINCT Province, District, Village, VNCAvailable
-                            FROM tb_Form_1A1_Submission
-                        ),
+                        WITH VillageMaxVNC AS (
+                                SELECT
+                                    Province,
+                                    District,
+                                    Village,
+                                    MAX(COALESCE(NumberOfNewVNC, 0)) AS MaxNewVNC,
+                                    MAX(COALESCE(NumberOfRenovatedVNC, 0)) AS MaxRenovatedVNC
+                                FROM tb_Form_1A1_Submission
+                                GROUP BY Province, District, Village
+                            ),
 
-                        UniqueParticipants AS (
-                            SELECT DISTINCT
-                                -- Add ReportingPeriod and SubActivity to the unique key
-                                COALESCE(p.HHId, '') || '_' || p.NameAndSurname || '_' ||
-                                COALESCE(s.ReportingPeriod, '') || '_' ||
-                                COALESCE(s.SubActivity, '') AS ParticipantKey,
+                            ParticipantSummary AS (
+                                SELECT DISTINCT
+                                    COALESCE(p.HHId, '') || '_' || p.NameAndSurname || '_' ||
+                                    COALESCE(s.ReportingPeriod, '') || '_' ||
+                                    COALESCE(s.SubActivity, '') AS ParticipantKey,
 
-                                p.Age,
-                                p.Gender,
-                                p.Responsibility,
-                                p.Ethnicity,
-                                p.PWBWStatus,
-                                s.ReportingPeriod,
-                                s.SubActivity
-                            FROM tb_Form_1A1_Participant p
-                            JOIN tb_Form_1A1_Submission s
-                                ON p.SubmissionId = s.Id
-                        )
+                                    p.Age,
+                                    p.Gender,
+                                    p.Responsibility,
+                                    p.Ethnicity,
+                                    p.PWBWStatus,
+                                    s.ReportingPeriod,
+                                    s.SubActivity
+                                FROM tb_Form_1A1_Participant p
+                                JOIN tb_Form_1A1_Submission s
+                                    ON p.SubmissionId = s.Id
+                            )
 
-                        SELECT
-                            -- Village Nutrition Centers
-                            COUNT(DISTINCT CASE WHEN VNCAvailable IN ('1','2') THEN Province||District||Village|| '_' || VNCAvailable END) AS Total_VNC,
-                            COUNT(DISTINCT CASE WHEN VNCAvailable = '1' THEN Province||District||Village|| '_' || VNCAvailable END) AS New_Construction,
-                            COUNT(DISTINCT CASE WHEN VNCAvailable = '2' THEN Province||District||Village|| '_' || VNCAvailable END) AS Renovation,
+                            SELECT
+                                -------------------------------------------------------------
+                                -- VNC Counts Using Maximum Values Per Village
+                                -------------------------------------------------------------
+                                SUM(CASE WHEN MaxNewVNC > 0 THEN 1 ELSE 0 END)
+                                + SUM(CASE WHEN MaxRenovatedVNC > 0 THEN 1 ELSE 0 END) AS Total_VNC,
 
-                            -- Village Facilitators
-                            COUNT(DISTINCT CASE WHEN Responsibility = 'vnf' THEN ParticipantKey END) AS VF_Total,
-                            COUNT(DISTINCT CASE WHEN Responsibility = 'vnf' AND Gender = 'Female' THEN ParticipantKey END) AS VF_Female,
+                                SUM(CASE WHEN MaxNewVNC > 0 THEN 1 ELSE 0 END) AS New_Construction,
+                                SUM(CASE WHEN MaxRenovatedVNC > 0 THEN 1 ELSE 0 END) AS Renovation,
 
-                            -- FNS Participants
-                            COUNT(DISTINCT ParticipantKey) AS Total_Participants,
-                            COUNT(DISTINCT CASE WHEN Gender = 'Female' THEN ParticipantKey END) AS Women_Participants,
-                            COUNT(DISTINCT CASE WHEN Age BETWEEN 15 AND 35 THEN ParticipantKey END) AS Youth_Participants,
-                            COUNT(DISTINCT CASE WHEN Ethnicity NOT IN ('_e01','_e02','_e03','_e04','_e05','_e06','_e07','_e08')
-                                                THEN ParticipantKey END) AS Ethnic_Participants,
+                                -------------------------------------------------------------
+                                -- Village Facilitators
+                                -------------------------------------------------------------
+                                (SELECT COUNT(DISTINCT ParticipantKey)
+                                FROM ParticipantSummary
+                                WHERE Responsibility = 'vnf') AS VF_Total,
 
-                            -- PW / BW / PBW
-                            COUNT(DISTINCT CASE WHEN PWBWStatus = 'pw' THEN ParticipantKey END) AS Pregnant_Women,
-                            COUNT(DISTINCT CASE WHEN PWBWStatus = 'bw' THEN ParticipantKey END) AS Breastfeeding_Women,
-                            COUNT(DISTINCT CASE WHEN PWBWStatus = 'pw_1' THEN ParticipantKey END) AS PBW_Women
+                                (SELECT COUNT(DISTINCT ParticipantKey)
+                                FROM ParticipantSummary
+                                WHERE Responsibility = 'vnf' AND Gender = 'Female') AS VF_Female,
 
-                        FROM UniqueVillages
-                        LEFT JOIN UniqueParticipants ON 1 = 1;
-        `;
+                                -------------------------------------------------------------
+                                -- FNS Participants
+                                -------------------------------------------------------------
+                                (SELECT COUNT(DISTINCT ParticipantKey)
+                                FROM ParticipantSummary) AS Total_Participants,
 
+                                (SELECT COUNT(DISTINCT ParticipantKey)
+                                FROM ParticipantSummary
+                                WHERE Gender = 'Female') AS Women_Participants,
 
+                                (SELECT COUNT(DISTINCT ParticipantKey)
+                                FROM ParticipantSummary
+                                WHERE Age BETWEEN 15 AND 35) AS Youth_Participants,
+
+                                (SELECT COUNT(DISTINCT ParticipantKey)
+                                FROM ParticipantSummary
+                                WHERE Ethnicity NOT IN ('_e01','_e02','_e03','_e04','_e05','_e06','_e07','_e08')) AS Ethnic_Participants,
+
+                                -------------------------------------------------------------
+                                -- PW / BW / PBW
+                                -------------------------------------------------------------
+                                (SELECT COUNT(DISTINCT ParticipantKey)
+                                FROM ParticipantSummary
+                                WHERE PWBWStatus = 'pw') AS Pregnant_Women,
+
+                                (SELECT COUNT(DISTINCT ParticipantKey)
+                                FROM ParticipantSummary
+                                WHERE PWBWStatus = 'bw') AS Breastfeeding_Women,
+
+                                (SELECT COUNT(DISTINCT ParticipantKey)
+                                FROM ParticipantSummary
+                                WHERE PWBWStatus = 'pw_1') AS PBW_Women
+
+                            FROM VillageMaxVNC;
+                    `;
         db.get(query, [], (err, row) => {
             db.close();
             if (err) {
