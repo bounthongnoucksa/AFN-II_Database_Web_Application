@@ -1079,22 +1079,23 @@ const normalizeKeys = (data) => {
 
         // // Basic identity
         // HHId: data["HHId"] || data["ລະຫັດຄົວເຮືອນ"],
-        // NameAndSurname: data["NameAndSurname"] || data["ຊື່ ແລະ ນາມສະກຸນ"],
+        NameAndSurname: data["NameAndSurname"] || data["ຊື່ ແລະ ນາມສະກຸນ"],
         Age: parseInt(data["Age"]) || parseInt(data["ອາຍຸ"]) || 0,
-        // Gender: data["Gender"] || data["ເພດ"],
-        // PWBWStatus: data["PWBWStatus"] || data["ສະຖານະ PWBW"],
-        // Ethnicity: data["Ethnicity"] || data["ຊົນເຜົ່າ"],
-        // Poverty_level: data["Poverty_level"] || data["ລະດັບຄວາມທຸກຍາກ"],
-        // Pwd_status: data["Pwd_status"] || data["ຜູ້ພິການ"],
+        Gender: data["Gender"] || data["ເພດ"],
+        PWBWStatus: data["PWBWStatus"] || data["ສະຖານະ PWBW"],
+        Ethnicity: data["Ethnicity"] || data["ຊົນເຜົ່າ"],
+        Poverty_level: data["Poverty_level"] || data["ລະດັບຄວາມທຸກຍາກ"],
+        Pwd_status: data["Pwd_status"] || data["ຜູ້ພິການ"],
 
-        // // Module participation
-        // Module_1: data["Module 1"] || data["Module 1"],
-        // Module_2: data["Module 2"] || data["Module 2"],
-        // Module_3: data["Module 3"] || data["Module 3"],
-        // Module_4: data["Module 4"] || data["Module 4"],
+        // Module participation
+        Module_1: data["Module 1"] || data["Module 1"],
+        Module_2: data["Module 2"] || data["Module 2"],
+        Module_3: data["Module 3"] || data["Module 3"],
+        Module_4: data["Module 4"] || data["Module 4"],
 
         // // Grant-related
-        // Receive_Grant: data["Receive_Grant"] || data["ໄດ້ຮັບທຶນສົ່ງເສີມບໍ"],
+        Receive_Grant: data["Received Grant"] || data["ໄດ້ຮັບທຶນສວນຄົວບໍ"],
+        //useGrantFor: data["IHHG Activities"] || data["ນຳໃຊ້ທຶນເຮັດກິດຈະກຳຫຍັງ"],
         // GrantUseFor: data["GrantUseFor"] || data["ໃຊ້ທຶນໃນການປະກອບອາຊີບ"],
 
         // Contributions
@@ -1123,7 +1124,17 @@ async function editForm1A2SubmissionAndParticipants(data) {
         await runQuery(db, `
             UPDATE tb_Form_1A2_Participant
             SET
+                NameAndSurname = ?,    
                 Age = ?,
+                Gender = ?,
+                PWBWStatus = ?,
+                poverty_level = ?,
+                Pwd_status = ?,
+                Module_1 = ?,
+                Module_2 = ?,
+                Module_3 = ?,
+                Module_4 = ?,
+                Receive_Grant = ?,
                 IFAD = ?,
                 MAF = ?,
                 WFP = ?,
@@ -1132,7 +1143,17 @@ async function editForm1A2SubmissionAndParticipants(data) {
                 OtherFund = ?
             WHERE Id = ?;
         `, [
+            d.NameAndSurname,
             d.Age,
+            d.Gender,
+            d.PWBWStatus,
+            d.Poverty_level,
+            d.Pwd_status,
+            d.Module_1,
+            d.Module_2,
+            d.Module_3,
+            d.Module_4,
+            d.Receive_Grant,
             d.IFAD,
             d.MAF,
             d.WFP,

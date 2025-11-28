@@ -7,6 +7,7 @@ import { Modal, Spinner, Button } from 'react-bootstrap'; // Import React Bootst
 import '../App.css'; // Import custom CSS for sticky header
 import { APP_API_URL } from '../constants/appURLConstrants';
 import FilterPanel from '../searchPannel/FilterPanel_v2';
+import { dropdownFieldsByIdx, dropdownOptions, dropdownReverseMap } from '../dropdownMap/1A1_dropdownFieldMapping';
 
 
 
@@ -408,12 +409,28 @@ export default function Form1A1({ refreshTrigger }) {
         // ✅ Get updated UUID before refreshing the modal before the current submissionID got deleted from KoboToolbox
         const uuid = await handleSubmissionUUID(); // This should return the UUID now
 
-
         try {
+            //New 26-Nov-2025: Map dropdown display values back to internal values before submission
+            //Makes a copy of the selectedRow object so you can safely modify it without affecting the original state
+            let dataToSubmit = { ...selectedRow };
+
+            Object.entries(dataToSubmit).forEach(([key, val], idx) => {
+                const fieldName = dropdownFieldsByIdx[idx];
+                if (fieldName) {
+                    const internalVal = dropdownReverseMap[fieldName][language][val];
+                    if (internalVal) {
+                        dataToSubmit[key] = internalVal;
+                    }
+                }
+            });
+            /////////////////////////////////////////
+
+
             //for modal loading pop state
             setLoadingModalMessage(true);
 
-            const response = await axios.post('http://localhost:3001/api/form1A1/updateParticipantAndSubmissionData', selectedRow); // Send the edited data object
+            //const response = await axios.post('http://localhost:3001/api/form1A1/updateParticipantAndSubmissionData', selectedRow); // Send the edited data object
+            const response = await axios.post('http://localhost:3001/api/form1A1/updateParticipantAndSubmissionData', dataToSubmit); // Send the edited data object with new mapping
 
             if (response.data.success) {
                 //alert('✅ Record updated successfully');
@@ -652,10 +669,13 @@ export default function Form1A1({ refreshTrigger }) {
                 <div className="modal d-block" tabIndex="-1" style={{ backgroundColor: 'rgba(0, 0, 0, 0.3)' }}>
                     <div className="mmodal-dialog modal-dialog-scrollable modal-dialog-centered">
                         <div className="modal-content">
+                            {/* Header */}
                             <div className="modal-header" style={{ backgroundColor: '#7de2d1' }}>
                                 <h5 className="modal-title">Submission ID: {submissionID}</h5>
                                 <button type="button" className="btn-close" onClick={closeModal}></button>
                             </div>
+
+                            {/* Body */}
                             <div className="modal-body" >
 
 
@@ -675,8 +695,13 @@ export default function Form1A1({ refreshTrigger }) {
 
                                             const isDateField = idx >= 3 && idx <= 5;
                                             //const isEditableText = (idx >= 11 && idx <= 7) || (idx >= 13 && idx <= 18);
-                                            const isEditableText = (idx === 14);
-                                            const isNumericField = (idx >= 23 && idx <= 29) || (idx === 14);
+                                            const isEditableText = (idx === 13) || (idx === 14);
+                                            const isNumericField = (idx >= 23 && idx <= 31) || (idx === 14);
+
+
+                                            // NEW 26-Nov-2025: detect dropdown field for data which we need to render as select box
+                                            const dropdownFieldName = dropdownFieldsByIdx[idx];
+                                            const isDropdown = Boolean(dropdownFieldName);
 
                                             return (
                                                 <React.Fragment key={idx}>
@@ -685,7 +710,26 @@ export default function Form1A1({ refreshTrigger }) {
                                                     <div className={`${colClass} mb-3`}>
                                                         <label className="form-label text-start w-100 fw-bold fs-6" style={{ color: '#001d3d' }}> {key + ":"}</label>
 
-                                                        {isDateField ? (
+                                                        {/* NEW 26-Nov-2025: Dropdown Rendering */}
+                                                        {isDropdown ? (
+                                                            <select
+                                                                className="form-control form-control-sm"
+                                                                value={value}
+                                                                onChange={(e) =>
+                                                                    setSelectedRow((prev) => ({
+                                                                        ...prev,
+                                                                        [key]: e.target.value
+                                                                    }))
+                                                                }
+                                                            >
+                                                                {dropdownOptions[dropdownFieldName].internal.map((internalVal) => (
+                                                                    <option key={internalVal} value={dropdownOptions[dropdownFieldName][language][internalVal]}>
+                                                                        {dropdownOptions[dropdownFieldName][language][internalVal]}
+                                                                    </option>
+                                                                ))}
+                                                            </select>
+
+                                                        ) : isDateField ? (
                                                             <input
                                                                 type="date"
                                                                 className="form-control form-control-sm"
@@ -770,7 +814,7 @@ export default function Form1A1({ refreshTrigger }) {
                                                     {Object.entries(row).map(([col, value], colIdx) => (
                                                         financialFields.includes(col) ? null : (
                                                             <td key={col}>
-                                                                {(colIdx >= 24 && colIdx <= 29 && value !== null && value !== '' && !isNaN(value))
+                                                                {(colIdx >= 24 && colIdx <= 31 && value !== null && value !== '' && !isNaN(value))
                                                                     ? Number(value).toLocaleString()
                                                                     : value}
                                                             </td>

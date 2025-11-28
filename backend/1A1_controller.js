@@ -941,7 +941,7 @@ const normalizeKeys = (data) => {
         NameAndSurname: data.NameAndSurname || data["Participant Name"] || data["ຊື່ ແລະ ນາມສະກຸນ"] || null,
         Age: parseInt(data.Age || data["ອາຍຸ"] || 0),
         Gender: data.Gender || data["ເພດ"] || null,
-        WomanHead: data.WomanHead || data["ແມ່ຍິງເປັນຫົວໜ້າຄົວເຮືອນບໍ"] || null,
+        WomanHead: data.WomanHead || data["ແມ່ຍິງຫົວໜ້າຄົວເຮືອນ"] || null,
         PWBWStatus: data.PWBWStatus || data["ສະຖານະ PWBW"] || null,
         Responsibility: data.Responsibility || data["Responsibility"] || data["ໜ້າທີ່"] || null,
         Ethnicity: data.Ethnicity || data["ຊົນເຜົ່າ"] || null,
@@ -989,10 +989,22 @@ async function editForm1A1SubmissionAndParticipants(data) {
         await runQuery(db, `
             UPDATE tb_Form_1A1_Participant
             SET
-                Age = ?
+                NameAndSurname = ?,
+                Age = ?,
+                WomanHead = ?,
+                povertyLevel = ?,
+                PWD = ?,
+                Gender = ?,
+                APGMember = ?
             WHERE Id = ?;
         `, [
+            d.NameAndSurname,
             d.Age,
+            d.WomanHead,
+            d.PovertyLevel,
+            d.PWD,
+            d.Gender,
+            d.APGMember,
             d.PID
         ]);
 
