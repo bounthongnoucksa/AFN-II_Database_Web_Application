@@ -858,7 +858,7 @@ const normalizeKeys = (data) => {
         SubActivity: data.SubActivity || data["Sub-Activity"] || data["ກິດຈະກຳຍ່ອຍທີ່ເຂົ້າຮ່ວມ"] || null,
         Conduct_Start: data.Conduct_Start || data["Start Date"] || data["ວັນເລີ່ມ"] || null,
         Conduct_End: data.Conduct_End || data["End Date"] || data["ວັນສຳເລັດ"] || null,
-        Equipment_received: data.Equipment_received || data["Starter Kit Received"] || data["ໄດ້ຮັບອຸປະກອນ"] || null,
+        Equipment_received: data.Equipment_received || data["Starter Kit Rcvd."] || data["ໄດ້ຮັບອຸປະກອນ"] || null,
         Certified: data.Certified || data["Certified"] || data["ໄດ້ຮັບໃບຢັ້ງຢືນ"] || null,
         Engaged: data.Engaged || data["Engaged in commercial"] || data["ໄດ້ເລີ່ມຊື້ຂາບປັດໃຈການຜະລິດ"] || null,
 
@@ -886,12 +886,21 @@ async function editForm1BAct7SubmissionAndParticipants(data) {
         await runQuery(db, `
             UPDATE tb_Form_1BAct7_Participant
             SET
-                
-                Age = ?
+                NameAndSurname = ?,
+                Responsibility = ?,
+                Age = ?,
+                Gender = ?,
+                Poverty_level = ?,
+                PWD_status = ?
                 
             WHERE Id = ?;
         `, [
+            d.NameAndSurname,
+            d.Responsibility,
             d.Age,
+            d.Gender,
+            d.Poverty_level,
+            d.PWD_status,
             d.PID
         ]);
 
@@ -901,7 +910,10 @@ async function editForm1BAct7SubmissionAndParticipants(data) {
             SET
                 Reporting_period = ?,
                 Conduct_Start = ?,
-                Conduct_End = ?,                
+                Conduct_End = ?,
+                Equipment_received = ?,
+                Certified = ?,
+                Engaged = ?,           
                 IFAD = ?,
                 MAF = ?,
                 WFP = ?,
@@ -912,6 +924,9 @@ async function editForm1BAct7SubmissionAndParticipants(data) {
             d.Reporting_period,
             d.Conduct_Start,
             d.Conduct_End,
+            d.Equipment_received,
+            d.Certified,
+            d.Engaged,
             d.IFAD,
             d.MAF,
             d.WFP,

@@ -754,6 +754,7 @@ db.serialize(() => {
                 CREATE TABLE IF NOT EXISTS tb_Form_3Act1a_Participant (
                     Id INTEGER PRIMARY KEY AUTOINCREMENT,
                     SubmissionId INTEGER,
+                    HaveHHId TEXT,
                     HHId TEXT,
                     NameAndSurname TEXT,
                     Age INTEGER,

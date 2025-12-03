@@ -881,7 +881,7 @@ const normalizeKeys = (data) => {
         VDPApprovalNumber: data.VDPApprovalNumber || data["VDP Approval No."] || data["ຈ/ນ VDP ຮັບຮອງ"] || null,
         DNCPApproval: data.DNCPApproval || data["DNCP Approval"] || null,
         DNCP_Item: data.DNCP_Item || data["DNCP Investment Activities"] || data["ບັນດາກິດຈະກໍາການລົງທຶນ ລວມຢູ່ໃນແຜນ DNCP"] || null,
-        EquiptSupported: data.EquiptSupported || data["Equip. Supported"] || data["ວັດຖຸ/ປັດໃຈໄດ້ຮັບຈາກໂຄງການ"] || null,
+        EquiptSupported: data.EquiptSupported || data["Equip. Supported"] || data["ວັດຖຸ/ປັດໃຈໄດ້ຮັບຈາກໂຄງການແລ້ວບໍ"] || null,
 
         // Contribution values
         IFAD: isNaN(parseFloat(data.IFAD || data["IFAD"])) ? null : parseFloat(data.IFAD || data["IFAD"]),
@@ -908,10 +908,14 @@ async function editForm3Act1bSubmissionAndParticipants(data) {
         await runQuery(db, `
             UPDATE tb_Form_3Act1b_Participant
             SET               
-                Age = ?
+                Full_name = ?,    
+                Age = ?,
+                Gender = ?
             WHERE Id = ?;
         `, [
+            d.Full_name,
             d.Age,
+            d.Gender,
             d.PID
         ]);
 
@@ -925,6 +929,8 @@ async function editForm3Act1bSubmissionAndParticipants(data) {
                 Conduct_date_2 = ?,
                 MeetingNo = ?,
                 VDPApprovalNumber = ?,
+                DNCPApproval = ?,
+                EquiptSupported = ?,
                 IFAD = ?,
                 MAF = ?,
                 WFP = ?,
@@ -939,6 +945,8 @@ async function editForm3Act1bSubmissionAndParticipants(data) {
             d.Conduct_date_2,
             d.MeetingNo,
             d.VDPApprovalNumber,
+            d.DNCPApproval,
+            d.EquiptSupported,
             d.IFAD,
             d.MAF,
             d.WFP,

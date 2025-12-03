@@ -7,6 +7,7 @@ import { Modal, Spinner, Button } from 'react-bootstrap'; // Import React Bootst
 import '../App.css'; // Import custom CSS for sticky header
 import { APP_API_URL } from '../constants/appURLConstrants';
 import FilterPanel from '../searchPannel/FilterPanel';
+import { dropdownFieldsByIdx, dropdownOptions, dropdownReverseMap } from '../dropdownMap/3Act1a_dropdownFieldMapping';
 
 
 
@@ -235,7 +236,7 @@ export default function Form3Act1a({ refreshTrigger }) {
         } catch (error) {
             console.error('Export failed', error);
             alert('Form 3Act1a Export to Excel failed');
-        }finally {
+        } finally {
             setloadingModalExcelExportMessage(false); //for modal Exporting pop state
         }
     };
@@ -407,10 +408,26 @@ export default function Form3Act1a({ refreshTrigger }) {
 
 
         try {
+            //New 26-Nov-2025: Map dropdown display values back to internal values before submission
+            //Makes a copy of the selectedRow object so you can safely modify it without affecting the original state
+            let dataToSubmit = { ...selectedRow };
+
+            Object.entries(dataToSubmit).forEach(([key, val], idx) => {
+                const fieldName = dropdownFieldsByIdx[idx];
+                if (fieldName) {
+                    const internalVal = dropdownReverseMap[fieldName][language][val];
+                    if (internalVal) {
+                        dataToSubmit[key] = internalVal;
+                    }
+                }
+            });
+            /////////////////////////////////////////
+
             //for modal loading pop state
             setLoadingModalMessage(true);
 
-            const response = await axios.post(APP_API_URL + '/api/form3Act1a/updateParticipantAndSubmissionData', selectedRow); // Send the edited data object
+            //const response = await axios.post(APP_API_URL + '/api/form3Act1a/updateParticipantAndSubmissionData', selectedRow); // Send the edited data object
+            const response = await axios.post(APP_API_URL + '/api/form3Act1a/updateParticipantAndSubmissionData', dataToSubmit); // Send the edited data object with new mapping
 
             if (response.data.success) {
                 //alert('✅ Record updated successfully');
@@ -673,8 +690,12 @@ export default function Form3Act1a({ refreshTrigger }) {
 
                                             const isDateField = (idx >= 3 && idx <= 5);
                                             //const isEditableText = (idx >= 11 && idx <= 7) || (idx >= 13 && idx <= 18);
-                                            const isEditableText = (idx === 9);
+                                            const isEditableText = (idx === 9) || (idx === 12);
                                             const isNumericField = (idx >= 20 && idx <= 25) || idx === 10 || idx === 13;
+
+                                            // NEW 26-Nov-2025: detect dropdown field for data which we need to render as select box
+                                            const dropdownFieldName = dropdownFieldsByIdx[idx];
+                                            const isDropdown = Boolean(dropdownFieldName);
 
                                             return (
                                                 <React.Fragment key={idx}>
@@ -683,7 +704,26 @@ export default function Form3Act1a({ refreshTrigger }) {
                                                     <div className={`${colClass} mb-3`}>
                                                         <label className="form-label text-start w-100 fw-bold fs-6" style={{ color: '#001d3d' }}> {key + ":"}</label>
 
-                                                        {isDateField ? (
+                                                        {/* NEW 26-Nov-2025: Dropdown Rendering */}
+                                                        {isDropdown ? (
+                                                            <select
+                                                                className="form-control form-control-sm"
+                                                                value={value}
+                                                                onChange={(e) =>
+                                                                    setSelectedRow((prev) => ({
+                                                                        ...prev,
+                                                                        [key]: e.target.value
+                                                                    }))
+                                                                }
+                                                            >
+                                                                {dropdownOptions[dropdownFieldName].internal.map((internalVal) => (
+                                                                    <option key={internalVal} value={dropdownOptions[dropdownFieldName][language][internalVal]}>
+                                                                        {dropdownOptions[dropdownFieldName][language][internalVal]}
+                                                                    </option>
+                                                                ))}
+                                                            </select>
+
+                                                        ) : isDateField ? (
                                                             <input
                                                                 type="date"
                                                                 className="form-control form-control-sm"

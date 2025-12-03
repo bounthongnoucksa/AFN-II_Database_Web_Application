@@ -97,10 +97,11 @@ async function downloadForm3Act1aSubmissionDataFromKoboToolbox() {
                         await runQuery(
                             db,
                             `INSERT INTO tb_Form_3Act1a_Participant (
-                                SubmissionId, HHId, NameAndSurname, Age, Gender, Ethnicity, PovertyLevel, PWD
-                            ) VALUES (?, ?, ?, ?, ?, ?, ?, ?)`,
+                                SubmissionId, HaveHHId, HHId, NameAndSurname, Age, Gender, Ethnicity, PovertyLevel, PWD
+                            ) VALUES (?, ?, ?, ?, ?, ?, ?, ?,?)`,
                             [
                                 submissionId,
+                                haveHHId || null,
                                 hhId || "",
                                 name || "",
                                 parseInt(p["group_participantdetail_hp48r4/_mainAge"] || 0),
@@ -892,10 +893,10 @@ function buildForm3Act1aSubmissionXML(submission, participants) {
     // Participants (group_participantdetail_hp48r4)
     participants.forEach(p => {
         xml.push(`  <group_participantdetail_hp48r4>`);
-        xml.push(`    <doyouhavehh_id>${escapeXML(p.HaveHH_id)}</doyouhavehh_id>`);
+        xml.push(`    <doyouhavehh_id>${escapeXML(p.HaveHHId)}</doyouhavehh_id>`);
         xml.push(`    <mainhhid>${escapeXML(p.HHId)}</mainhhid>`);
 
-        if (p.HaveHH_id === 'hhidyes') {
+        if (p.HaveHHId === 'hhidyes') {
             xml.push(`    <select_one_mainNameAndSurname>${escapeXML(p.NameAndSurname)}</select_one_mainNameAndSurname>`);
         } else {
             xml.push(`    <text_hx6fh11>${escapeXML(p.NameAndSurname)}</text_hx6fh11>`);
@@ -954,7 +955,7 @@ const normalizeKeys = (data) => {
         SubmissionID: data.SubmissionID || data.SubmissionId,
 
         // Participant fields
-        HaveHH_id: data.HaveHHId || data["ມີລະຫັດຄົວເຮືອນບໍ"] || null,
+        HaveHHId: data.HaveHHId || data["ມີລະຫັດຄົວເຮືອນບໍ"] || null,
         HHId: data.HHId || data["HH ID"] || data["ລະຫັດຄົວເຮືອນ"] || null,
         NameAndSurname: data.NameAndSurname || data["Participant Name"] || data["ຊື່ຜູ້ເຂົ້າຮ່ວມ"] || null,
         Age: parseInt(data.Age || data["ອາຍຸ"] || 0),
@@ -1001,10 +1002,19 @@ async function editForm3Act1aSubmissionAndParticipants(data) {
         await runQuery(db, `
             UPDATE tb_Form_3Act1a_Participant
             SET
-                Age = ?   
+                NameAndSurname = ?,    
+                Age = ?,
+                Gender = ?,
+                PovertyLevel = ?,
+                PWD = ?
+
             WHERE Id = ?;
         `, [
+            d.NameAndSurname,
             d.Age,
+            d.Gender,
+            d.PovertyLevel,
+            d.PWD,
             d.PID
         ]);
 
@@ -1016,7 +1026,8 @@ async function editForm3Act1aSubmissionAndParticipants(data) {
                 SubActivity = ?,
                 Conduct_Start = ?,
                 Conduct_End = ?,
-                MeetingNo = ?,               
+                MeetingNo = ?,
+                VDPApproval = ?,               
                 IFAD = ?,
                 MAF = ?,
                 WFP = ?,
@@ -1030,6 +1041,7 @@ async function editForm3Act1aSubmissionAndParticipants(data) {
             d.Conduct_Start,
             d.Conduct_End,
             d.MeetingNo,
+            d.VDPApproval,
             d.IFAD,
             d.MAF,
             d.WFP,
