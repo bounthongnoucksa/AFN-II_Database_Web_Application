@@ -895,14 +895,21 @@ const normalizeKeys = (data) => {
         // IDs
         PID: data.PID || data.ParticipantId,
         SubmissionID: data.SubmissionID || data.Id || data["SubmissionID"],
+        
 
         // Participant fields
+        NameAndSurname: data.NameAndSurname || data["Participant Name"] || data["ຊື່ ແລະ ນາມສະກຸນ ຜູ້ໄດ້ເຂົ້າຮ່ວມ"] || null,
         Age: parseInt(data.Age || data["ອາຍຸ"] || 0),
+        Gender: data.Gender || data["ເພດ"] || null,
+        PovertyLevel: data.Poverty_level || data["ລະດັບຄວາມທຸກຍາກ"] || data["Poverty Level"] || null,
+        PWD: data.PWD_status || data["ຜູ້ພິການບໍ"] || data["PWD Status"] || null,
+        APGMember: data.APGMember || data["ເປັນສະມາຊິກກຸ່ມບໍ"] || data["APG Member"] || null,
 
         // Submission fields
         ReportingPeriod: data.ReportingPeriod || data["ໄລຍະເວລາລາຍງານ"] || data["Reporting Period"] || null,
         ConductDateStart: data.ConductDateStart || data["ວັນເລີ່ມ"] || data["Start Date"] || null,
         ConductDateEnd: data.ConductDateEnd || data["ວັນສຳເລັດ"] || data["End Date"] || null,
+        DevPlan: data.DevPlan || data["ນອນຢູ່ໃນແຜນພັດທະນາຂອງບ້ານບໍ"] || data["Community investment plan developed"] || null,
         ConsArea: parseFloat(data.ConsArea || data["ຂະໜາດຂອງເຂດສະຫງວນ(ເຮັກຕາ)"] || data["Conservation Area"] || 0),
         KeySpeciesConserved: data.KeySpeciesConserved || data["ຊະນິດພັນ (ພືດ/ສັດນ້ຳ) ຕົ້ນຕໍທີ່ສະຫງວນ"] || data["Key Species Conserved"] || null,
 
@@ -933,11 +940,21 @@ async function editForm1A4SubmissionAndParticipants(data) {
         await runQuery(db, `
             UPDATE tb_Form_1A4_Participant
             SET
-                Age = ?
+                NameAndSurname = ?,
+                Age = ?,
+                Gender = ?,
+                Poverty_level = ?,    
+                PWD_status = ?,
+                APGMember = ?
                 
             WHERE Id = ?;
         `, [
+            d.NameAndSurname,
             d.Age,
+            d.Gender,
+            d.PovertyLevel,
+            d.PWD,
+            d.APGMember,
             d.PID
         ]);
 
@@ -947,7 +964,8 @@ async function editForm1A4SubmissionAndParticipants(data) {
             SET
                 Reporting_period = ?,
                 Conduct_date1 = ?,
-                Conduct_date2 = ?,               
+                Conduct_date2 = ?,
+                DevPlan = ?,               
                 Cons_area = ?,                
                 KeySpeciesConserved = ?,
                 IFAD = ?,
@@ -961,6 +979,7 @@ async function editForm1A4SubmissionAndParticipants(data) {
             d.ReportingPeriod,
             d.ConductDateStart,
             d.ConductDateEnd,
+            d.DevPlan,
             d.ConsArea,
             d.KeySpeciesConserved,
             d.IFAD,

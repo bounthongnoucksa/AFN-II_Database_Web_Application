@@ -940,7 +940,7 @@ const normalizeKeys = (data) => {
         Age: parseInt(data.Age || data["ອາຍຸ"] || 0),
         Gender: data.Gender || data["Gender"] || data["ເພດ"] || null,
         Ethnicity: data.Ethnicity || data["Ethnicity"] || data["ຊົນເຜົ່າ"] || null,
-        PovertyLevel: data.PovertyLevel || data["Poverty Level"] || data["ຖານະຄອບຄົວ"] || null,
+        PovertyLevel: data.Poverty_level || data["Poverty Level"] || data["ຖານະຄອບຄົວ"] || null,
         PWD: data.PWD || data["PWD Status"] || data["ເສຍອົງຄະບໍ"] || null,
         PositionInGroup: data.PositionInGroup || data["Position in group"] || data["ຕຳແໜ່ງໃນກຸ່ມ"] || null,
         MSME: data.MSME || data["MSME"] || data["MSME Member"] || null,
@@ -959,9 +959,9 @@ const normalizeKeys = (data) => {
         CropQuantity: isNaN(parseFloat(data.CropQuantity || data["Crop Qty (kg)"] || data["ປະລິມານພືດ (ກິໂລ)"])) ? null : parseFloat(data.CropQuantity || data["Crop Qty (kg)"] || data["ປະລິມານພືດ (ກິໂລ)"]),
         LivestockType: data.LivestockType || data["Livestock Type"] || data["ປະເພດສັດ"] || null,
         LivestockQuantity: isNaN(parseFloat(data.LivestockQuantity || data["Livestock Qty (kg)"] || data["ປະລິມານສັດ (ກິໂລ)"])) ? null : parseFloat(data.LivestockQuantity || data["Livestock Qty (kg)"] || data["ປະລິມານສັດ (ກິໂລ)"]),
-        ForageQuantity: isNaN(parseFloat(data.ForageQuantity || data["Forage Qty (kg)"] || data["ພືດອາຫານສັດ (ກິໂລ)"]) ? null : parseFloat(data.ForageQuantity || data["Forage Qty (kg)"] || data["ພືດອາຫານສັດ (ກິໂລ)"])),
+        ForageQuantity: isNaN(parseFloat(data.ForageQuantity || data["Forage Qty (kg)"] || data["ພືດອາຫານສັດ (ກິໂລ)"])) ? null : parseFloat(data.ForageQuantity || data["Forage Qty (kg)"] || data["ພືດອາຫານສັດ (ກິໂລ)"]),
         ACRegistered: data.ACRegistered || data["AC Registered"] || null,
-        GrantReceived: data.GrantReceived || data["Grant Received"] || null,
+        GrantReceived: data.GrantReceived || data["ໄດ້ຮັບທຶນ"] || data["Grant Received"] || null,
 
         // Contribution values
         IFAD: isNaN(parseFloat(data.IFAD)) ? null : parseFloat(data.IFAD),
@@ -990,11 +990,22 @@ async function editForm1BAct6SubmissionAndParticipants(data) {
         await runQuery(db, `
             UPDATE tb_Form_1BAct6_Participant
             SET
-                Age = ?
-                
+                NameAndSurname = ?,    
+                Age = ?,
+                Gender = ?,
+                Poverty_level = ?,
+                PWD_status = ?,
+                PositionInGroup = ?,
+                MSME = ?               
             WHERE Id = ?;
         `, [
+            d.NameAndSurname,
             d.Age,
+            d.Gender,
+            d.PovertyLevel,
+            d.PWD,
+            d.PositionInGroup,
+            d.MSME,
             d.PID
         ]);
 
@@ -1010,6 +1021,8 @@ async function editForm1BAct6SubmissionAndParticipants(data) {
                 LivestockType = ?,
                 LivestockQuantity = ?,
                 ForageQuantity = ?,
+                ACRegistered = ?,
+                GrantReceived = ?,
                 IFAD = ?,
                 MAF = ?,
                 WFP = ?,
@@ -1026,6 +1039,8 @@ async function editForm1BAct6SubmissionAndParticipants(data) {
             d.LivestockType,
             d.LivestockQuantity,
             d.ForageQuantity,
+            d.ACRegistered,
+            d.GrantReceived,
             d.IFAD,
             d.MAF,
             d.WFP,
