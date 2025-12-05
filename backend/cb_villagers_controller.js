@@ -13,7 +13,7 @@ const KOBO_NEW_SUBMISSION_API = process.env.KOBO_NEW_SUBMISSION_API_URL; // Kobo
 const KOBO_CB_FOR_VILLAGERS_FORM_ID = process.env.KOBO_CB_FOR_VILLAGERS_UID;
 //const KOBO_CB_FOR_VILLAGERS_FORM_ID = process.env.KOBO_CB_FOR_VILLAGERS_UID_TEST; // KoboToolbox form ID for CB for Villagers
 const KOBO_DELETE_SUBMISSION_API = `${process.env.KOBO_API_URL}/${KOBO_CB_FOR_VILLAGERS_FORM_ID}/data/`; // KoboToolbox API endpoint for deleting submissions
-const KOBO_DOWNLOAD_SUBMISSION_API = `${process.env.KOBO_API_URL}/${KOBO_CB_FOR_VILLAGERS_FORM_ID}/data.json`; // KoboToolbox API endpoint for downloading submissions
+const KOBO_DOWNLOAD_SUBMISSION_API = `${process.env.KOBO_API_URL}/${KOBO_CB_FOR_VILLAGERS_FORM_ID}/data.json?limit=1000`; // KoboToolbox API endpoint for downloading submissions
 
 
 
