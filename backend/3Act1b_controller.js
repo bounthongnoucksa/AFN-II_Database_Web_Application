@@ -27,11 +27,19 @@ async function downloadForm3Act1bSubmissionDataFromKoboToolbox() {
 
         let nextUrl = KOBO_DOWNLOAD_SUBMISSION_API;
 
+        console.log("🔄 Starting table clean up data...");
+
+        //New 05-Dec-2025: VERY IMPORTANT – wrap everything in 1 transaction (huge speed boost)
+        await runQuery(db, "BEGIN TRANSACTION");
+
         // Optional: clear old data
         await runQuery(db, "DELETE FROM tb_Form_3Act1b_Participant");
         await runQuery(db, "DELETE FROM tb_Form_3Act1b_Submission");
 
+        console.log("🔄 Starting Kobo sync...");
+
         while (nextUrl) {
+            //console.log("⬇️ Fetching:", nextUrl);
             const resp = await axios.get(nextUrl, { headers });
             const root = resp.data;
             nextUrl = root.next;
@@ -96,9 +104,12 @@ async function downloadForm3Act1bSubmissionDataFromKoboToolbox() {
             }
         }
 
+        await runQuery(db, "COMMIT");
         console.log("✅ Form 3Act1b submission data downloaded and saved.");
     } catch (err) {
+        if (db) await runQuery(db, "ROLLBACK");
         console.error("❌ Error downloading Form 3Act1b data:", err.message);
+        console.log("Database rollback...");
         throw err;
     } finally {
         if (db) await db.close();
