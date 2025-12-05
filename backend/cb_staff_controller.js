@@ -503,11 +503,19 @@ async function downloadCBStaffSubmissionDataFromKoboToolbox() {
         const headers = { Authorization: `Token ${KOBO_API_KEY}` };
         let nextUrl = KOBO_DOWNLOAD_SUBMISSION_API;
 
+        console.log("🔄 Starting table clean up data...");
+
+        //New 05-Dec-2025: VERY IMPORTANT – wrap everything in 1 transaction (huge speed boost)
+        await runQuery(db, "BEGIN TRANSACTION");
+
         // clear old data
         await runQuery(db, "DELETE FROM tb_CB_Staff_Submission");
         await runQuery(db, "DELETE FROM tb_CB_Staff_Participant");
 
+        console.log("🔄 Starting Kobo sync...");
+
         while (nextUrl) {
+            //console.log("⬇️ Fetching:", nextUrl);
             const resp = await axios.get(nextUrl, { headers });
             const root = resp.data;
             nextUrl = root.next;
@@ -576,10 +584,13 @@ async function downloadCBStaffSubmissionDataFromKoboToolbox() {
             }
         }
 
+        await runQuery(db, "COMMIT");
         console.log("CB Staff submission data downloaded and saved to the database successfully.");
 
     } catch (err) {
+        if (db) await runQuery(db, "ROLLBACK");
         console.error("Error downloading form CB Staff data:", err.message);
+        console.log("Database rollback...");
         throw err; // ✅ rethrow so Express knows it failed
     } finally {
         if (db) db.close();
