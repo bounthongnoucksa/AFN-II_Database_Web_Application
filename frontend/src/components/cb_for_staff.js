@@ -9,6 +9,9 @@ import { Modal, Spinner, Button } from 'react-bootstrap'; // Import React Bootst
 import '../App.css'; // Import custom CSS for sticky header
 import { APP_API_URL } from '../constants/appURLConstrants';
 import FilterPanel from '../searchPannel/cb_for_staff_FilterPanel';
+import { dropdownFieldsByIdx, dropdownOptions, dropdownReverseMap } from '../dropdownMap/cb_staff_dropdownFieldMapping';
+
+
 
 export default function CBForStaff({ refreshTrigger }) {
     const [data, setData] = useState([]);
@@ -243,7 +246,7 @@ export default function CBForStaff({ refreshTrigger }) {
     const handleDownloadCBStaffDataFromKobo = async () => {
         try {
             setLoadingModalMessage(true); //for modal loading pop state
-            const response = await axios.get('http://localhost:3001/api/cbForStaff/downloadFromKoboToolbox');
+            const response = await axios.get(`${APP_API_URL}/api/cbForStaff/downloadFromKoboToolbox`);
             if (response.data.success) {
                 //alert('Data downloaded successfully from KoboToolbox');
                 setModalMessage('✅ Operation completed successfully!');
@@ -346,7 +349,7 @@ export default function CBForStaff({ refreshTrigger }) {
         try {
             setLoadingModalMessage(true);
 
-            const response = await axios.post('http://localhost:3001/api/cbForStaff/deleteParticipant', { participantId, submissionId });
+            const response = await axios.post(`${APP_API_URL}/api/cbForStaff/deleteParticipant`, { participantId, submissionId });
 
             if (response.data.success) {
                 setModalMessage('✅ Participant deleted successfully');
@@ -405,10 +408,26 @@ export default function CBForStaff({ refreshTrigger }) {
 
 
         try {
+
+            //New 26-Nov-2025: Map dropdown display values back to internal values before submission
+            //Makes a copy of the selectedRow object so you can safely modify it without affecting the original state
+            let dataToSubmit = { ...selectedRow };
+
+            Object.entries(dataToSubmit).forEach(([key, val], idx) => {
+                const fieldName = dropdownFieldsByIdx[idx];
+                if (fieldName) {
+                    const internalVal = dropdownReverseMap[fieldName][language][val];
+                    if (internalVal) {
+                        dataToSubmit[key] = internalVal;
+                    }
+                }
+            });
+            /////////////////////////////////////////
             //for modal loading pop state
             setLoadingModalMessage(true);
 
-            const response = await axios.post('http://localhost:3001/api/cbForStaff/updateParticipantAndSubmissionData', selectedRow); // Send the edited data object
+            //const response = await axios.post('http://localhost:3001/api/cbForStaff/updateParticipantAndSubmissionData', selectedRow); // Send the edited data object
+            const response = await axios.post(`${APP_API_URL}/api/cbForStaff/updateParticipantAndSubmissionData`, dataToSubmit); // Send the edited data object with new mapping
 
             if (response.data.success) {
                 //alert('✅ Record updated successfully');
@@ -669,6 +688,11 @@ export default function CBForStaff({ refreshTrigger }) {
                                             const isNumericField = idx === 7 || (idx >= 15 && idx <= 19);
                                             //const isNumberFeildNoRefresh = ;
 
+
+                                            // NEW 26-Nov-2025: detect dropdown field for data which we need to render as select box
+                                            const dropdownFieldName = dropdownFieldsByIdx[idx];
+                                            const isDropdown = Boolean(dropdownFieldName);
+
                                             return (
                                                 <React.Fragment key={idx}>
                                                     {needsNewLine && <div className="w-100"></div>}
@@ -676,7 +700,26 @@ export default function CBForStaff({ refreshTrigger }) {
                                                     <div className={`${colClass} mb-3`}>
                                                         <label className="form-label text-start w-100 fw-bold fs-6" style={{ color: '#001d3d' }}> {key + ":"}</label>
 
-                                                        {isDateField ? (
+                                                        {/* NEW 26-Nov-2025: Dropdown Rendering */}
+                                                        {isDropdown ? (
+                                                            <select
+                                                                className="form-control form-control-sm"
+                                                                value={value}
+                                                                onChange={(e) =>
+                                                                    setSelectedRow((prev) => ({
+                                                                        ...prev,
+                                                                        [key]: e.target.value
+                                                                    }))
+                                                                }
+                                                            >
+                                                                {dropdownOptions[dropdownFieldName].internal.map((internalVal) => (
+                                                                    <option key={internalVal} value={dropdownOptions[dropdownFieldName][language][internalVal]}>
+                                                                        {dropdownOptions[dropdownFieldName][language][internalVal]}
+                                                                    </option>
+                                                                ))}
+                                                            </select>
+
+                                                        ) : isDateField ? (
                                                             <input
                                                                 type="date"
                                                                 className="form-control form-control-sm"

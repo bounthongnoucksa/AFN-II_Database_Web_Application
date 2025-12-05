@@ -249,7 +249,7 @@ export default function Form1A1({ refreshTrigger }) {
     const handleDownloadForm1A1DataFromKobo = async () => {
         try {
             setLoadingModalMessage(true); //for modal loading pop state
-            const response = await axios.get('http://localhost:3001/api/form1A1/downloadFromKoboToolbox');
+            const response = await axios.get(`${APP_API_URL}/api/form1A1/downloadFromKoboToolbox`);
             if (response.data.success) {
                 //alert('Data downloaded successfully from KoboToolbox');
                 setModalMessage('✅ Operation completed successfully!');
@@ -352,7 +352,7 @@ export default function Form1A1({ refreshTrigger }) {
         try {
             setLoadingModalMessage(true);
 
-            const response = await axios.post('http://localhost:3001/api/form1A1/deleteParticipant', { participantId, submissionId });
+            const response = await axios.post(`${APP_API_URL}/api/form1A1/deleteParticipant`, { participantId, submissionId });
 
             if (response.data.success) {
                 setModalMessage('✅ Participant deleted successfully');
@@ -430,7 +430,7 @@ export default function Form1A1({ refreshTrigger }) {
             setLoadingModalMessage(true);
 
             //const response = await axios.post('http://localhost:3001/api/form1A1/updateParticipantAndSubmissionData', selectedRow); // Send the edited data object
-            const response = await axios.post('http://localhost:3001/api/form1A1/updateParticipantAndSubmissionData', dataToSubmit); // Send the edited data object with new mapping
+            const response = await axios.post(`${APP_API_URL}/api/form1A1/updateParticipantAndSubmissionData`, dataToSubmit); // Send the edited data object with new mapping
 
             if (response.data.success) {
                 //alert('✅ Record updated successfully');

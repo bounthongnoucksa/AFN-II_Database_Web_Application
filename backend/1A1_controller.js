@@ -945,9 +945,9 @@ const normalizeKeys = (data) => {
         PWBWStatus: data.PWBWStatus || data["ສະຖານະ PWBW"] || null,
         Responsibility: data.Responsibility || data["Responsibility"] || data["ໜ້າທີ່"] || null,
         Ethnicity: data.Ethnicity || data["ຊົນເຜົ່າ"] || null,
-        PovertyLevel: data.PovertyLevel || data["ລະດັບຄວາມທຸກຍາກ"] || null,
+        PovertyLevel: data.PovertyLevel || data["Poverty Level"] || data["ລະດັບຄວາມທຸກຍາກ"] || null,
         PWD: data.PWD || data["ຜູ້ພິການບໍ"] || null,
-        APGMember: data.APGMember || data["ເປັນສະມາຊິກກຸ່ມບໍ"] || null,
+        APGMember: data.APGMember || data["APG Member"] || data["ເປັນສະມາຊິກກຸ່ມບໍ"] || null,
 
         // Submission fields
         ReportingPeriod: data.ReportingPeriod || data["ໄລຍະເວລາລາຍງານ"] || null,

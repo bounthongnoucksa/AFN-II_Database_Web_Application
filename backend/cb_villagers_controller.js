@@ -862,13 +862,20 @@ const normalizeKeys = (data) => {
     return {
         PID: data.PID || data.ParticipantId,
         SubmissionID: data.SubmissionID || data.SubmissionId,
+        NameAndSurname: data.NameAndSurname || data["Participant Name"] || data["ຊື່ ແລະ ນາມສະກຸນ ຜູ້ເຂົ້າຮ່ວມ"] || null,
         Age: parseInt(data["Age"] || data["ອາຍຸ"] || 0),
+        Gender: data.Gender || data["ເພດ"] || null,
+        Responsibility: data.Responsibility || data["Responsibility"] || data["ໜ້າທີ່ຮັບຜິດຊອບ"] || null,
+        PovertyLevel: data.PovertyLevel || data["Poverty Level"] || data["ລະດັບຄວາມທຸກຍາກ"] || null,
+        PWD: data.PWD || data["ຜູ້ພິການ"] || null,
+        APGMember: data.APGMember || data["APG Member"] || data["ສະມາຊິກກຸ່ມ APG"] || null,
 
         ReportingPeriod: data["Reporting Period"] || data["ໄລຍະເວລາລາຍງານ"],
         StartDate: data["Start Date"] || data["ວັນເລີ່ມ"],
         EndDate: data["End Date"] || data["ວັນສຳເລັດ"],
-        OtherLocation: data["Other venues than village"] || data["ສະຖານທີ່ອື່ນ (ນອກຈາກບ້ານ)"],
-        ActivityCode: data["Activity Code"] || data["ກິດຈະກຳໃດ"],
+        OtherLocation: data.OtherLocation || data["Other venues than village"] || data["ສະຖານທີ່ອື່ນ (ນອກຈາກບ້ານ)"],
+        ConductedBy: data.ConductedBy || data["Conducted By"] || data["ຈັດຕັ້ງນຳພາ-ສິດສອນ-ເຜີຍແຜ່ ໂດຍ"],
+        ActivityCode: data.ActivityCode || data["Activity Code"] || data["ກິດຈະກຳໃດ"],
 
         IFAD: isNaN(parseInt(data.IFAD)) ? null : parseInt(data.IFAD),
         MAF: isNaN(parseInt(data.MAF)) ? null : parseInt(data.MAF),
@@ -895,12 +902,24 @@ async function editCBVillagerSubmissionAndParticipants(data) {
             UPDATE tb_CB_for_Villagers_Participant
             SET
             
-                Age = ?
+                NameAndSurname = ?,    
+                Age = ?,
+                Gender = ?,
+                Responsibility = ?,
+                PovertyLevel = ?,
+                PWD = ?,
+                APGMember = ?
                 
             WHERE Id = ?;
         `, [
 
+            d.NameAndSurname,            
             d.Age,
+            d.Gender,
+            d.Responsibility,
+            d.PovertyLevel,
+            d.PWD,
+            d.APGMember,
             d.PID
         ]);
 
@@ -912,6 +931,7 @@ async function editCBVillagerSubmissionAndParticipants(data) {
                 ConductDateStart = ?,
                 ConductDateEnd = ?,
                 OtherLocation = ?,
+                ConductedBy = ?,
                 ActivityCode = ?,
                 IFAD = ?,
                 MAF = ?,
@@ -923,6 +943,7 @@ async function editCBVillagerSubmissionAndParticipants(data) {
             d.StartDate,
             d.EndDate,
             d.OtherLocation,
+            d.ConductedBy,
             d.ActivityCode,
             d.IFAD,
             d.MAF,

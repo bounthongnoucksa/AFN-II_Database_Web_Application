@@ -902,25 +902,30 @@ async function editSubmissionAndParticipants(data) {
         await runQuery(db, `
         UPDATE tb_CB_Staff_Participant
         SET
-        Name = ?,
-        Responsibility = ?,
-        Age = ?
+            Name = ?,
+            Responsibility = ?,
+            Office = ?,
+            StaffType = ?,
+            Age = ?,
+            Gender = ?
+                      
+
         WHERE Id = ?; `
-            , [d.Name, d.Responsibility, d.Age, d.PID]);
+            , [d.Name, d.Responsibility, d.Office, d.StaffType, d.Age, d.Gender, d.PID]);
 
         // Update submission
         await runQuery(db, `
         UPDATE tb_CB_Staff_Submission
         SET
-        ReportingPeriodDate = ?,
-        ActivityStartDate = ?,
-        ActivityEndDate = ?,
-        ActivityLocation = ?,
-        IFAD = ?,
-        MAF = ?,
-        WFP = ?,
-        GoL = ?,
-        Ben = ?
+            ReportingPeriodDate = ?,
+            ActivityStartDate = ?,
+            ActivityEndDate = ?,
+            ActivityLocation = ?,
+            IFAD = ?,
+            MAF = ?,
+            WFP = ?,
+            GoL = ?,
+            Ben = ?
         WHERE Id = ?;`,
             [d.ReportingPeriod,
             d.StartDate,

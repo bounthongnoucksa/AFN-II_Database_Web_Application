@@ -7,6 +7,7 @@ import { Modal, Spinner, Button } from 'react-bootstrap'; // Import React Bootst
 import '../App.css'; // Import custom CSS for sticky header
 import { APP_API_URL } from '../constants/appURLConstrants';
 import FilterPanel from '../searchPannel/FilterPanel_v2';
+import { dropdownFieldsByIdx, dropdownOptions, dropdownReverseMap } from '../dropdownMap/cb_villagers_dropdownFieldMapping';
 
 
 
@@ -243,7 +244,7 @@ export default function CBForVillagers({ refreshTrigger }) {
     const handleDownloadCBSVillagersDataFromKobo = async () => {
         try {
             setLoadingModalMessage(true); //for modal loading pop state
-            const response = await axios.get('http://localhost:3001/api/cbForVillagers/downloadFromKoboToolbox');
+            const response = await axios.get(`${APP_API_URL}/api/cbForVillagers/downloadFromKoboToolbox`);
             if (response.data.success) {
                 //alert('Data downloaded successfully from KoboToolbox');
                 setModalMessage('✅ Operation completed successfully!');
@@ -346,7 +347,7 @@ export default function CBForVillagers({ refreshTrigger }) {
         try {
             setLoadingModalMessage(true);
 
-            const response = await axios.post('http://localhost:3001/api/cbForVillagers/deleteParticipant', { participantId, submissionId });
+            const response = await axios.post(`${APP_API_URL}/api/cbForVillagers/deleteParticipant`, { participantId, submissionId });
 
             if (response.data.success) {
                 setModalMessage('✅ Participant deleted successfully');
@@ -405,10 +406,26 @@ export default function CBForVillagers({ refreshTrigger }) {
 
 
         try {
+            //New 26-Nov-2025: Map dropdown display values back to internal values before submission
+            //Makes a copy of the selectedRow object so you can safely modify it without affecting the original state
+            let dataToSubmit = { ...selectedRow };
+
+            Object.entries(dataToSubmit).forEach(([key, val], idx) => {
+                const fieldName = dropdownFieldsByIdx[idx];
+                if (fieldName) {
+                    const internalVal = dropdownReverseMap[fieldName][language][val];
+                    if (internalVal) {
+                        dataToSubmit[key] = internalVal;
+                    }
+                }
+            });
+            /////////////////////////////////////////
+
             //for modal loading pop state
             setLoadingModalMessage(true);
 
-            const response = await axios.post('http://localhost:3001/api/cbForVillagers/updateParticipantAndSubmissionData', selectedRow); // Send the edited data object
+            //const response = await axios.post('http://localhost:3001/api/cbForVillagers/updateParticipantAndSubmissionData', selectedRow); // Send the edited data object
+            const response = await axios.post(`${APP_API_URL}/api/cbForVillagers/updateParticipantAndSubmissionData`, dataToSubmit); // Send the edited data object with new mapping
 
             if (response.data.success) {
                 //alert('✅ Record updated successfully');
@@ -660,8 +677,12 @@ export default function CBForVillagers({ refreshTrigger }) {
 
                                             const isDateField = idx >= 3 && idx <= 5;
                                             //const isEditableText = (idx >= 11 && idx <= 7) || (idx >= 13 && idx <= 18);
-                                            const isEditableText = (idx === 11) || (idx === 13 || idx === 16);
+                                            const isEditableText = (idx === 11) || (idx === 15 || idx === 16);
                                             const isNumericField = (idx >= 24 && idx <= 27) || (idx === 16);
+
+                                            // NEW 26-Nov-2025: detect dropdown field for data which we need to render as select box
+                                            const dropdownFieldName = dropdownFieldsByIdx[idx];
+                                            const isDropdown = Boolean(dropdownFieldName);
 
                                             return (
                                                 <React.Fragment key={idx}>
@@ -670,7 +691,26 @@ export default function CBForVillagers({ refreshTrigger }) {
                                                     <div className={`${colClass} mb-3`}>
                                                         <label className="form-label text-start w-100 fw-bold fs-6" style={{ color: '#001d3d' }}> {key + ":"}</label>
 
-                                                        {isDateField ? (
+                                                        {/* NEW 26-Nov-2025: Dropdown Rendering */}
+                                                        {isDropdown ? (
+                                                            <select
+                                                                className="form-control form-control-sm"
+                                                                value={value}
+                                                                onChange={(e) =>
+                                                                    setSelectedRow((prev) => ({
+                                                                        ...prev,
+                                                                        [key]: e.target.value
+                                                                    }))
+                                                                }
+                                                            >
+                                                                {dropdownOptions[dropdownFieldName].internal.map((internalVal) => (
+                                                                    <option key={internalVal} value={dropdownOptions[dropdownFieldName][language][internalVal]}>
+                                                                        {dropdownOptions[dropdownFieldName][language][internalVal]}
+                                                                    </option>
+                                                                ))}
+                                                            </select>
+
+                                                        ) : isDateField ? (
                                                             <input
                                                                 type="date"
                                                                 className="form-control form-control-sm"
