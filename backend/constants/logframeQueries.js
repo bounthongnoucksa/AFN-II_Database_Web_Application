@@ -1736,7 +1736,7 @@ export const indicatorQueryMap = {
     "1BAct8_Total_Area": {
         query: `
       --1BAct8
-        SELECT SUM(AreaAmount) AS TotalAreaAmount
+        SELECT SUM(AreaAmount) AS count
         FROM (
             SELECT p.HHId, SUM(p.AreaAmount) AS AreaAmount
             FROM tb_Form_1BAct8_Participant p
@@ -1748,6 +1748,142 @@ export const indicatorQueryMap = {
     `,
         getParams: ({ startDate, endDate }) => [startDate, endDate]
     },
+
+
+
+
+
+
+
+
+
+    //Part 7: Persons receiving capacity development support (GAFSP Tier 2 Indicator #10)
+    "cb_staff_Males": {
+    query: `
+        SELECT 
+            COALESCE(
+                COUNT(DISTINCT 
+                    COALESCE(TRIM(S.ReportingPeriodDate), '') || '_' ||
+                    COALESCE(P.Name, '') || '_' ||
+                    COALESCE(P.Office, '') || '_' ||
+                    COALESCE(S.Topic, '')
+                ),
+            0) AS count
+        FROM tb_CB_Staff_Participant P
+        JOIN tb_CB_Staff_Submission S ON P.SubmissionId = S.Id
+        WHERE P.Gender = '_male'
+          AND S.Category <> '6_meeting'
+          AND date(S.ReportingPeriodDate) BETWEEN date(?) AND date(?)
+    `,
+    getParams: ({ startDate, endDate }) => [startDate, endDate],
+},
+
+"cb_staff_Females": {
+    query: `
+        SELECT 
+            COALESCE(
+                COUNT(DISTINCT 
+                    COALESCE(TRIM(S.ReportingPeriodDate), '') || '_' ||
+                    COALESCE(P.Name, '') || '_' ||
+                    COALESCE(P.Office, '') || '_' ||
+                    COALESCE(S.Topic, '')
+                ),
+            0) AS count
+        FROM tb_CB_Staff_Participant P
+        JOIN tb_CB_Staff_Submission S ON P.SubmissionId = S.Id
+        WHERE P.Gender = '_female'
+          AND S.Category <> '6_meeting'
+          AND date(S.ReportingPeriodDate) BETWEEN date(?) AND date(?)
+    `,
+    getParams: ({ startDate, endDate }) => [startDate, endDate],
+},
+
+"cb_staff_Males_Percent": {
+    query: `
+        SELECT
+            ROUND(
+                100.0 * COUNT(DISTINCT CASE
+                    WHEN P.Gender = '_male' THEN
+                        COALESCE(TRIM(S.ReportingPeriodDate), '') || '_' ||
+                        COALESCE(P.Name, '') || '_' ||
+                        COALESCE(P.Office, '') || '_' ||
+                        COALESCE(S.Topic, '')
+                END)
+                / NULLIF(
+                    COUNT(DISTINCT
+                        COALESCE(TRIM(S.ReportingPeriodDate), '') || '_' ||
+                        COALESCE(P.Name, '') || '_' ||
+                        COALESCE(P.Office, '') || '_' ||
+                        COALESCE(S.Topic, '')
+                    ), 0
+                ),
+            0) AS count
+        FROM tb_CB_Staff_Participant P
+        JOIN tb_CB_Staff_Submission S ON P.SubmissionId = S.Id
+        WHERE S.Category <> '6_meeting'
+          AND date(S.ReportingPeriodDate) BETWEEN date(?) AND date(?)
+    `,
+    getParams: ({ startDate, endDate }) => [startDate, endDate],
+},
+
+"cb_staff_Females_Percent": {
+    query: `
+        SELECT
+            ROUND(
+                100.0 * COUNT(DISTINCT CASE
+                    WHEN P.Gender = '_female' THEN
+                        COALESCE(TRIM(S.ReportingPeriodDate), '') || '_' ||
+                        COALESCE(P.Name, '') || '_' ||
+                        COALESCE(P.Office, '') || '_' ||
+                        COALESCE(S.Topic, '')
+                END)
+                / NULLIF(
+                    COUNT(DISTINCT
+                        COALESCE(TRIM(S.ReportingPeriodDate), '') || '_' ||
+                        COALESCE(P.Name, '') || '_' ||
+                        COALESCE(P.Office, '') || '_' ||
+                        COALESCE(S.Topic, '')
+                    ), 0
+                ),
+            0) AS count
+        FROM tb_CB_Staff_Participant P
+        JOIN tb_CB_Staff_Submission S ON P.SubmissionId = S.Id
+        WHERE S.Category <> '6_meeting'
+          AND date(S.ReportingPeriodDate) BETWEEN date(?) AND date(?)
+    `,
+    getParams: ({ startDate, endDate }) => [startDate, endDate],
+},
+
+"cb_staff_Young_people": {
+    query: `
+        SELECT 
+            COALESCE(
+                COUNT(DISTINCT 
+                    COALESCE(TRIM(S.ReportingPeriodDate), '') || '_' ||
+                    COALESCE(P.Name, '') || '_' ||
+                    COALESCE(P.Office, '') || '_' ||
+                    COALESCE(S.Topic, '')
+                ),
+            0) AS count
+        FROM tb_CB_Staff_Participant P
+        JOIN tb_CB_Staff_Submission S ON P.SubmissionId = S.Id
+        WHERE P.Age BETWEEN ? AND ?
+          AND S.Category <> '6_meeting'
+          AND date(S.ReportingPeriodDate) BETWEEN date(?) AND date(?)
+    `,
+    getParams: ({ minAge, maxAge, startDate, endDate }) => [
+        minAge,
+        maxAge,
+        startDate,
+        endDate
+    ],
+},
+
+
+
+
+
+
 
 
 

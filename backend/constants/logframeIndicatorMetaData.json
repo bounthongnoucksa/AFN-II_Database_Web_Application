@@ -370,6 +370,59 @@
     "indicator": "Hectares of land - Area (ha)",
     "midTerm": 14000,
     "endTarget": 28000
+  },
+
+
+
+
+
+
+
+
+
+  "cb_staff_Males": {
+    "hierarchy": "2.7 | 1500 persons receiving capacity development support",
+    "indicatorGroup": "Persons receiving capacity development support (GAFSP Tier 2 Indicator #10)",
+    "gender": "Male",
+    "baseline": 0,
+    "indicator": "Males",
+    "midTerm": 150,
+    "endTarget": 750
+  },
+  "cb_staff_Females": {
+    "hierarchy": "2.7 | 1500 persons receiving capacity development support",
+    "indicatorGroup": "Persons receiving capacity development support (GAFSP Tier 2 Indicator #10)",
+    "gender": "Female",
+    "baseline": 0,
+    "indicator": "Females",
+    "midTerm": 150,
+    "endTarget": 750
+  },
+  "cb_staff_Males_Percent": {
+    "hierarchy": "2.7 | 1500 persons receiving capacity development support",
+    "indicatorGroup": "Persons receiving capacity development support (GAFSP Tier 2 Indicator #10)",
+    "baseline": 0,
+    "indicator": "Males (%)",
+    "midTerm": 20,
+    "endTarget": 50
+  },
+  "cb_staff_Females_Percent": {
+    "hierarchy": "2.7 | 1500 persons receiving capacity development support",
+    "indicatorGroup": "Persons receiving capacity development support (GAFSP Tier 2 Indicator #10)",
+    "baseline": 0,
+    "indicator": "Females (%)",
+    "midTerm": 20,
+    "endTarget": 50
+  },
+"cb_staff_Young_people": {
+    "hierarchy": "2.7 | 1500 persons receiving capacity development support",
+    "indicatorGroup": "Persons receiving capacity development support (GAFSP Tier 2 Indicator #10)",
+    "minAge": "15",
+    "maxAge": "35",
+    "baseline": 0,
+    "indicator": "Young people",
+    "midTerm": 300,
+    "endTarget": 750
   }
 
 

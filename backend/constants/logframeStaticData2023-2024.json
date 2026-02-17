@@ -181,6 +181,37 @@
   "1BAct8_Total_Area": {
     "2023": 0,
     "2024-Current": 0
+  },
+
+
+
+
+
+
+
+
+
+
+
+  "cb_staff_Males": {
+    "2023": 0,
+    "2024-Current": 0
+  },
+  "cb_staff_Females": {
+    "2023": 0,
+    "2024-Current": 0
+  },
+  "cb_staff_Males_Percent": {
+    "2023": 0,
+    "2024-Current": 0
+  },
+  "cb_staff_Females_Percent": {
+    "2023": 0,
+    "2024-Current": 0
+  },
+"cb_staff_Young_people": {
+    "2023": 0,
+    "2024-Current": 0
   }
 
 
