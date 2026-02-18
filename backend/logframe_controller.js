@@ -191,7 +191,8 @@ async function fetchIndicatorData() {
         if (indicatorKey === 'Outreach_Indigenous_people' ||
           indicatorKey === '1A1_Indigenous_people' ||
           indicatorKey === 'cb_villagers_Crop_Indigenous_People' ||
-          indicatorKey === 'cb_villagers_Livestock_Indigenous_People') {
+          indicatorKey === 'cb_villagers_Livestock_Indigenous_People' ||
+        indicatorKey === '1BAct6_Indigenous_people') {
 
           query = query.replace(/\?\?/g, meta.ethnic);
         }

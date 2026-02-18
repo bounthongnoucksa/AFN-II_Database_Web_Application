@@ -123,7 +123,7 @@ export default function LogFrame() {
                             {Object.entries(groupedData).map(([groupTitle, rows], groupIndex) => (
                                 <React.Fragment key={`group-${groupIndex}`}>
                                     <tr className="table-secondary fw-bold text-start">
-                                        <td colSpan={totalColumns}>Output: &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; {groupTitle}</td>
+                                        <td colSpan={totalColumns}>Output: &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; {groupTitle}</td>
                                         {/* <td colSpan= '1'>Output</td> */}
                                         {/* <td colSpan= '10'>Output: {groupTitle}</td> */}
                                     </tr>

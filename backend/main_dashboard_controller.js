@@ -813,6 +813,8 @@ function getForm1BAct6Statics() {
                         --  Unique farmers/participants
                         AllParticipants AS (
                             SELECT DISTINCT
+                                S.Reporting_period,
+								S.SubActivity,
                                 s.Province,
                                 s.District,
                                 s.Village,
