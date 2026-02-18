@@ -1250,7 +1250,7 @@ export const indicatorQueryMap = {
 
 
 
-    
+
 
 
     //Part 2: 1.1.8  Households provided with targeted support to improve their nutrition
@@ -2688,18 +2688,42 @@ export const indicatorQueryMap = {
 //Part 10: Number of nutrition plans developed and endorsed
 // in involve in 2 tables: 2Act1a: Nutrition plans developed, 2Act1b: Nutrition plans endorsed
 
-// "3Act1a_Nutrition_plans_developed": {
-//     query: `
-
-//     `,
-//     getParams: ({ startDate, endDate }) => [startDate, endDate],
-//   },
-// "3Act1b_Nutrition_plans_endorsed": {
-//     query: `
-
-//     `,
-//     getParams: ({ startDate, endDate }) => [startDate, endDate],
-//   },
+"3Act1a_Nutrition_plans_developed": {
+    query: `
+    SELECT COUNT(*) AS count
+    FROM (
+    SELECT DISTINCT
+        TRIM(COALESCE(Reporting_period, '')) AS Reporting_period,
+        TRIM(COALESCE(Province, '')) AS Province,
+        TRIM(COALESCE(District, '')) AS District,
+        TRIM(COALESCE(Village, '')) AS Village,
+        TRIM(COALESCE(VDPApproval, '')) AS VDPApproval
+        --TRIM(COALESCE(InvestmentItems, '')) AS InvestmentItems
+    FROM tb_Form_3Act1a_Submission
+    WHERE 
+        TRIM(VDPApproval) = 'yes'
+        AND date(Reporting_period) BETWEEN date(?) AND date(?)
+);
+    `,
+    getParams: ({ startDate, endDate }) => [startDate, endDate],
+  },
+"3Act1b_Nutrition_plans_endorsed": {
+    query: `
+    SELECT SUM(VDPApprovalNumber) AS count
+    FROM (
+    SELECT DISTINCT
+        TRIM(COALESCE(Reporting_period, '')) AS Reporting_period,
+        TRIM(COALESCE(Province, '')) AS Province,
+        TRIM(COALESCE(District, '')) AS District,
+        TRIM(COALESCE(VDPApprovalNumber, '')) AS VDPApprovalNumber
+    FROM tb_Form_3Act1b_Submission
+    WHERE 
+        VDPApprovalNumber > 0
+        AND date(Reporting_period) BETWEEN date(?) AND date(?)
+);
+    `,
+    getParams: ({ startDate, endDate }) => [startDate, endDate],
+  },
 
 
 
