@@ -44,12 +44,19 @@ export const indicatorQueryMap = {
                             UNION ALL
                             
                             -- 1BAct6 (×2)
+                            --SELECT 
+                            --    COUNT(DISTINCT COALESCE(TRIM(P.HHId), '') || '_' || COALESCE(TRIM(P.NameAndSurname), '') || '_' || COALESCE(TRIM(S.Reporting_period), '') || '_' || COALESCE(TRIM(S.Subactivity), '')) * 2 AS count
+                            --FROM tb_Form_1BAct6_Participant P
+                            --JOIN tb_Form_1BAct6_Submission S ON P.SubmissionId = S.Id
+                            --WHERE P.Gender = ? 
+                            --AND date(S.Reporting_period) BETWEEN date(?) AND date(?)
+                            -- #### For 1BAct6, we will not filter by gender, but just take half of total count (as agree with WFP-Edwin and AFN-II M&E-Khamtan) ####
                             SELECT 
-                                COUNT(DISTINCT COALESCE(TRIM(P.HHId), '') || '_' || COALESCE(TRIM(P.NameAndSurname), '') || '_' || COALESCE(TRIM(S.Reporting_period), '') || '_' || COALESCE(TRIM(S.Subactivity), '')) * 2 AS count
+                                COUNT(DISTINCT COALESCE(TRIM(P.HHId), '') || '_' || COALESCE(TRIM(P.NameAndSurname), '') || '_' || COALESCE(TRIM(S.Reporting_period), '') || '_' || COALESCE(TRIM(S.Subactivity), '')) AS count
                             FROM tb_Form_1BAct6_Participant P
                             JOIN tb_Form_1BAct6_Submission S ON P.SubmissionId = S.Id
-                            WHERE P.Gender = ? 
-                            AND date(S.Reporting_period) BETWEEN date(?) AND date(?)
+                            --WHERE P.Gender = ? 
+                            WHERE date(S.Reporting_period) BETWEEN date(?) AND date(?)
                             
                             UNION ALL
                             
@@ -105,14 +112,42 @@ export const indicatorQueryMap = {
                         ) AS Combined_Counts;
 
     `,
-        //getParams: ({ gender, startDate, endDate }) => [gender, startDate, endDate],
-        getParams: ({ gender, startDate, endDate }) => {
-            const params = [];
-            for (let i = 0; i < 9; i++) {
-                params.push(gender, startDate, endDate);
-            }
-            return params;
-        }
+        ////getParams: ({ gender, startDate, endDate }) => [gender, startDate, endDate],
+        // getParams: ({ gender, startDate, endDate }) => {
+        //     const params = [];
+        //     for (let i = 0; i < 9; i++) {
+        //         params.push(gender, startDate, endDate);
+        //     }
+        //     return params;
+        // }
+        getParams: ({ gender, startDate, endDate }) => [
+            // 1A1 Form
+            gender, startDate, endDate,
+
+            // 1A1 CB
+            gender, startDate, endDate,
+
+            // 1A4
+            gender, startDate, endDate,
+
+            // 1BAct6 (No gender parameter)
+            startDate, endDate,
+
+            // 1BAct8
+            gender, startDate, endDate,
+
+            // 2Act1
+            gender, startDate, endDate,
+
+            // 2Act2
+            gender, startDate, endDate,
+
+            // 2Act3
+            gender, startDate, endDate,
+
+            // 3Act2
+            gender, startDate, endDate,
+        ]
     },
 
     "Outreach_Females": {
@@ -156,12 +191,19 @@ export const indicatorQueryMap = {
                 UNION ALL
 
                 -- 1BAct6 (×2)
+                --SELECT 
+                --    COUNT(DISTINCT COALESCE(TRIM(P.HHId), '') || '_' || COALESCE(TRIM(P.NameAndSurname), '') || '_' || COALESCE(TRIM(S.Reporting_period), '') || '_' || COALESCE(TRIM(S.Subactivity), '')) * 2 AS count
+                --FROM tb_Form_1BAct6_Participant P
+                --JOIN tb_Form_1BAct6_Submission S ON P.SubmissionId = S.Id
+                --WHERE P.Gender = ? 
+                --AND date(S.Reporting_period) BETWEEN date(?) AND date(?)
+                -- #### For 1BAct6, we will not filter by gender, but just take half of total count (as agree with WFP-Edwin and AFN-II M&E-Khamtan) ####
                 SELECT 
-                    COUNT(DISTINCT COALESCE(TRIM(P.HHId), '') || '_' || COALESCE(TRIM(P.NameAndSurname), '') || '_' || COALESCE(TRIM(S.Reporting_period), '') || '_' || COALESCE(TRIM(S.Subactivity), '')) * 2 AS count
+                    COUNT(DISTINCT COALESCE(TRIM(P.HHId), '') || '_' || COALESCE(TRIM(P.NameAndSurname), '') || '_' || COALESCE(TRIM(S.Reporting_period), '') || '_' || COALESCE(TRIM(S.Subactivity), '')) AS count
                 FROM tb_Form_1BAct6_Participant P
                 JOIN tb_Form_1BAct6_Submission S ON P.SubmissionId = S.Id
-                WHERE P.Gender = ? 
-                AND date(S.Reporting_period) BETWEEN date(?) AND date(?)
+                --WHERE P.Gender = ? 
+                WHERE date(S.Reporting_period) BETWEEN date(?) AND date(?)
 
                 UNION ALL
 
@@ -216,14 +258,42 @@ export const indicatorQueryMap = {
                 AND date(S.Reporting_Period) BETWEEN date(?) AND date(?)
             ) AS Combined_Counts;
     `,
-        //getParams: ({ gender, startDate, endDate }) => [gender, startDate, endDate],
-        getParams: ({ gender, startDate, endDate }) => {
-            const params = [];
-            for (let i = 0; i < 9; i++) {
-                params.push(gender, startDate, endDate);
-            }
-            return params;
-        }
+        ////getParams: ({ gender, startDate, endDate }) => [gender, startDate, endDate],
+        // getParams: ({ gender, startDate, endDate }) => {
+        //     const params = [];
+        //     for (let i = 0; i < 9; i++) {
+        //         params.push(gender, startDate, endDate);
+        //     }
+        //     return params;
+        // }
+        getParams: ({ gender, startDate, endDate }) => [
+            // 1A1 Form
+            gender, startDate, endDate,
+
+            // 1A1 CB
+            gender, startDate, endDate,
+
+            // 1A4
+            gender, startDate, endDate,
+
+            // 1BAct6 (No gender parameter)
+            startDate, endDate,
+
+            // 1BAct8
+            gender, startDate, endDate,
+
+            // 2Act1
+            gender, startDate, endDate,
+
+            // 2Act2
+            gender, startDate, endDate,
+
+            // 2Act3
+            gender, startDate, endDate,
+
+            // 3Act2
+            gender, startDate, endDate,
+        ]
     },
 
     "Outreach_Young_people": {
@@ -450,83 +520,222 @@ export const indicatorQueryMap = {
         }
     },
     "Outreach_persons_received_services": {
+        //     query: `
+        //             SELECT SUM(count) AS count
+        //             FROM (
+        //                 --It was requested to combine counts from Form 1A.1 and CB for Villagers for indicator 1A.1 and 1A2 from M&E team
+        //                         SELECT
+        //                             A.Count_1A1_All_Participants + B.Count_cb_for_villagers_All_Participants AS count
+        //                         FROM
+        //                         (
+        //                             SELECT 
+        //                                 COUNT(DISTINCT COALESCE(TRIM(P.HHId), '') || '_' || COALESCE(TRIM(P.NameAndSurname), '') || '_' || COALESCE(TRIM(S.ReportingPeriod), '')|| '_' || COALESCE(TRIM(S.Subactivity), '')) AS Count_1A1_All_Participants                                    
+        //                             FROM tb_Form_1A1_Participant P
+        //                             JOIN tb_Form_1A1_Submission S ON P.SubmissionId = S.Id
+        //                             WHERE date(S.ReportingPeriod) BETWEEN date(?) AND date(?)
+        //                         ) A
+        //                         CROSS JOIN
+        //                         (
+        //                             SELECT 
+        //                                 COUNT(DISTINCT COALESCE(TRIM(P.HHId), '') || '_' || COALESCE(TRIM(P.NameAndSurname), '') || '_' || COALESCE(TRIM(S.ReportingPeriod), '') || '_' || COALESCE(TRIM(S.SpecializedTopic), '')) AS Count_cb_for_villagers_All_Participants                                    
+        //                             FROM tb_CB_for_Villagers_Participant P
+        //                             JOIN tb_CB_for_Villagers_Submission S ON P.SubmissionId = S.Id
+        //                             WHERE S.ActivityCode IN ('1A.1','1A.2')                                
+        //                             AND date(S.ReportingPeriod) BETWEEN date(?) AND date(?)
+        //                         ) B
+
+        //                 UNION ALL
+
+        //                 SELECT COUNT(DISTINCT COALESCE(TRIM(P.HHId), '') || '_' || COALESCE(TRIM(P.NameAndSurname), '') || '_' || COALESCE(TRIM(S.Reporting_period), '') || '_' || COALESCE(TRIM(S.Subactivity), '')) * 2 AS count
+        //                 FROM tb_Form_1A4_Participant P
+        //                 JOIN tb_Form_1A4_Submission S ON P.SubmissionId = S.Id
+        //                 WHERE date(S.Reporting_period) BETWEEN date(?) AND date(?)
+
+        //                 UNION ALL
+
+        //                 SELECT COUNT(DISTINCT COALESCE(TRIM(P.HHId), '') || '_' || COALESCE(TRIM(P.NameAndSurname), '') || '_' || COALESCE(TRIM(S.Reporting_period), '') || '_' || COALESCE(TRIM(S.Subactivity), '')) * 2 AS count
+        //                 FROM tb_Form_1BAct6_Participant P
+        //                 JOIN tb_Form_1BAct6_Submission S ON P.SubmissionId = S.Id
+        //                 WHERE date(S.Reporting_period) BETWEEN date(?) AND date(?)
+
+        //                 UNION ALL
+
+        //                 SELECT COUNT(DISTINCT COALESCE(TRIM(P.HHId), '') || '_' || COALESCE(TRIM(P.NameAndSurname), '') || '_' || COALESCE(TRIM(S.Reporting_period), '') || '_' || COALESCE(TRIM(S.Subactivity), '')) * 2 AS count
+        //                 FROM tb_Form_1BAct8_Participant P
+        //                 JOIN tb_Form_1BAct8_Submission S ON P.SubmissionId = S.Id
+        //                 WHERE S.Subactivity IN ('con_irr', 'recon_irr')
+        //                 AND date(S.Reporting_Period) BETWEEN date(?) AND date(?)
+
+        //                 UNION ALL
+
+        //                 SELECT COUNT(DISTINCT COALESCE(P.NameOfMSME_Owner, '')) * 3 AS count
+        //                 FROM tb_Form_2Act1_Participant P
+        //                 JOIN tb_Form_2Act1_Submission S ON P.SubmissionId = S.Id
+        //                 WHERE date(S.Reporting_Period) BETWEEN date(?) AND date(?)
+
+        //                 UNION ALL
+
+        //                 SELECT COUNT(DISTINCT COALESCE(P.NameAndSurname, '')) * 25 AS count
+        //                 FROM tb_Form_2Act2_Participant P
+        //                 JOIN tb_Form_2Act2_Submission S ON P.SubmissionId = S.Id
+        //                 WHERE date(S.Reporting_Period) BETWEEN date(?) AND date(?)
+
+        //                 UNION ALL
+
+        //                 SELECT COUNT(DISTINCT COALESCE(P.HHId, '') || '_' || COALESCE(P.NameAndSurname, '')) * 6 AS count
+        //                 FROM tb_Form_2Act3_Participant P
+        //                 JOIN tb_Form_2Act3_Submission S ON P.SubmissionId = S.Id
+        //                 WHERE S.Subactivity IN ('accesstracks')
+        //                 AND date(S.Reporting_Period) BETWEEN date(?) AND date(?)
+
+        //                 UNION ALL
+
+        //                 SELECT COUNT(DISTINCT COALESCE(P.HHId, '') || '_' || COALESCE(P.NameOfAPG, '')) * 2 AS count
+        //                 FROM tb_Form_3Act2_Participant P
+        //                 JOIN tb_Form_3Act2_Submission S ON P.Submission_id = S.Id
+        //                 WHERE date(S.Reporting_Period) BETWEEN date(?) AND date(?)
+        //             ) AS Combined_Counts;
+
+        // `
         query: `
-                SELECT SUM(count) AS count
+           SELECT 
+                --SUM(CASE WHEN Gender = 'Female' THEN total_count ELSE 0 END) AS Female_Total,
+                --SUM(CASE WHEN Gender = 'Male' THEN total_count ELSE 0 END) AS Male_Total,
+                SUM(total_count) AS count
+            FROM (
+
+                -- 1A1
+                --It was requested to combine counts from Form 1A.1 and CB for Villagers for indicator 1A.1 and 1A2 from M&E team
+                SELECT Gender, SUM(cnt) AS total_count
                 FROM (
-                    --It was requested to combine counts from Form 1A.1 and CB for Villagers for indicator 1A.1 and 1A2 from M&E team
-                            SELECT
-                                A.Count_1A1_All_Participants + B.Count_cb_for_villagers_All_Participants AS count
-                            FROM
-                            (
-                                SELECT 
-                                    COUNT(DISTINCT COALESCE(TRIM(P.HHId), '') || '_' || COALESCE(TRIM(P.NameAndSurname), '') || '_' || COALESCE(TRIM(S.ReportingPeriod), '')|| '_' || COALESCE(TRIM(S.Subactivity), '')) AS Count_1A1_All_Participants                                    
-                                FROM tb_Form_1A1_Participant P
-                                JOIN tb_Form_1A1_Submission S ON P.SubmissionId = S.Id
-                                WHERE date(S.ReportingPeriod) BETWEEN date(?) AND date(?)
-                            ) A
-                            CROSS JOIN
-                            (
-                                SELECT 
-                                    COUNT(DISTINCT COALESCE(TRIM(P.HHId), '') || '_' || COALESCE(TRIM(P.NameAndSurname), '') || '_' || COALESCE(TRIM(S.ReportingPeriod), '') || '_' || COALESCE(TRIM(S.SpecializedTopic), '')) AS Count_cb_for_villagers_All_Participants                                    
-                                FROM tb_CB_for_Villagers_Participant P
-                                JOIN tb_CB_for_Villagers_Submission S ON P.SubmissionId = S.Id
-                                WHERE S.ActivityCode IN ('1A.1','1A.2')                                
-                                AND date(S.ReportingPeriod) BETWEEN date(?) AND date(?)
-                            ) B
+                    SELECT 
+                        P.Gender,
+                        COUNT(DISTINCT COALESCE(TRIM(P.HHId), '') || '_' ||
+                                        COALESCE(TRIM(P.NameAndSurname), '') || '_' ||
+                                        COALESCE(TRIM(S.ReportingPeriod), '') || '_' ||
+                                        COALESCE(TRIM(S.Subactivity), '')
+                        ) AS cnt
+                    FROM tb_Form_1A1_Participant P
+                    JOIN tb_Form_1A1_Submission S ON P.SubmissionId = S.Id
+                    WHERE P.Gender IN ('Male','Female')
+                    AND date(S.ReportingPeriod) BETWEEN date(?) AND date(?)
+                    GROUP BY P.Gender
 
                     UNION ALL
 
-                    SELECT COUNT(DISTINCT COALESCE(TRIM(P.HHId), '') || '_' || COALESCE(TRIM(P.NameAndSurname), '') || '_' || COALESCE(TRIM(S.Reporting_period), '') || '_' || COALESCE(TRIM(S.Subactivity), '')) * 2 AS count
-                    FROM tb_Form_1A4_Participant P
-                    JOIN tb_Form_1A4_Submission S ON P.SubmissionId = S.Id
-                    WHERE date(S.Reporting_period) BETWEEN date(?) AND date(?)
+                    SELECT 
+                        P.Gender,
+                        COUNT(DISTINCT COALESCE(TRIM(P.HHId), '') || '_' ||
+                                        COALESCE(TRIM(P.NameAndSurname), '') || '_' ||
+                                        COALESCE(TRIM(S.ReportingPeriod), '') || '_' ||
+                                        COALESCE(TRIM(S.SpecializedTopic), '')
+                        ) AS cnt
+                    FROM tb_CB_for_Villagers_Participant P
+                    JOIN tb_CB_for_Villagers_Submission S ON P.SubmissionId = S.Id
+                    WHERE S.ActivityCode IN ('1A.1','1A.2')
+                    AND P.Gender IN ('Male','Female')
+                    AND date(S.ReportingPeriod) BETWEEN date(?) AND date(?)
+                    GROUP BY P.Gender
+                )
+                GROUP BY Gender
 
-                    UNION ALL
+                UNION ALL
 
-                    SELECT COUNT(DISTINCT COALESCE(TRIM(P.HHId), '') || '_' || COALESCE(TRIM(P.NameAndSurname), '') || '_' || COALESCE(TRIM(S.Reporting_period), '') || '_' || COALESCE(TRIM(S.Subactivity), '')) * 2 AS count
-                    FROM tb_Form_1BAct6_Participant P
-                    JOIN tb_Form_1BAct6_Submission S ON P.SubmissionId = S.Id
-                    WHERE date(S.Reporting_period) BETWEEN date(?) AND date(?)
+                -- 1A4 (×2)
+                SELECT P.Gender,
+                    COUNT(DISTINCT COALESCE(TRIM(P.HHId), '') || '_' ||
+                                            COALESCE(TRIM(P.NameAndSurname), '') || '_' ||
+                                            COALESCE(TRIM(S.Reporting_period), '') || '_' ||
+                                            COALESCE(TRIM(S.Subactivity), '')
+                    ) * 2
+                FROM tb_Form_1A4_Participant P
+                JOIN tb_Form_1A4_Submission S ON P.SubmissionId = S.Id
+                WHERE P.Gender IN ('Male','Female')
+                AND date(S.Reporting_period) BETWEEN date(?) AND date(?)
+                GROUP BY P.Gender
 
-                    UNION ALL
+                UNION ALL
 
-                    SELECT COUNT(DISTINCT COALESCE(TRIM(P.HHId), '') || '_' || COALESCE(TRIM(P.NameAndSurname), '') || '_' || COALESCE(TRIM(S.Reporting_period), '') || '_' || COALESCE(TRIM(S.Subactivity), '')) * 2 AS count
-                    FROM tb_Form_1BAct8_Participant P
-                    JOIN tb_Form_1BAct8_Submission S ON P.SubmissionId = S.Id
-                    WHERE S.Subactivity IN ('con_irr', 'recon_irr')
-                    AND date(S.Reporting_Period) BETWEEN date(?) AND date(?)
+                -- 1BAct6 (×2)
+                SELECT P.Gender,
+                    COUNT(DISTINCT COALESCE(TRIM(P.HHId), '') || '_' ||
+                                            COALESCE(TRIM(P.NameAndSurname), '') || '_' ||
+                                            COALESCE(TRIM(S.Reporting_period), '') || '_' ||
+                                            COALESCE(TRIM(S.Subactivity), '')
+                    ) * 2
+                FROM tb_Form_1BAct6_Participant P
+                JOIN tb_Form_1BAct6_Submission S ON P.SubmissionId = S.Id
+                WHERE P.Gender IN ('Male','Female')
+                AND date(S.Reporting_period) BETWEEN date(?) AND date(?)
+                GROUP BY P.Gender
 
-                    UNION ALL
+                UNION ALL
 
-                    SELECT COUNT(DISTINCT COALESCE(P.NameOfMSME_Owner, '')) * 3 AS count
-                    FROM tb_Form_2Act1_Participant P
-                    JOIN tb_Form_2Act1_Submission S ON P.SubmissionId = S.Id
-                    WHERE date(S.Reporting_Period) BETWEEN date(?) AND date(?)
+                -- 1BAct8 (×2)
+                SELECT P.Gender,
+                    COUNT(DISTINCT COALESCE(TRIM(P.HHId), '') || '_' ||
+                                            COALESCE(TRIM(P.NameAndSurname), '') || '_' ||
+                                            COALESCE(TRIM(S.Reporting_period), '') || '_' ||
+                                            COALESCE(TRIM(S.Subactivity), '')
+                    ) * 2
+                FROM tb_Form_1BAct8_Participant P
+                JOIN tb_Form_1BAct8_Submission S ON P.SubmissionId = S.Id
+                WHERE S.Subactivity IN ('con_irr','recon_irr')
+                AND P.Gender IN ('Male','Female')
+                AND date(S.Reporting_period) BETWEEN date(?) AND date(?)
+                GROUP BY P.Gender
 
-                    UNION ALL
+                UNION ALL
 
-                    SELECT COUNT(DISTINCT COALESCE(P.NameAndSurname, '')) * 25 AS count
-                    FROM tb_Form_2Act2_Participant P
-                    JOIN tb_Form_2Act2_Submission S ON P.SubmissionId = S.Id
-                    WHERE date(S.Reporting_Period) BETWEEN date(?) AND date(?)
+                -- 2Act1 (×3)
+                SELECT P.Gender,
+                    COUNT(DISTINCT COALESCE(TRIM(P.NameOfMSME_Owner), '')) * 3
+                FROM tb_Form_2Act1_Participant P
+                JOIN tb_Form_2Act1_Submission S ON P.SubmissionId = S.Id
+                WHERE P.Gender IN ('Male','Female')
+                AND date(S.Reporting_period) BETWEEN date(?) AND date(?)
+                GROUP BY P.Gender
 
-                    UNION ALL
+                UNION ALL
 
-                    SELECT COUNT(DISTINCT COALESCE(P.HHId, '') || '_' || COALESCE(P.NameAndSurname, '')) * 6 AS count
-                    FROM tb_Form_2Act3_Participant P
-                    JOIN tb_Form_2Act3_Submission S ON P.SubmissionId = S.Id
-                    WHERE S.Subactivity IN ('accesstracks')
-                    AND date(S.Reporting_Period) BETWEEN date(?) AND date(?)
+                -- 2Act2 (×25)
+                SELECT P.Gender,
+                    COUNT(DISTINCT COALESCE(TRIM(P.NameAndSurname), '')) * 25
+                FROM tb_Form_2Act2_Participant P
+                JOIN tb_Form_2Act2_Submission S ON P.SubmissionId = S.Id
+                WHERE P.Gender IN ('Male','Female')
+                AND date(S.Reporting_period) BETWEEN date(?) AND date(?)
+                GROUP BY P.Gender
 
-                    UNION ALL
+                UNION ALL
 
-                    SELECT COUNT(DISTINCT COALESCE(P.HHId, '') || '_' || COALESCE(P.NameOfAPG, '')) * 2 AS count
-                    FROM tb_Form_3Act2_Participant P
-                    JOIN tb_Form_3Act2_Submission S ON P.Submission_id = S.Id
-                    WHERE date(S.Reporting_Period) BETWEEN date(?) AND date(?)
-                ) AS Combined_Counts;
+                -- 2Act3 (×6)
+                SELECT P.Gender,
+                    COUNT(DISTINCT COALESCE(TRIM(P.HHId), '') || '_' ||
+                                            COALESCE(TRIM(P.NameAndSurname), '')
+                    ) * 6
+                FROM tb_Form_2Act3_Participant P
+                JOIN tb_Form_2Act3_Submission S ON P.SubmissionId = S.Id
+                WHERE S.Subactivity IN ('accesstracks')
+                AND P.Gender IN ('Male','Female')
+                AND date(S.Reporting_period) BETWEEN date(?) AND date(?)
+                GROUP BY P.Gender
 
-    `,
+                UNION ALL
+
+                -- 3Act2 (×2)
+                SELECT P.Gender,
+                    COUNT(DISTINCT COALESCE(TRIM(P.HHId), '') || '_' ||
+                                            COALESCE(TRIM(P.NameOfAPG), '')
+                    ) * 2
+                FROM tb_Form_3Act2_Participant P
+                JOIN tb_Form_3Act2_Submission S ON P.Submission_id = S.Id
+                WHERE P.Gender IN ('Male','Female')
+                AND date(S.Reporting_period) BETWEEN date(?) AND date(?)
+                GROUP BY P.Gender
+
+            ) AS All_Activities;    
+           `,
         //getParams: ({ startDate, endDate }) => [startDate, endDate],
         getParams: ({ startDate, endDate }) => {
             const params = [];
@@ -819,7 +1028,7 @@ export const indicatorQueryMap = {
     //##################### SurveyID1 ######################
     //Assessment Survey Part: 
     // SurveyID1 : 16,800 households with increased incomes by 20% (GAFSP Tier 1 indicator)
-    
+
     // "SurveyID1_Question1_Number_of_Households" : {
     // query: `
 
@@ -844,7 +1053,7 @@ export const indicatorQueryMap = {
     //##################### SurveyID2 ######################
     //Assessment Survey Part: 
     // SurveyID2 : 16,800 households with decreased food insecurity by 20% measured by Food Insecurity Experience Scale (FIES) - GAFSP Tier 1 indicator
-    
+
     //"SurveyID2_Question1_Number_of_Households" : {
     // query: `
 
@@ -877,44 +1086,42 @@ export const indicatorQueryMap = {
     //##################### SurveyID3 ######################
     //Assessment Survey Part: 
     // SurveyID3 : 1.2.8  Women reporting minimum dietary diversity (MDDW)
-//   "SurveyID3_Question1_Women_Percentage" : {
-//     query: `
+    //   "SurveyID3_Question1_Women_Percentage" : {
+    //     query: `
 
-//     `,
-//     getParams: ({ startDate, endDate }) => [startDate, endDate],
-//   },
-//   "SurveyID3_Question2_Households_Number_of_Women" : {
-//     query: `
+    //     `,
+    //     getParams: ({ startDate, endDate }) => [startDate, endDate],
+    //   },
+    //   "SurveyID3_Question2_Households_Number_of_Women" : {
+    //     query: `
 
-//     `,
-//     getParams: ({ startDate, endDate }) => [startDate, endDate],
-//   },
-//   "SurveyID3_Question3_Households_Percentage" : {
-//     query: `
+    //     `,
+    //     getParams: ({ startDate, endDate }) => [startDate, endDate],
+    //   },
+    //   "SurveyID3_Question3_Households_Percentage" : {
+    //     query: `
 
-//     `,
-//     getParams: ({ startDate, endDate }) => [startDate, endDate],
-//   },
-//   "SurveyID3_Question4_Number_of_Households" : {
-//     query: `
+    //     `,
+    //     getParams: ({ startDate, endDate }) => [startDate, endDate],
+    //   },
+    //   "SurveyID3_Question4_Number_of_Households" : {
+    //     query: `
 
-//     `,
-//     getParams: ({ startDate, endDate }) => [startDate, endDate],
-//   },
-//   "SurveyID3_Question5_Number_of_Household_members" : {
-//     query: `
+    //     `,
+    //     getParams: ({ startDate, endDate }) => [startDate, endDate],
+    //   },
+    //   "SurveyID3_Question5_Number_of_Household_members" : {
+    //     query: `
 
-//     `,
-//     getParams: ({ startDate, endDate }) => [startDate, endDate],
-//   },
-//   "SurveyID3_Question6_Number_of_Women_headed_households" : {
-//     query: `
+    //     `,
+    //     getParams: ({ startDate, endDate }) => [startDate, endDate],
+    //   },
+    //   "SurveyID3_Question6_Number_of_Women_headed_households" : {
+    //     query: `
 
-//     `,
-//     getParams: ({ startDate, endDate }) => [startDate, endDate],
-//   },
-
-
+    //     `,
+    //     getParams: ({ startDate, endDate }) => [startDate, endDate],
+    //   },
 
 
 
@@ -923,10 +1130,12 @@ export const indicatorQueryMap = {
 
 
 
-//##################### SurveyID4 ######################
+
+
+    //##################### SurveyID4 ######################
     //Assessment Survey Part: 
     // SurveyID4 : 16,800 households with increased climate change resilience by 30%
-    
+
     // "SurveyID4_Question1_Number_of_Households" : {
     // query: `
 
@@ -2205,7 +2414,7 @@ export const indicatorQueryMap = {
 
     //Part 7: Persons receiving capacity development support (GAFSP Tier 2 Indicator #10)
     "cb_staff_Males": {
-    query: `
+        query: `
         SELECT 
             COALESCE(
                 COUNT(DISTINCT 
@@ -2221,11 +2430,11 @@ export const indicatorQueryMap = {
           AND S.Category <> '6_meeting'
           AND date(S.ReportingPeriodDate) BETWEEN date(?) AND date(?)
     `,
-    getParams: ({ startDate, endDate }) => [startDate, endDate],
-},
+        getParams: ({ startDate, endDate }) => [startDate, endDate],
+    },
 
-"cb_staff_Females": {
-    query: `
+    "cb_staff_Females": {
+        query: `
         SELECT 
             COALESCE(
                 COUNT(DISTINCT 
@@ -2241,11 +2450,11 @@ export const indicatorQueryMap = {
           AND S.Category <> '6_meeting'
           AND date(S.ReportingPeriodDate) BETWEEN date(?) AND date(?)
     `,
-    getParams: ({ startDate, endDate }) => [startDate, endDate],
-},
+        getParams: ({ startDate, endDate }) => [startDate, endDate],
+    },
 
-"cb_staff_Males_Percent": {
-    query: `
+    "cb_staff_Males_Percent": {
+        query: `
         SELECT
             ROUND(
                 100.0 * COUNT(DISTINCT CASE
@@ -2269,11 +2478,11 @@ export const indicatorQueryMap = {
         WHERE S.Category <> '6_meeting'
           AND date(S.ReportingPeriodDate) BETWEEN date(?) AND date(?)
     `,
-    getParams: ({ startDate, endDate }) => [startDate, endDate],
-},
+        getParams: ({ startDate, endDate }) => [startDate, endDate],
+    },
 
-"cb_staff_Females_Percent": {
-    query: `
+    "cb_staff_Females_Percent": {
+        query: `
         SELECT
             ROUND(
                 100.0 * COUNT(DISTINCT CASE
@@ -2297,11 +2506,11 @@ export const indicatorQueryMap = {
         WHERE S.Category <> '6_meeting'
           AND date(S.ReportingPeriodDate) BETWEEN date(?) AND date(?)
     `,
-    getParams: ({ startDate, endDate }) => [startDate, endDate],
-},
+        getParams: ({ startDate, endDate }) => [startDate, endDate],
+    },
 
-"cb_staff_Young_people": {
-    query: `
+    "cb_staff_Young_people": {
+        query: `
         SELECT 
             COALESCE(
                 COUNT(DISTINCT 
@@ -2317,13 +2526,13 @@ export const indicatorQueryMap = {
           AND S.Category <> '6_meeting'
           AND date(S.ReportingPeriodDate) BETWEEN date(?) AND date(?)
     `,
-    getParams: ({ minAge, maxAge, startDate, endDate }) => [
-        minAge,
-        maxAge,
-        startDate,
-        endDate
-    ],
-},
+        getParams: ({ minAge, maxAge, startDate, endDate }) => [
+            minAge,
+            maxAge,
+            startDate,
+            endDate
+        ],
+    },
 
 
 
@@ -2338,10 +2547,32 @@ export const indicatorQueryMap = {
 
 
 
-//Part8: 2.1.3  Rural producers’ organizations supported
-"1BAct6_Total_size_of_PO": {
-    query: `
-        SELECT COUNT(*) AS count
+    //Part8: 2.1.3  Rural producers’ organizations supported
+    // it was discussed between AFN-II M&E and WAF to remove the condition of only grant > 0
+    // (
+    //             S.IFAD > 0
+    //             OR S.MAF > 0
+    //             OR S.WFP > 0
+    //             OR S.GoL > 0
+    //             OR S.Ben > 0
+    //             OR S.OtherFund > 0
+    //         )
+    //         AND
+
+    // (
+    //             S.IFAD > 0
+    //             OR S.MAF > 0
+    //             OR S.WFP > 0
+    //             OR S.GoL > 0
+    //             OR S.Ben > 0
+    //             OR S.OtherFund > 0
+    //         )	
+    //         AND 
+
+
+    "1BAct6_Total_size_of_PO": {
+        query: `
+        SELECT COUNT(*) * 2 AS count
     FROM (
     SELECT DISTINCT
         COALESCE(P.HHId, '') AS HHId,
@@ -2363,22 +2594,14 @@ export const indicatorQueryMap = {
     JOIN tb_Form_1BAct6_Submission S 
         ON P.SubmissionId = S.Id
     WHERE 
-        (
-            S.IFAD > 0
-            OR S.MAF > 0
-            OR S.WFP > 0
-            OR S.GoL > 0
-            OR S.Ben > 0
-            OR S.OtherFund > 0
-        )
-        AND date(S.Reporting_period) BETWEEN date(?) AND date(?)
+         date(S.Reporting_period) BETWEEN date(?) AND date(?)
 );
     `,
-    getParams: ({ startDate, endDate }) => [startDate, endDate],
-},
+        getParams: ({ startDate, endDate }) => [startDate, endDate],
+    },
 
-"1BAct6_Rural_POs_supported": {
-    query: `
+    "1BAct6_Rural_POs_supported": {
+        query: `
         SELECT COUNT(*) AS count
     FROM (
     SELECT DISTINCT
@@ -2398,31 +2621,51 @@ export const indicatorQueryMap = {
     JOIN tb_Form_1BAct6_Submission s 
         ON p.SubmissionId = s.Id
     WHERE 
-        (
-            S.IFAD > 0
-            OR S.MAF > 0
-            OR S.WFP > 0
-            OR S.GoL > 0
-            OR S.Ben > 0
-            OR S.OtherFund > 0
-        )	
-        AND s.CBOEstablish IS NOT NULL
+        s.CBOEstablish IS NOT NULL
         AND s.CBOEstablish IN (1,2)
         AND p.PositionInGroup = 'g_head'
 		AND date(S.Reporting_period) BETWEEN date(?) AND date(?)
 );
     `,
-    getParams: ({ startDate, endDate }) => [startDate, endDate],
-},
+        getParams: ({ startDate, endDate }) => [startDate, endDate],
+    },
 
-"1BAct6_Males": {
-    query: `
+    "1BAct6_Males": {
+        // query: `
+        // SELECT COUNT(*) * 2 AS count
+        // FROM (
+        // SELECT DISTINCT
+        //     COALESCE(P.HHId, '') AS HHId,
+        //     TRIM(COALESCE(P.NameAndSurname, '')) AS NameAndSurname,
+        // 	TRIM(COALESCE(P.Gender, '')) AS Gender,
+        //     TRIM(COALESCE(S.Reporting_period, '')) AS Reporting_period,
+        //     TRIM(COALESCE(S.Province, '')) AS Province,
+        //     TRIM(COALESCE(S.District, '')) AS District,
+        //     TRIM(COALESCE(S.Village, '')) AS Village,
+        //     TRIM(COALESCE(S.SubActivity, '')) AS SubActivity,
+        //     COALESCE(S.IFAD, 0) AS IFAD,
+        //     COALESCE(S.MAF, 0) AS MAF,
+        //     COALESCE(S.WFP, 0) AS WFP,
+        //     COALESCE(S.GoL, 0) AS GoL,
+        //     COALESCE(S.Ben, 0) AS Ben,
+        //     COALESCE(S.OtherFund, 0) AS OtherFund
+        // FROM tb_Form_1BAct6_Participant P
+        // JOIN tb_Form_1BAct6_Submission S 
+        //     ON P.SubmissionId = S.Id
+        // WHERE 
+        //      P.Gender = 'Male'
+        //     AND date(S.Reporting_period) BETWEEN date(?) AND date(?)
+        // );
+        // `
+
+        // ##### As agree with WFP-Edwin and AFN-II M&E-Khamtan: Totoal number is x 2.
+        // ##### but for both male and female we will just take half number of total (without filtering by gender)
+        query: `
     SELECT COUNT(*) AS count
     FROM (
     SELECT DISTINCT
         COALESCE(P.HHId, '') AS HHId,
         TRIM(COALESCE(P.NameAndSurname, '')) AS NameAndSurname,
-		TRIM(COALESCE(P.Gender, '')) AS Gender,
         TRIM(COALESCE(S.Reporting_period, '')) AS Reporting_period,
         TRIM(COALESCE(S.Province, '')) AS Province,
         TRIM(COALESCE(S.District, '')) AS District,
@@ -2433,34 +2676,52 @@ export const indicatorQueryMap = {
         COALESCE(S.WFP, 0) AS WFP,
         COALESCE(S.GoL, 0) AS GoL,
         COALESCE(S.Ben, 0) AS Ben,
-        COALESCE(S.OtherFund, 0) AS OtherFund
+        COALESCE(S.OtherFund, 0) AS OtherFund		
     FROM tb_Form_1BAct6_Participant P
     JOIN tb_Form_1BAct6_Submission S 
         ON P.SubmissionId = S.Id
     WHERE 
-        (
-            S.IFAD > 0
-            OR S.MAF > 0
-            OR S.WFP > 0
-            OR S.GoL > 0
-            OR S.Ben > 0
-            OR S.OtherFund > 0
-        )
-        AND P.Gender = 'Male'
-        AND date(S.Reporting_period) BETWEEN date(?) AND date(?)
+         date(S.Reporting_period) BETWEEN date(?) AND date(?)
     );
     `,
-    getParams: ({ startDate, endDate }) => [startDate, endDate],
-},
+        getParams: ({ startDate, endDate }) => [startDate, endDate],
+    },
 
-"1BAct6_Females": {
-    query: `
+    "1BAct6_Females": {
+        // query: `
+        // SELECT COUNT(*) * 2 AS count
+        // FROM (
+        // SELECT DISTINCT
+        //     COALESCE(P.HHId, '') AS HHId,
+        //     TRIM(COALESCE(P.NameAndSurname, '')) AS NameAndSurname,
+        // 	TRIM(COALESCE(P.Gender, '')) AS Gender,
+        //     TRIM(COALESCE(S.Reporting_period, '')) AS Reporting_period,
+        //     TRIM(COALESCE(S.Province, '')) AS Province,
+        //     TRIM(COALESCE(S.District, '')) AS District,
+        //     TRIM(COALESCE(S.Village, '')) AS Village,
+        //     TRIM(COALESCE(S.SubActivity, '')) AS SubActivity,
+        //     COALESCE(S.IFAD, 0) AS IFAD,
+        //     COALESCE(S.MAF, 0) AS MAF,
+        //     COALESCE(S.WFP, 0) AS WFP,
+        //     COALESCE(S.GoL, 0) AS GoL,
+        //     COALESCE(S.Ben, 0) AS Ben,
+        //     COALESCE(S.OtherFund, 0) AS OtherFund
+        // FROM tb_Form_1BAct6_Participant P
+        // JOIN tb_Form_1BAct6_Submission S 
+        //     ON P.SubmissionId = S.Id
+        // WHERE 
+        //      P.Gender = 'Female'
+        //     AND date(S.Reporting_period) BETWEEN date(?) AND date(?)
+        // );
+        // `
+        // ##### As agree with WFP-Edwin and AFN-II M&E-Khamtan: Totoal number is x 2.
+        // ##### but for both male and female we will just take half number of total (without filtering by gender)
+        query: `
     SELECT COUNT(*) AS count
     FROM (
     SELECT DISTINCT
         COALESCE(P.HHId, '') AS HHId,
         TRIM(COALESCE(P.NameAndSurname, '')) AS NameAndSurname,
-		TRIM(COALESCE(P.Gender, '')) AS Gender,
         TRIM(COALESCE(S.Reporting_period, '')) AS Reporting_period,
         TRIM(COALESCE(S.Province, '')) AS Province,
         TRIM(COALESCE(S.District, '')) AS District,
@@ -2471,29 +2732,20 @@ export const indicatorQueryMap = {
         COALESCE(S.WFP, 0) AS WFP,
         COALESCE(S.GoL, 0) AS GoL,
         COALESCE(S.Ben, 0) AS Ben,
-        COALESCE(S.OtherFund, 0) AS OtherFund
+        COALESCE(S.OtherFund, 0) AS OtherFund		
     FROM tb_Form_1BAct6_Participant P
     JOIN tb_Form_1BAct6_Submission S 
         ON P.SubmissionId = S.Id
     WHERE 
-        (
-            S.IFAD > 0
-            OR S.MAF > 0
-            OR S.WFP > 0
-            OR S.GoL > 0
-            OR S.Ben > 0
-            OR S.OtherFund > 0
-        )
-        AND P.Gender = 'Female'
-        AND date(S.Reporting_period) BETWEEN date(?) AND date(?)
+         date(S.Reporting_period) BETWEEN date(?) AND date(?)
     );
     `,
-    getParams: ({ startDate, endDate }) => [startDate, endDate],
-},
+        getParams: ({ startDate, endDate }) => [startDate, endDate],
+    },
 
-"1BAct6_Young": {
-    query: `
-    SELECT COUNT(*) AS count
+    "1BAct6_Young": {
+        query: `
+    SELECT COUNT(*) * 2 AS count
     FROM (
     SELECT DISTINCT
         COALESCE(P.HHId, '') AS HHId,
@@ -2514,29 +2766,21 @@ export const indicatorQueryMap = {
     JOIN tb_Form_1BAct6_Submission S 
         ON P.SubmissionId = S.Id
     WHERE 
-        (
-            S.IFAD > 0
-            OR S.MAF > 0
-            OR S.WFP > 0
-            OR S.GoL > 0
-            OR S.Ben > 0
-            OR S.OtherFund > 0
-        )
-        AND P.Age BETWEEN ? AND ?
+         P.Age BETWEEN ? AND ?
         AND date(S.Reporting_period) BETWEEN date(?) AND date(?)
     );
     `,
-    getParams: ({ minAge, maxAge, startDate, endDate }) => [
-        minAge,
-        maxAge,
-        startDate,
-        endDate
-    ],
-},
+        getParams: ({ minAge, maxAge, startDate, endDate }) => [
+            minAge,
+            maxAge,
+            startDate,
+            endDate
+        ],
+    },
 
-"1BAct6_Indigenous_people": {
+    "1BAct6_Indigenous_people": {
         query: `
-    SELECT COUNT(*) AS count
+    SELECT COUNT(*) * 2 AS count
     FROM (
     SELECT DISTINCT
         COALESCE(P.HHId, '') AS HHId,
@@ -2556,15 +2800,7 @@ export const indicatorQueryMap = {
     JOIN tb_Form_1BAct6_Submission S 
         ON P.SubmissionId = S.Id
     WHERE 
-        (
-            S.IFAD > 0
-            OR S.MAF > 0
-            OR S.WFP > 0
-            OR S.GoL > 0
-            OR S.Ben > 0
-            OR S.OtherFund > 0
-        )
-        AND P.Ethnicity NOT IN (${'??'})
+         P.Ethnicity NOT IN (${'??'})
         AND date(S.Reporting_period) BETWEEN date(?) AND date(?)
     );
   `,
@@ -2578,7 +2814,7 @@ export const indicatorQueryMap = {
     },
 
     "1BAct6_Rural_POs_supported_women_headed": {
-    query: `
+        query: `
     SELECT COUNT(*) AS count
     FROM (
     SELECT DISTINCT
@@ -2599,15 +2835,7 @@ export const indicatorQueryMap = {
     JOIN tb_Form_1BAct6_Submission s 
         ON p.SubmissionId = s.Id
     WHERE
-        (
-            S.IFAD > 0
-            OR S.MAF > 0
-            OR S.WFP > 0
-            OR S.GoL > 0
-            OR S.Ben > 0
-            OR S.OtherFund > 0
-        )	
-        AND s.CBOEstablish IS NOT NULL
+         s.CBOEstablish IS NOT NULL
         AND s.CBOEstablish IN (1,2)
         AND p.PositionInGroup = 'g_head'
 		AND p.Gender = 'Female'
@@ -2615,49 +2843,46 @@ export const indicatorQueryMap = {
     );
 
     `,
-    getParams: ({ startDate, endDate }) => [startDate, endDate],
-},
+        getParams: ({ startDate, endDate }) => [startDate, endDate],
+    },
 
 
-//Part 9 has 2 sub indicator group:
-//Part 9: 2.1.6 Market, processing or storage facilities constructed or rehabilitated
-//Part 9: CI 2.1.5: Roads constructed, rehabilitated or upgraded
+    //Part 9 has 2 sub indicator group:
+    //Part 9: 2.1.6 Market, processing or storage facilities constructed or rehabilitated
+    //Part 9: CI 2.1.5: Roads constructed, rehabilitated or upgraded
 
-//######## This part has no data yet on 2Act3. to add SQL queries once data is available.#########
+    //######## This part has no data yet on 2Act3. to add SQL queries once data is available.#########
 
-//   "2Act3_Total_number_of_facilities": {
-//     query: `
+    //   "2Act3_Total_number_of_facilities": {
+    //     query: `
 
-//     `,
-//     getParams: ({ startDate, endDate }) => [startDate, endDate],
-//   },
-//   "2Act3_Market_facilities_constructed_rehabilitated": {
-//     query: `
+    //     `,
+    //     getParams: ({ startDate, endDate }) => [startDate, endDate],
+    //   },
+    //   "2Act3_Market_facilities_constructed_rehabilitated": {
+    //     query: `
 
-//     `,
-//     getParams: ({ startDate, endDate }) => [startDate, endDate],
-//   },
-//   "2Act3_Processing_facilities_constructed_rehabilitated": {
-//     query: `
+    //     `,
+    //     getParams: ({ startDate, endDate }) => [startDate, endDate],
+    //   },
+    //   "2Act3_Processing_facilities_constructed_rehabilitated": {
+    //     query: `
 
-//     `,
-//     getParams: ({ startDate, endDate }) => [startDate, endDate],
-//   },
-//   "2Act3_Storage_facilities_constructed_rehabilitated": {
-//     query: `
+    //     `,
+    //     getParams: ({ startDate, endDate }) => [startDate, endDate],
+    //   },
+    //   "2Act3_Storage_facilities_constructed_rehabilitated": {
+    //     query: `
 
-//     `,
-//     getParams: ({ startDate, endDate }) => [startDate, endDate],
-//   },
-//   "2Act3_Length_of_roads": {
-//     query: `
+    //     `,
+    //     getParams: ({ startDate, endDate }) => [startDate, endDate],
+    //   },
+    //   "2Act3_Length_of_roads": {
+    //     query: `
 
-//     `,
-//     getParams: ({ startDate, endDate }) => [startDate, endDate],
-//   },
-
-
-
+    //     `,
+    //     getParams: ({ startDate, endDate }) => [startDate, endDate],
+    //   },
 
 
 
@@ -2667,29 +2892,32 @@ export const indicatorQueryMap = {
 
 
 
-//Part 9: Number of MSMEs joining the SUN Business Network as new members
-//######## This part has no data yet on 2Act1. to add SQL queries once data is available.#########
-
-// "2Act1_Number_of_MSMEs_joining": {
-//     query: `
-
-//     `,
-//     getParams: ({ startDate, endDate }) => [startDate, endDate],
-//   },
 
 
 
+    //Part 9: Number of MSMEs joining the SUN Business Network as new members
+    //######## This part has no data yet on 2Act1. to add SQL queries once data is available.#########
 
+    // "2Act1_Number_of_MSMEs_joining": {
+    //     query: `
 
+    //     `,
+    //     getParams: ({ startDate, endDate }) => [startDate, endDate],
+    //   },
 
 
 
 
-//Part 10: Number of nutrition plans developed and endorsed
-// in involve in 2 tables: 2Act1a: Nutrition plans developed, 2Act1b: Nutrition plans endorsed
 
-"3Act1a_Nutrition_plans_developed": {
-    query: `
+
+
+
+
+    //Part 10: Number of nutrition plans developed and endorsed
+    // in involve in 2 tables: 2Act1a: Nutrition plans developed, 2Act1b: Nutrition plans endorsed
+
+    "3Act1a_Nutrition_plans_developed": {
+        query: `
     SELECT COUNT(*) AS count
     FROM (
     SELECT DISTINCT
@@ -2705,10 +2933,10 @@ export const indicatorQueryMap = {
         AND date(Reporting_period) BETWEEN date(?) AND date(?)
 );
     `,
-    getParams: ({ startDate, endDate }) => [startDate, endDate],
-  },
-"3Act1b_Nutrition_plans_endorsed": {
-    query: `
+        getParams: ({ startDate, endDate }) => [startDate, endDate],
+    },
+    "3Act1b_Nutrition_plans_endorsed": {
+        query: `
     SELECT SUM(VDPApprovalNumber) AS count
     FROM (
     SELECT DISTINCT
@@ -2722,8 +2950,8 @@ export const indicatorQueryMap = {
         AND date(Reporting_period) BETWEEN date(?) AND date(?)
 );
     `,
-    getParams: ({ startDate, endDate }) => [startDate, endDate],
-  },
+        getParams: ({ startDate, endDate }) => [startDate, endDate],
+    },
 
 
 
@@ -2734,16 +2962,16 @@ export const indicatorQueryMap = {
 
 
 
-//This part is from survey data:
-//Part 11: Policy 1 Policy-relevant knowledge products completed
-//######## This part has no data yet on survey table. to add SQL queries once data is available.#########
+    //This part is from survey data:
+    //Part 11: Policy 1 Policy-relevant knowledge products completed
+    //######## This part has no data yet on survey table. to add SQL queries once data is available.#########
 
-// "SurveyID13_Question1_Policy_relevant_knowledge_products_completed_Number_of_Knowledge_Products": {
-//     query: `
+    // "SurveyID13_Question1_Policy_relevant_knowledge_products_completed_Number_of_Knowledge_Products": {
+    //     query: `
 
-//     `,
-//     getParams: ({ startDate, endDate }) => [startDate, endDate],
-//   },
+    //     `,
+    //     getParams: ({ startDate, endDate }) => [startDate, endDate],
+    //   },
 
 
     // Extend with more as needed...

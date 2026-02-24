@@ -292,7 +292,7 @@ export default function OutreachCalc() {
             </div>
 
             <div>
-                <div className="table-responsive" style={{ overflowX: 'auto', overflowY: 'auto', maxHeight: '780px' }}>
+                <div className="table-responsive" style={{ overflowX: 'auto', overflowY: 'auto', maxHeight: '640px' }}>
                     <table className="outreach-table table table-sm table-bordered align-middle text-center fs-7 ">
                         {/* Column header */}
                         <thead className="sticky-header">
