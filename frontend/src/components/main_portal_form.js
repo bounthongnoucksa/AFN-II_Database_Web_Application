@@ -169,11 +169,11 @@ export default function MainPortalForm() {
             case 'tab21':
                 tabComponent = <Form3Act2 />;
                 break;
-            case 'tab22':
-                tabComponent = <MapView />;
-                break;
+            // case 'tab22':
+            //     tabComponent = <MapView />;
+            //     break;
             default:
-                tabComponent = <div>No content available</div>;
+                tabComponent = <div>Content development is in progress. the content for this tab is not yet available.</div>;
         }
 
         setTabCache(prev => ({ ...prev, [tabId]: tabComponent }));
