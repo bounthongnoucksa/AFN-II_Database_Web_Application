@@ -20,141 +20,13 @@ const indicatorMetaPath = path.join(__dirname, 'constants', 'logframeIndicatorMe
 // Logframe Static results like 2023 and 2024-Current
 const staticResultPath = path.join(__dirname, 'constants', 'logframeStaticData2023-2024.json');
 
-// const staticResults = {
-//   "1A1_Males": {
-//     "2023": 120,
-//     "2024-Current": 4564
-//   },
-//   "1A1_Females": {
-//     "2023": 273,
-//     "2024-Current": 5248
-//   },
-//   "1A1_Young_people": {
-//     "2023": 204,
-//     "2024-Current": 5039
-//   },
-//   "1A1_Indigenous_people": {
-//     "2023": 393,
-//     "2024-Current": 8778
-//   },
-//   "1A1_persons_received_services": {
-//     "2023": 393,
-//     "2024-Current": 9812
-//   },
-//   "1A1_pwd_number": {
-//     "2023": 0,
-//     "2024-Current": 0
-//   },
-//   "1A1_Households": {
-//     "2023": 393,
-//     "2024-Current": 3010
-//   },
-//   "1A1_Household_members": {
-//     "2023": 2358,
-//     "2024-Current": 18060
-//   }
-// };
-
-
-
-
-
-// //Outreach indicator metadata
-// // Gender mapping
-// const indicatorMeta = {
-//   "1A1_Males": {
-//     hierarchy: "Outreach",
-//     indicatorGroup: "1 Persons receiving services promoted or supported by the project",
-//     gender: "Male",
-//     baseline: 0,
-//     indicator: "Males",
-//     midTerm: 33600,
-//     endTarget: 84000,
-
-//   },
-//   "1A1_Females": {
-//     hierarchy: "Outreach",
-//     indicatorGroup: "1 Persons receiving services promoted or supported by the project",
-//     gender: "Female",
-//     baseline: 0,
-//     indicator: "Females",
-//     midTerm: 33600,
-//     endTarget: 84000,
-//   },
-//   "1A1_Young_people": {
-//     hierarchy: "Outreach",
-//     indicatorGroup: "1 Persons receiving services promoted or supported by the project",
-//     minAge: "15",
-//     maxAge: "35",
-//     baseline: 0,
-//     indicator: "Young people",
-//     midTerm: 16800,
-//     endTarget: 42000,
-//   }
-
-//   ,
-//   "1A1_Indigenous_people": {
-//     hierarchy: "Outreach",
-//     indicatorGroup: "1 Persons receiving services promoted or supported by the project",
-//     minAge: "15",
-//     maxAge: "35",
-//     baseline: 0,
-//     indicator: "Indigenous people",
-//     midTerm: 47040,
-//     endTarget: 117600,
-//   },
-//   "1A1_persons_received_services": {
-//     hierarchy: "Outreach",
-//     indicatorGroup: "1 Persons receiving services promoted or supported by the project",
-//     minAge: "15",
-//     maxAge: "35",
-//     baseline: 0,
-//     indicator: "Total number of persons receiving services",
-//     midTerm: 67200,
-//     endTarget: 168000,
-//   },
-//   "1A1_pwd_number": {
-//     hierarchy: "Outreach",
-//     indicatorGroup: "1 Persons receiving services promoted or supported by the project",
-//     minAge: "15",
-//     maxAge: "35",
-//     baseline: 0,
-//     indicator: "Persons with disabilities",
-//     midTerm: 1344,
-//     endTarget: 3360,
-//   },
-//   "1A1_Households": {
-//     hierarchy: "Outreach",
-//     indicatorGroup: "1 Persons receiving services promoted or supported by the project",
-//     minAge: "15",
-//     maxAge: "35",
-//     baseline: 0,
-//     indicator: "number of households reached",
-//     midTerm: 11200,
-//     endTarget: 28000,
-//   },
-//   "1A1_Household_members": {
-//     hierarchy: "Outreach",
-//     indicatorGroup: "1 Persons receiving services promoted or supported by the project",
-//     minAge: "15",
-//     maxAge: "35",
-//     baseline: 0,
-//     indicator: "total number of households members",
-//     midTerm: 67200,
-//     endTarget: 168000,
-//   }
-// };
-
-
-
-
-
 
 
 
 
 
 async function fetchIndicatorData() {
+
   const allTargets = JSON.parse(fs.readFileSync(targetsPath, 'utf-8'));
 
   //Get Outreach indicator metadata from external file
@@ -164,17 +36,22 @@ async function fetchIndicatorData() {
   const staticResults = JSON.parse(fs.readFileSync(staticResultPath, 'utf-8'));
 
   const promises = Object.entries(allTargets).map(async ([indicatorKey, yearlyTargets]) => {
-    const meta = indicatorMeta[indicatorKey];
-    //const { gender, indicator, hierarchy, indicatorGroup, baseline, midTerm, endTarget } = indicatorMeta[indicatorKey];
-    const resultsForIndicator = staticResults[indicatorKey] || {};
-    const queryObj = indicatorQueryMap[indicatorKey];
 
-    const orderedYears = ['2024', '2025', '2026', '2027', '2028', '2029', '2030'];
+    const meta = indicatorMeta[indicatorKey];
+    const resultsForIndicator = staticResults[indicatorKey] || {};
+
+    const orderedYears = ['2024','2025','2026','2027','2028','2029','2030'];
 
     let cumulative = 0;
+
+    // Used for percentage indicators
+    let cumulativeNumerator = 0;
+    let cumulativeDenominator = 0;
+
     let yearlyData = {};
 
     for (const yearStr of orderedYears) {
+
       let result = 0;
       let target = yearlyTargets[yearStr] || 0;
 
@@ -185,15 +62,17 @@ async function fetchIndicatorData() {
       const queryObj = indicatorQueryMap[indicatorKey];
 
       if (queryObj) {
+
         let { query, getParams } = queryObj;
 
         // Indigenous People modifications
-        if (indicatorKey === 'Outreach_Indigenous_people' ||
+        if (
+          indicatorKey === 'Outreach_Indigenous_people' ||
           indicatorKey === '1A1_Indigenous_people' ||
           indicatorKey === 'cb_villagers_Crop_Indigenous_People' ||
           indicatorKey === 'cb_villagers_Livestock_Indigenous_People' ||
-        indicatorKey === '1BAct6_Indigenous_people') {
-
+          indicatorKey === '1BAct6_Indigenous_people'
+        ) {
           query = query.replace(/\?\?/g, meta.ethnic);
         }
 
@@ -210,21 +89,49 @@ async function fetchIndicatorData() {
           });
         });
 
-        result = resultRow?.count || 0;
+        // ==========================
+        // PERCENTAGE INDICATORS 
+        // (The logframeIndicatorMetaData.json must include type: "percentage" and the query must return both the numerator as 'indicator_count' and the denominator as 'total_count')
+        // ==========================
+        if (meta.type === "percentage") {
+
+          const numerator = resultRow?.indicator_count || 0;
+          const denominator = resultRow?.total_count || 0;
+
+          cumulativeNumerator += numerator;
+          cumulativeDenominator += denominator;
+
+          // yearly percentage
+          result = denominator
+            ? Number(((numerator / denominator) * 100).toFixed(1))
+            : 0;
+
+          // cumulative percentage
+          cumulative = cumulativeDenominator
+            ? Number(((cumulativeNumerator / cumulativeDenominator) * 100).toFixed(1))
+            : 0;
+
+        }
+
+        // ==========================
+        // NORMAL COUNT INDICATORS
+        // ==========================
+        else {
+
+          result = resultRow?.count || 0;
+          cumulative += result;
+
+        }
+
       }
 
-      // New cumulative logic
-      cumulative += result;
+      yearlyData[yearStr] = {
+        target,
+        result,
+        cumulative
+      };
 
-      yearlyData[yearStr] = { target, result, cumulative };
     }
-
-
-
-
-
-
-
 
     return {
       hierarchy: meta.hierarchy,
@@ -233,27 +140,37 @@ async function fetchIndicatorData() {
       baseline: meta.baseline,
       midTerm: meta.midTerm,
       endTarget: meta.endTarget,
-      yearlyData,
+      yearlyData
     };
+
   });
 
   return Promise.all(promises);
+
 }
 
 
 
 // Route handler
 async function getIndicatorData(req, res) {
+
   try {
+
     const finalData = await fetchIndicatorData();
-    //Test:
-    //console.log(JSON.stringify(finalData, null, 2));
 
     res.json(finalData);
+
   } catch (err) {
+
     console.error('Error fetching indicator data:', err);
-    res.status(500).json({ error: 'Failed to fetch logframe data', detail: err.message });
+
+    res.status(500).json({
+      error: 'Failed to fetch logframe data',
+      detail: err.message
+    });
+
   }
+
 }
 
 export {

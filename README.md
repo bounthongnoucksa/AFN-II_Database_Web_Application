@@ -21,6 +21,7 @@ npm i axios (if issue found the run npm audit fix --force)
 npm install bootstrap
 npm install react-bootstrap (Specical boostrap built for React)
 npm install react-scripts@latest
+npm install leaflet react-leaflet (For mapping: Leaflet+OpenStreetMap_for_Map_visualizer)
 npm audit fix
 
 npm start

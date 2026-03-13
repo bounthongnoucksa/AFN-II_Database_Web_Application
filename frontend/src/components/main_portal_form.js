@@ -2,6 +2,9 @@
 import React, { useState } from 'react';
 import 'bootstrap/dist/css/bootstrap.min.css';
 
+//Import CSS for Map visualization
+import 'leaflet/dist/leaflet.css';
+
 //Import all related components
 import MainDashboard from './main_dashboard';
 import CBForStaff from './cb_for_staff'; // Import the CBForStaff component
@@ -24,6 +27,7 @@ import Form3Act1b from './3Act1b';
 import Form3Act2 from './3Act2';
 import OutreachCalc from './OutreachCalc';
 import LogFrame from './logFrame';
+import MapView from './MapView';
 
 export default function MainPortalForm() {
     const [activeTab, setActiveTab] = useState('tab1');
@@ -44,7 +48,8 @@ export default function MainPortalForm() {
         tab1: '#0D6EFD', tab2: '#6610F2', tab3: '#6f42c1', tab4: '#198754', tab5: '#fd7e14',
         tab6: '#20c997', tab7: '#0dcaf0', tab8: '#ffc107', tab9: '#dc3545', tab10: '#0d6efd',
         tab11: '#6f42c1', tab12: '#6610f2', tab13: '#198754', tab14: '#fd7e14', tab15: '#20c997',
-        tab16: '#0dcaf0', tab17: '#ffc107', tab18: '#dc3545', tab19: '#0d6efd', tab20: '#6f42c1', tab21: '#6610f2',
+        tab16: '#0dcaf0', tab17: '#ffc107', tab18: '#dc3545', tab19: '#0d6efd', tab20: '#6f42c1',
+        tab21: '#1ba4e4', tab22: '#003f00',
     };
 
     const tabButtonStyle = (tabId) => ({
@@ -85,6 +90,7 @@ export default function MainPortalForm() {
         { id: 'tab19', label: '3Act1a' },
         { id: 'tab20', label: '3Act1b' },
         { id: 'tab21', label: '3Act2' },
+        { id: 'tab22', label: 'GeoM&E' },
     ];
 
 
@@ -162,6 +168,9 @@ export default function MainPortalForm() {
                 break;
             case 'tab21':
                 tabComponent = <Form3Act2 />;
+                break;
+            case 'tab22':
+                tabComponent = <MapView />;
                 break;
             default:
                 tabComponent = <div>No content available</div>;

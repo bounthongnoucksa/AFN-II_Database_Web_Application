@@ -1,0 +1,32 @@
+/* ################################################33 */
+/* Custom added by Bounthong */
+
+/* For Legend box */
+.map-legend {
+  position: absolute;       /* overlay on map */
+  bottom: 5px;             /* distance from bottom */
+  right: 5px;              /* distance from right */
+  background: rgba(255, 255, 255, 0.9);
+  padding: 10px;
+  border-radius: 8px;
+  box-shadow: 0 0 5px rgba(0,0,0,0.3);
+  font-size: 14px;
+  z-index: 1000;            /* above map layers */
+}
+
+.map-legend h4 {
+  margin: 0 0 5px 0;
+  font-size: 16px;
+}
+
+.map-legend .legend-item {
+  display: flex;
+  align-items: center;
+  margin-bottom: 4px;
+}
+
+.map-legend .legend-item img {
+  width: 20px;
+  height: 33px;   /* same aspect ratio as Leaflet markers */
+  margin-right: 6px;
+}

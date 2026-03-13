@@ -676,6 +676,7 @@
   "1A2_Females_Percent": {
     "hierarchy": "2.2 | 15,000 people benefiting from cash or food-based transfers",
     "indicatorGroup": "Persons benefiting from cash or food-based transfers",
+    "type": "percentage",
     "baseline": 0,
     "indicator": "Females (%)",
     "midTerm": 40,
@@ -832,6 +833,7 @@
   "1BAct7_Males_Percentage": {
     "hierarchy": "2.4 | 10,000 farmers receiving inputs or services on climate resilient or sustainable agriculture practices",
     "indicatorGroup": "Number of farmers receiving inputs or services on climate resilient or sustainable agriculture practices (GAFSP Tier 2 indicator #13)",
+    "type": "percentage",
     "baseline": 0,
     "indicator": "Males (%)",
     "midTerm": 24,
@@ -840,6 +842,7 @@
   "1BAct7_Females_Percentage": {
     "hierarchy": "2.4 | 10,000 farmers receiving inputs or services on climate resilient or sustainable agriculture practices",
     "indicatorGroup": "Number of farmers receiving inputs or services on climate resilient or sustainable agriculture practices (GAFSP Tier 2 indicator #13)",
+    "type": "percentage",
     "baseline": 0,
     "indicator": "Females (%)",
     "midTerm": 16,
@@ -894,6 +897,7 @@
   "cb_staff_Males_Percent": {
     "hierarchy": "2.7 | 1500 persons receiving capacity development support",
     "indicatorGroup": "Persons receiving capacity development support (GAFSP Tier 2 Indicator #10)",
+    "type": "percentage",
     "baseline": 0,
     "indicator": "Males (%)",
     "midTerm": 20,
@@ -902,6 +906,7 @@
   "cb_staff_Females_Percent": {
     "hierarchy": "2.7 | 1500 persons receiving capacity development support",
     "indicatorGroup": "Persons receiving capacity development support (GAFSP Tier 2 Indicator #10)",
+    "type": "percentage",
     "baseline": 0,
     "indicator": "Females (%)",
     "midTerm": 20,

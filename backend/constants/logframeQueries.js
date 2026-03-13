@@ -1803,16 +1803,28 @@ export const indicatorQueryMap = {
     },
     "1A2_Females_Percent": {
         query: `
-        --1A2
-            SELECT
-                ROUND(
-                    100.0 * COUNT(DISTINCT CASE 
+            --1A2
+--             SELECT
+--                 ROUND(
+--                     100.0 * COUNT(DISTINCT CASE 
+--                                 WHEN P.Gender = 'Female' 
+--                                 THEN COALESCE(P.HHId, '') || '_' || COALESCE(P.NameAndSurname, '') || '_' || COALESCE(TRIM(S.Reporting_period), '') || '_' || COALESCE(TRIM(S.Subactivity), '') 
+--                             END)
+--                     / NULLIF(COUNT(DISTINCT COALESCE(P.HHId, '') || '_' || COALESCE(P.NameAndSurname, '') || '_' || COALESCE(TRIM(S.Reporting_period), '') || '_' || COALESCE(TRIM(S.Subactivity), '')), 0)
+--                 , 0) AS count
+--             FROM tb_Form_1A2_Participant P
+--             JOIN tb_Form_1A2_Submission S ON P.SubmissionId = S.Id
+--             WHERE date(S.Reporting_period) BETWEEN date(?) AND date(?);
+			
+			--Update query to return both indicator_count and total_count to calculate percentage at controller function.
+			SELECT COUNT(DISTINCT CASE 
                                 WHEN P.Gender = 'Female' 
                                 THEN COALESCE(P.HHId, '') || '_' || COALESCE(P.NameAndSurname, '') || '_' || COALESCE(TRIM(S.Reporting_period), '') || '_' || COALESCE(TRIM(S.Subactivity), '') 
-                            END)
-                    / NULLIF(COUNT(DISTINCT COALESCE(P.HHId, '') || '_' || COALESCE(P.NameAndSurname, '') || '_' || COALESCE(TRIM(S.Reporting_period), '') || '_' || COALESCE(TRIM(S.Subactivity), '')), 0)
-                , 0) AS count
-            FROM tb_Form_1A2_Participant P
+                         END) as indicator_count,
+						 
+				 NULLIF(COUNT(DISTINCT COALESCE(P.HHId, '') || '_' || COALESCE(P.NameAndSurname, '') || '_' || COALESCE(TRIM(S.Reporting_period), '') || '_' || COALESCE(TRIM(S.Subactivity), '')), 0) as total_count
+							
+							FROM tb_Form_1A2_Participant P
             JOIN tb_Form_1A2_Submission S ON P.SubmissionId = S.Id
             WHERE date(S.Reporting_period) BETWEEN date(?) AND date(?);
 
@@ -2329,55 +2341,93 @@ export const indicatorQueryMap = {
     "1BAct7_Males_Percentage": {
         query: `
       --1BAct7
-      SELECT ROUND(
-        COALESCE(
-          COUNT(DISTINCT COALESCE(P.HHId, '') || '_' || COALESCE(P.NameAndSurname, '') || '_' || COALESCE(TRIM(S.Reporting_period), '') || '_' || COALESCE(TRIM(S.Subactivity), '')), 0
-        ) * 100.0 / 
-        (SELECT COALESCE(COUNT(DISTINCT COALESCE(P2.HHId, '') || '_' || COALESCE(P2.NameAndSurname, '') || '_' || COALESCE(TRIM(S2.Reporting_period), '') || '_' || COALESCE(TRIM(S2.Subactivity), '')), 0)
-         FROM tb_Form_1BAct7_Participant P2
-         JOIN tb_Form_1BAct7_Submission S2 ON P2.SubmissionId = S2.Id
-         WHERE date(S2.Reporting_period) BETWEEN date(?) AND date(?)
-        ), 0
-      ) AS count
-      FROM tb_Form_1BAct7_Participant P
-      JOIN tb_Form_1BAct7_Submission S ON P.SubmissionId = S.Id
-      WHERE P.Gender = 'Male' AND date(S.Reporting_period) BETWEEN date(?) AND date(?);
+        -- SELECT ROUND(
+        --         COALESCE(
+        --           COUNT(DISTINCT COALESCE(P.HHId, '') || '_' || COALESCE(P.NameAndSurname, '') || '_' || COALESCE(TRIM(S.Reporting_period), '') || '_' || COALESCE(TRIM(S.Subactivity), '')), 0
+        --         ) * 100.0 / 
+        --         (SELECT COALESCE(COUNT(DISTINCT COALESCE(P2.HHId, '') || '_' || COALESCE(P2.NameAndSurname, '') || '_' || COALESCE(TRIM(S2.Reporting_period), '') || '_' || COALESCE(TRIM(S2.Subactivity), '')), 0)
+        --          FROM tb_Form_1BAct7_Participant P2
+        --          JOIN tb_Form_1BAct7_Submission S2 ON P2.SubmissionId = S2.Id
+        --          WHERE date(S2.Reporting_period) BETWEEN date(?) AND date(?)
+        --         ), 0
+        --       ) AS count
+        --       FROM tb_Form_1BAct7_Participant P
+        --       JOIN tb_Form_1BAct7_Submission S ON P.SubmissionId = S.Id
+        --       WHERE P.Gender = 'Male' AND date(S.Reporting_period) BETWEEN date(?) AND date(?);
+
+        SELECT
+            COUNT(DISTINCT CASE WHEN P.Gender = 'Male' THEN
+                COALESCE(P.HHId, '') || '_' ||
+                COALESCE(P.NameAndSurname, '') || '_' ||
+                COALESCE(TRIM(S.Reporting_period), '') || '_' ||
+                COALESCE(TRIM(S.Subactivity), '')
+            END) AS indicator_count,
+            
+            COUNT(DISTINCT
+                COALESCE(P.HHId, '') || '_' ||
+                COALESCE(P.NameAndSurname, '') || '_' ||
+                COALESCE(TRIM(S.Reporting_period), '') || '_' ||
+                COALESCE(TRIM(S.Subactivity), '')
+            ) AS total_count
+
+        FROM tb_Form_1BAct7_Participant P
+        JOIN tb_Form_1BAct7_Submission S ON P.SubmissionId = S.Id
+        WHERE date(S.Reporting_period) BETWEEN date(?) AND date(?);
     `,
-        //getParams: ({ startDate, endDate, gender }) => [startDate, endDate, startDate, endDate]
-        getParams: ({ startDate, endDate }) => {
-            const params = [];
-            for (let i = 0; i < 2; i++) {
-                params.push(startDate, endDate);
-            }
-            return params;
-        }
+        getParams: ({ startDate, endDate }) => [startDate, endDate]
+        // getParams: ({ startDate, endDate }) => {
+        //     const params = [];
+        //     for (let i = 0; i < 2; i++) {
+        //         params.push(startDate, endDate);
+        //     }
+        //     return params;
+        // }
     },
 
     "1BAct7_Females_Percentage": {
         query: `
       --1BAct7
-      SELECT ROUND(
-        COALESCE(
-          COUNT(DISTINCT COALESCE(P.HHId, '') || '_' || COALESCE(P.NameAndSurname, '') || '_' || COALESCE(TRIM(S.Reporting_period), '') || '_' || COALESCE(TRIM(S.Subactivity), '')), 0
-        ) * 100.0 / 
-        (SELECT COALESCE(COUNT(DISTINCT COALESCE(P2.HHId, '') || '_' || COALESCE(P2.NameAndSurname, '') || '_' || COALESCE(TRIM(S2.Reporting_period), '') || '_' || COALESCE(TRIM(S2.Subactivity), '')), 0)
-         FROM tb_Form_1BAct7_Participant P2
-         JOIN tb_Form_1BAct7_Submission S2 ON P2.SubmissionId = S2.Id
-         WHERE date(S2.Reporting_period) BETWEEN date(?) AND date(?)
-        ), 0
-      ) AS count
-      FROM tb_Form_1BAct7_Participant P
-      JOIN tb_Form_1BAct7_Submission S ON P.SubmissionId = S.Id
-      WHERE P.Gender = 'Female' AND date(S.Reporting_period) BETWEEN date(?) AND date(?);
+        -- SELECT ROUND(
+        --         COALESCE(
+        --           COUNT(DISTINCT COALESCE(P.HHId, '') || '_' || COALESCE(P.NameAndSurname, '') || '_' || COALESCE(TRIM(S.Reporting_period), '') || '_' || COALESCE(TRIM(S.Subactivity), '')), 0
+        --         ) * 100.0 / 
+        --         (SELECT COALESCE(COUNT(DISTINCT COALESCE(P2.HHId, '') || '_' || COALESCE(P2.NameAndSurname, '') || '_' || COALESCE(TRIM(S2.Reporting_period), '') || '_' || COALESCE(TRIM(S2.Subactivity), '')), 0)
+        --          FROM tb_Form_1BAct7_Participant P2
+        --          JOIN tb_Form_1BAct7_Submission S2 ON P2.SubmissionId = S2.Id
+        --          WHERE date(S2.Reporting_period) BETWEEN date(?) AND date(?)
+        --         ), 0
+        --       ) AS count
+        --       FROM tb_Form_1BAct7_Participant P
+        --       JOIN tb_Form_1BAct7_Submission S ON P.SubmissionId = S.Id
+        --       WHERE P.Gender = 'Female' AND date(S.Reporting_period) BETWEEN date(?) AND date(?);
+
+        SELECT
+            COUNT(DISTINCT CASE WHEN P.Gender = 'Female' THEN
+                COALESCE(P.HHId, '') || '_' ||
+                COALESCE(P.NameAndSurname, '') || '_' ||
+                COALESCE(TRIM(S.Reporting_period), '') || '_' ||
+                COALESCE(TRIM(S.Subactivity), '')
+            END) AS indicator_count,
+            
+            COUNT(DISTINCT
+                COALESCE(P.HHId, '') || '_' ||
+                COALESCE(P.NameAndSurname, '') || '_' ||
+                COALESCE(TRIM(S.Reporting_period), '') || '_' ||
+                COALESCE(TRIM(S.Subactivity), '')
+            ) AS total_count
+
+        FROM tb_Form_1BAct7_Participant P
+        JOIN tb_Form_1BAct7_Submission S ON P.SubmissionId = S.Id
+        WHERE date(S.Reporting_period) BETWEEN date(?) AND date(?);
     `,
-        //getParams: ({ startDate, endDate }) => [startDate, endDate, startDate, endDate]
-        getParams: ({ startDate, endDate }) => {
-            const params = [];
-            for (let i = 0; i < 2; i++) {
-                params.push(startDate, endDate);
-            }
-            return params;
-        }
+        getParams: ({ startDate, endDate }) => [startDate, endDate]
+        // getParams: ({ startDate, endDate }) => {
+        //     const params = [];
+        //     for (let i = 0; i < 2; i++) {
+        //         params.push(startDate, endDate);
+        //     }
+        //     return params;
+        // }
     },
 
 
@@ -2455,56 +2505,106 @@ export const indicatorQueryMap = {
 
     "cb_staff_Males_Percent": {
         query: `
-        SELECT
-            ROUND(
-                100.0 * COUNT(DISTINCT CASE
-                    WHEN P.Gender = '_male' THEN
-                        COALESCE(TRIM(S.ReportingPeriodDate), '') || '_' ||
-                        COALESCE(P.Name, '') || '_' ||
-                        COALESCE(P.Office, '') || '_' ||
-                        COALESCE(S.Topic, '')
-                END)
-                / NULLIF(
-                    COUNT(DISTINCT
-                        COALESCE(TRIM(S.ReportingPeriodDate), '') || '_' ||
-                        COALESCE(P.Name, '') || '_' ||
-                        COALESCE(P.Office, '') || '_' ||
-                        COALESCE(S.Topic, '')
-                    ), 0
-                ),
-            0) AS count
-        FROM tb_CB_Staff_Participant P
-        JOIN tb_CB_Staff_Submission S ON P.SubmissionId = S.Id
-        WHERE S.Category <> '6_meeting'
-          AND date(S.ReportingPeriodDate) BETWEEN date(?) AND date(?)
+        --      SELECT
+        --             ROUND(
+        --                 100.0 * COUNT(DISTINCT CASE
+        --                     WHEN P.Gender = '_male' THEN
+        --                         COALESCE(TRIM(S.ReportingPeriodDate), '') || '_' ||
+        --                         COALESCE(P.Name, '') || '_' ||
+        --                         COALESCE(P.Office, '') || '_' ||
+        --                         COALESCE(S.Topic, '')
+        --                 END)
+        --                 / NULLIF(
+        --                     COUNT(DISTINCT
+        --                         COALESCE(TRIM(S.ReportingPeriodDate), '') || '_' ||
+        --                         COALESCE(P.Name, '') || '_' ||
+        --                         COALESCE(P.Office, '') || '_' ||
+        --                         COALESCE(S.Topic, '')
+        --                     ), 0
+        --                 ),
+        --             0) AS count
+        --         FROM tb_CB_Staff_Participant P
+        --         JOIN tb_CB_Staff_Submission S ON P.SubmissionId = S.Id
+        --         WHERE S.Category <> '6_meeting'
+        --         AND date(S.ReportingPeriodDate) BETWEEN date(?) AND date(?)
+                    
+                SELECT
+                    
+                        COUNT(DISTINCT CASE
+                            WHEN P.Gender = '_male' THEN
+                                COALESCE(TRIM(S.ReportingPeriodDate), '') || '_' ||
+                                COALESCE(P.Name, '') || '_' ||
+                                COALESCE(P.Office, '') || '_' ||
+                                COALESCE(S.Topic, '')
+                        END) AS indicator_count,
+                        
+                        
+                        COUNT(DISTINCT
+                                COALESCE(TRIM(S.ReportingPeriodDate), '') || '_' ||
+                                COALESCE(P.Name, '') || '_' ||
+                                COALESCE(P.Gender, '') || '_' ||
+                                COALESCE(P.Office, '') || '_' ||
+                                COALESCE(S.Topic, '')
+                            ) AS total_count
+                        
+                    
+                FROM tb_CB_Staff_Participant P
+                JOIN tb_CB_Staff_Submission S ON P.SubmissionId = S.Id
+                WHERE S.Category <> '6_meeting'
+                AND date(S.ReportingPeriodDate) BETWEEN date(?) AND date(?);
     `,
         getParams: ({ startDate, endDate }) => [startDate, endDate],
     },
 
     "cb_staff_Females_Percent": {
         query: `
-        SELECT
-            ROUND(
-                100.0 * COUNT(DISTINCT CASE
-                    WHEN P.Gender = '_female' THEN
-                        COALESCE(TRIM(S.ReportingPeriodDate), '') || '_' ||
-                        COALESCE(P.Name, '') || '_' ||
-                        COALESCE(P.Office, '') || '_' ||
-                        COALESCE(S.Topic, '')
-                END)
-                / NULLIF(
-                    COUNT(DISTINCT
-                        COALESCE(TRIM(S.ReportingPeriodDate), '') || '_' ||
-                        COALESCE(P.Name, '') || '_' ||
-                        COALESCE(P.Office, '') || '_' ||
-                        COALESCE(S.Topic, '')
-                    ), 0
-                ),
-            0) AS count
-        FROM tb_CB_Staff_Participant P
-        JOIN tb_CB_Staff_Submission S ON P.SubmissionId = S.Id
-        WHERE S.Category <> '6_meeting'
-          AND date(S.ReportingPeriodDate) BETWEEN date(?) AND date(?)
+        --      SELECT
+        --             ROUND(
+        --                 100.0 * COUNT(DISTINCT CASE
+        --                     WHEN P.Gender = '_female' THEN
+        --                         COALESCE(TRIM(S.ReportingPeriodDate), '') || '_' ||
+        --                         COALESCE(P.Name, '') || '_' ||
+        --                         COALESCE(P.Office, '') || '_' ||
+        --                         COALESCE(S.Topic, '')
+        --                 END)
+        --                 / NULLIF(
+        --                     COUNT(DISTINCT
+        --                         COALESCE(TRIM(S.ReportingPeriodDate), '') || '_' ||
+        --                         COALESCE(P.Name, '') || '_' ||
+        --                         COALESCE(P.Office, '') || '_' ||
+        --                         COALESCE(S.Topic, '')
+        --                     ), 0
+        --                 ),
+        --             0) AS count
+        --         FROM tb_CB_Staff_Participant P
+        --         JOIN tb_CB_Staff_Submission S ON P.SubmissionId = S.Id
+        --         WHERE S.Category <> '6_meeting'
+        --         AND date(S.ReportingPeriodDate) BETWEEN date(?) AND date(?)
+                    
+                SELECT
+                    
+                        COUNT(DISTINCT CASE
+                            WHEN P.Gender = '_female' THEN
+                                COALESCE(TRIM(S.ReportingPeriodDate), '') || '_' ||
+                                COALESCE(P.Name, '') || '_' ||
+                                COALESCE(P.Office, '') || '_' ||
+                                COALESCE(S.Topic, '')
+                        END) AS indicator_count,
+                        
+                        
+                        COUNT(DISTINCT
+                                COALESCE(TRIM(S.ReportingPeriodDate), '') || '_' ||
+                                COALESCE(P.Name, '') || '_' ||
+                                COALESCE(P.Gender, '') || '_' ||
+                                COALESCE(P.Office, '') || '_' ||
+                                COALESCE(S.Topic, '')
+                            ) AS total_count
+                        
+                    
+                FROM tb_CB_Staff_Participant P
+                JOIN tb_CB_Staff_Submission S ON P.SubmissionId = S.Id
+                WHERE S.Category <> '6_meeting'
+                AND date(S.ReportingPeriodDate) BETWEEN date(?) AND date(?);
     `,
         getParams: ({ startDate, endDate }) => [startDate, endDate],
     },
