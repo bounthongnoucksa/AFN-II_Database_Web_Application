@@ -1858,17 +1858,124 @@ export const indicatorQueryMap = {
 
 
 
-    //Part 4: 1.1.4  Persons trained in production practices and/or technologies
+    //Part 4: 1.1.4 Persons trained in production practices and/or technologies
     "cb_villagers_Total_Persons": {
+        //         query: `
+        //       SELECT 
+        //           --COUNT(DISTINCT COALESCE(TRIM(P.HHId), '') || '_' || COALESCE(TRIM(P.NameAndSurname), '')) AS count
+        //           COUNT(DISTINCT COALESCE(TRIM(P.HHId), '') || '_' || COALESCE(TRIM(P.NameAndSurname), '') || '_' || COALESCE(TRIM(S.ReportingPeriod), '') || '_' || COALESCE(TRIM(S.SpecializedTopic), '')) AS count
+        //       FROM tb_CB_for_Villagers_Participant P
+        //       JOIN tb_CB_for_Villagers_Submission S ON P.SubmissionId = S.Id
+        //       WHERE date(S.ReportingPeriod) BETWEEN date(?) AND date(?)
+        //   `
+        //######## As per request from M&E Team, Total People trained = Total People train in crops and livestock.
         query: `
-      SELECT 
-          --COUNT(DISTINCT COALESCE(TRIM(P.HHId), '') || '_' || COALESCE(TRIM(P.NameAndSurname), '')) AS count
-          COUNT(DISTINCT COALESCE(TRIM(P.HHId), '') || '_' || COALESCE(TRIM(P.NameAndSurname), '') || '_' || COALESCE(TRIM(S.ReportingPeriod), '') || '_' || COALESCE(TRIM(S.SpecializedTopic), '')) AS count
-      FROM tb_CB_for_Villagers_Participant P
-      JOIN tb_CB_for_Villagers_Submission S ON P.SubmissionId = S.Id
-      WHERE date(S.ReportingPeriod) BETWEEN date(?) AND date(?)
-  `,
-        getParams: ({ startDate, endDate }) => [startDate, endDate],
+        SELECT 
+                        (
+                            -- 100% of 2TC
+                            (SELECT 
+                                --COUNT(DISTINCT COALESCE(TRIM(P.HHId), '') || '_' || COALESCE(TRIM(P.NameAndSurname), ''))
+                                COUNT(DISTINCT COALESCE(TRIM(P.HHId), '') || '_' || COALESCE(TRIM(P.NameAndSurname), '') || '_' || COALESCE(TRIM(S.ReportingPeriod), '') || '_' || COALESCE(TRIM(S.SpecializedTopic), '')) AS count
+                            FROM tb_CB_for_Villagers_Participant P
+                            JOIN tb_CB_for_Villagers_Submission S ON P.SubmissionId = S.Id
+                            WHERE P.Gender = 'Male'
+                            AND S.ActivityType = '2_tc'
+                            AND date(S.ReportingPeriod) BETWEEN date(?) AND date(?)
+                            )
+                            +
+                            -- 50% of 2TL+TC
+                            ROUND(0.5 * (
+                                SELECT 
+                                    --COUNT(DISTINCT COALESCE(TRIM(P.HHId), '') || '_' || COALESCE(TRIM(P.NameAndSurname), ''))
+                                    COUNT(DISTINCT COALESCE(TRIM(P.HHId), '') || '_' || COALESCE(TRIM(P.NameAndSurname), '') || '_' || COALESCE(TRIM(S.ReportingPeriod), '') || '_' || COALESCE(TRIM(S.SpecializedTopic), '')) AS count
+                                FROM tb_CB_for_Villagers_Participant P
+                                JOIN tb_CB_for_Villagers_Submission S ON P.SubmissionId = S.Id
+                                WHERE P.Gender = 'Male'
+                                AND S.ActivityType = '2_tl_tc'
+                                AND date(S.ReportingPeriod) BETWEEN date(?) AND date(?)
+                            ),0)
+                            +
+                            -- 100% of 2TC
+                            (SELECT 
+                                --COUNT(DISTINCT COALESCE(TRIM(P.HHId), '') || '_' || COALESCE(TRIM(P.NameAndSurname), ''))
+                                COUNT(DISTINCT COALESCE(TRIM(P.HHId), '') || '_' || COALESCE(TRIM(P.NameAndSurname), '') || '_' || COALESCE(TRIM(S.ReportingPeriod), '') || '_' || COALESCE(TRIM(S.SpecializedTopic), '')) AS count
+                            FROM tb_CB_for_Villagers_Participant P
+                            JOIN tb_CB_for_Villagers_Submission S ON P.SubmissionId = S.Id
+                            WHERE P.Gender = 'Female'
+                            AND S.ActivityType = '2_tc'
+                            AND date(S.ReportingPeriod) BETWEEN date(?) AND date(?)
+                            )
+                            +
+                            -- 50% of 2TL+TC
+                            ROUND(0.5 * (
+                                SELECT 
+                                    --COUNT(DISTINCT COALESCE(TRIM(P.HHId), '') || '_' || COALESCE(TRIM(P.NameAndSurname), ''))
+                                    COUNT(DISTINCT COALESCE(TRIM(P.HHId), '') || '_' || COALESCE(TRIM(P.NameAndSurname), '') || '_' || COALESCE(TRIM(S.ReportingPeriod), '') || '_' || COALESCE(TRIM(S.SpecializedTopic), '')) AS count
+                                FROM tb_CB_for_Villagers_Participant P
+                                JOIN tb_CB_for_Villagers_Submission S ON P.SubmissionId = S.Id
+                                WHERE P.Gender = 'Female'
+                                AND S.ActivityType = '2_tl_tc'
+                                AND date(S.ReportingPeriod) BETWEEN date(?) AND date(?)
+                            ),0)
+							
+							+
+							
+							-- 100% of 2TL
+                            (SELECT 
+                                --COUNT(DISTINCT COALESCE(TRIM(P.HHId), '') || '_' || COALESCE(TRIM(P.NameAndSurname), ''))
+                                COUNT(DISTINCT COALESCE(TRIM(P.HHId), '') || '_' || COALESCE(TRIM(P.NameAndSurname), '') || '_' || COALESCE(TRIM(S.ReportingPeriod), '') || '_' || COALESCE(TRIM(S.SpecializedTopic), '')) AS count
+                            FROM tb_CB_for_Villagers_Participant P
+                            JOIN tb_CB_for_Villagers_Submission S ON P.SubmissionId = S.Id
+                            WHERE P.Gender = 'Male'
+                            AND S.ActivityType = '2_tl'
+                            AND date(S.ReportingPeriod) BETWEEN date(?) AND date(?)
+                            )
+                            +
+                            -- 50% of 2TL+TL
+                            ROUND(0.5 * (
+                                SELECT 
+                                    --COUNT(DISTINCT COALESCE(TRIM(P.HHId), '') || '_' || COALESCE(TRIM(P.NameAndSurname), ''))
+                                    COUNT(DISTINCT COALESCE(TRIM(P.HHId), '') || '_' || COALESCE(TRIM(P.NameAndSurname), '') || '_' || COALESCE(TRIM(S.ReportingPeriod), '') || '_' || COALESCE(TRIM(S.SpecializedTopic), '')) AS count
+                                FROM tb_CB_for_Villagers_Participant P
+                                JOIN tb_CB_for_Villagers_Submission S ON P.SubmissionId = S.Id
+                                WHERE P.Gender = 'Male'
+                                AND S.ActivityType = '2_tl_tc'
+                                AND date(S.ReportingPeriod) BETWEEN date(?) AND date(?)
+                            ),0)
+                            +
+                            -- 100% of 2TL
+                            (SELECT 
+                                --COUNT(DISTINCT COALESCE(TRIM(P.HHId), '') || '_' || COALESCE(TRIM(P.NameAndSurname), ''))
+                                COUNT(DISTINCT COALESCE(TRIM(P.HHId), '') || '_' || COALESCE(TRIM(P.NameAndSurname), '') || '_' || COALESCE(TRIM(S.ReportingPeriod), '') || '_' || COALESCE(TRIM(S.SpecializedTopic), '')) AS count
+                            FROM tb_CB_for_Villagers_Participant P
+                            JOIN tb_CB_for_Villagers_Submission S ON P.SubmissionId = S.Id
+                            WHERE P.Gender = 'Female'
+                            AND S.ActivityType = '2_tl'
+                            AND date(S.ReportingPeriod) BETWEEN date(?) AND date(?)
+                            )
+                            +
+                            -- 50% of 2TL+TC
+                            ROUND(0.5 * (
+                                SELECT 
+                                    --COUNT(DISTINCT COALESCE(TRIM(P.HHId), '') || '_' || COALESCE(TRIM(P.NameAndSurname), ''))
+                                    COUNT(DISTINCT COALESCE(TRIM(P.HHId), '') || '_' || COALESCE(TRIM(P.NameAndSurname), '') || '_' || COALESCE(TRIM(S.ReportingPeriod), '') || '_' || COALESCE(TRIM(S.SpecializedTopic), '')) AS count
+                                FROM tb_CB_for_Villagers_Participant P
+                                JOIN tb_CB_for_Villagers_Submission S ON P.SubmissionId = S.Id
+                                WHERE P.Gender = 'Female'
+                                AND S.ActivityType = '2_tl_tc'
+                                AND date(S.ReportingPeriod) BETWEEN date(?) AND date(?)
+                            ),0)
+					
+                        ) AS count					
+        `,
+        //getParams: ({ startDate, endDate }) => [startDate, endDate],
+        getParams: ({ startDate, endDate }) => {
+            const params = [];
+            for (let i = 0; i < 8; i++) {
+                params.push(startDate, endDate);
+            }
+            return params;
+        }
     },
 
     "cb_villagers_Crop_Males": {
@@ -2204,7 +2311,8 @@ export const indicatorQueryMap = {
                             +
                             -- 100% of 2TC
                             (SELECT 
-                                COUNT(DISTINCT COALESCE(TRIM(P.HHId), '') || '_' || COALESCE(TRIM(P.NameAndSurname), ''))
+                                --COUNT(DISTINCT COALESCE(TRIM(P.HHId), '') || '_' || COALESCE(TRIM(P.NameAndSurname), ''))
+                                COUNT(DISTINCT COALESCE(TRIM(P.HHId), '') || '_' || COALESCE(TRIM(P.NameAndSurname), '') || '_' || COALESCE(TRIM(S.ReportingPeriod), '') || '_' || COALESCE(TRIM(S.SpecializedTopic), '')) AS count
                             FROM tb_CB_for_Villagers_Participant P
                             JOIN tb_CB_for_Villagers_Submission S ON P.SubmissionId = S.Id
                             WHERE P.Gender = 'Female'
@@ -2215,7 +2323,8 @@ export const indicatorQueryMap = {
                             -- 50% of 2TL+TC
                             ROUND(0.5 * (
                                 SELECT 
-                                    COUNT(DISTINCT COALESCE(TRIM(P.HHId), '') || '_' || COALESCE(TRIM(P.NameAndSurname), ''))
+                                    --COUNT(DISTINCT COALESCE(TRIM(P.HHId), '') || '_' || COALESCE(TRIM(P.NameAndSurname), ''))
+                                    COUNT(DISTINCT COALESCE(TRIM(P.HHId), '') || '_' || COALESCE(TRIM(P.NameAndSurname), '') || '_' || COALESCE(TRIM(S.ReportingPeriod), '') || '_' || COALESCE(TRIM(S.SpecializedTopic), '')) AS count
                                 FROM tb_CB_for_Villagers_Participant P
                                 JOIN tb_CB_for_Villagers_Submission S ON P.SubmissionId = S.Id
                                 WHERE P.Gender = 'Female'
