@@ -71,7 +71,7 @@ function get1A1OutreachData(reportingPeriod, reportYear) {
         // WHERE date(S.ReportingPeriod) BETWEEN date(?) AND date(?)
         // `;
         let query = `
-        --It was requested to combine counts from Form 1A.1 , 1A.2 and CB for Villagers for indicator 1A.1 from M&E team
+        --It was requested to combine counts from Form 1A.1 , 1A.2, 1A.4 and CB for Villagers for indicator 1A.1 from M&E team
         SELECT
             A.Count_1A1_All_Participants
                 + B.Count_cb_for_villagers_All_Participants
@@ -83,7 +83,7 @@ function get1A1OutreachData(reportingPeriod, reportYear) {
         FROM
         (
             SELECT 
-                COUNT(DISTINCT COALESCE(TRIM(P.HHId), '') || '_' || COALESCE(TRIM(P.NameAndSurname), '') ) AS Count_1A1_All_Participants,
+                COUNT(DISTINCT COALESCE(TRIM(P.HHId), '') || '_' || COALESCE(TRIM(P.NameAndSurname), '') || '_' || COALESCE(TRIM(P.Gender), '')) AS Count_1A1_All_Participants,
                 COUNT(DISTINCT P.HHId) AS Count_1A1_Unique_HH_ID
             FROM tb_Form_1A1_Participant P
             JOIN tb_Form_1A1_Submission S ON P.SubmissionId = S.Id
@@ -92,11 +92,11 @@ function get1A1OutreachData(reportingPeriod, reportYear) {
         CROSS JOIN
         (
             SELECT 
-                COUNT(DISTINCT COALESCE(TRIM(P.HHId), '') || '_' || COALESCE(TRIM(P.NameAndSurname), '')  ) AS Count_cb_for_villagers_All_Participants,
+                COUNT(DISTINCT COALESCE(TRIM(P.HHId), '') || '_' || COALESCE(TRIM(P.NameAndSurname), '') || '_' || COALESCE(TRIM(P.Gender), '')) AS Count_cb_for_villagers_All_Participants,
                 COUNT(DISTINCT P.HHId) AS Count_cb_for_villagers_Unique_HH_ID
             FROM tb_CB_for_Villagers_Participant P
             JOIN tb_CB_for_Villagers_Submission S ON P.SubmissionId = S.Id
-            WHERE S.ActivityCode IN ('1A.1','1A.2')
+            WHERE S.ActivityCode IN ('1A.1','1A.2','1A.4')
             AND date(S.ReportingPeriod) BETWEEN date(?) AND date(?)
         ) B;
 

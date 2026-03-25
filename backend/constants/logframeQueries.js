@@ -626,7 +626,7 @@ export const indicatorQueryMap = {
             FROM (
 
                 -- 1A1
-                --It was requested to combine counts from Form 1A.1 and CB for Villagers for indicator 1A.1 and 1A2 from M&E team
+                --It was requested to combine counts from Form 1A.1 and CB for Villagers for indicator 1A.1, 1A2, 1A4 from M&E team
                 SELECT Gender, SUM(cnt) AS total_count
                 FROM (
                     --SELECT 
@@ -638,9 +638,7 @@ export const indicatorQueryMap = {
                     --    ) AS cnt
                     SELECT 
                         P.Gender,
-                        COUNT(DISTINCT COALESCE(TRIM(P.HHId), '') || '_' ||
-                                        COALESCE(TRIM(P.NameAndSurname), '')
-                        ) AS cnt
+                        COUNT(DISTINCT COALESCE(TRIM(P.HHId), '') || '_' || COALESCE(TRIM(P.NameAndSurname), '')) AS cnt
 
                     FROM tb_Form_1A1_Participant P
                     JOIN tb_Form_1A1_Submission S ON P.SubmissionId = S.Id
@@ -659,9 +657,7 @@ export const indicatorQueryMap = {
                     --    ) AS cnt
                     SELECT 
                         P.Gender,
-                        COUNT(DISTINCT COALESCE(TRIM(P.HHId), '') || '_' ||
-                                        COALESCE(TRIM(P.NameAndSurname), '')
-                        ) AS cnt
+                        COUNT(DISTINCT COALESCE(TRIM(P.HHId), '') || '_' || COALESCE(TRIM(P.NameAndSurname), '')) AS cnt
                     FROM tb_CB_for_Villagers_Participant P
                     JOIN tb_CB_for_Villagers_Submission S ON P.SubmissionId = S.Id
                     WHERE S.ActivityCode IN ('1A.1','1A.2','1A.4')
