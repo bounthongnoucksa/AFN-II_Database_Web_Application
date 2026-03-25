@@ -15,7 +15,7 @@ import { APP_API_URL } from '../constants/appURLConstrants';
 export default function OutreachCalc() {
 
     // define reporting periods and years
-    const reportingPeriods = ['Whole Year', '6-Months', 'Q1', 'Q2', 'Q3', 'Q4'];
+    const reportingPeriods = ['Whole Year', '6-Months', 'Q1', 'Q2', 'Q3', 'Q4','Whole Project'];
     const currentYear = new Date().getFullYear();
     const startYear = 2023;
     const endYear = currentYear + 5;

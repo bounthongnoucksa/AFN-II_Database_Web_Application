@@ -38,6 +38,11 @@ function getDateRange(reportingPeriod, reportYear) {
                 start: `${year}-10-01`,
                 end: `${year}-12-31`
             };
+        case 'Whole Project':
+            return {
+                start: `2024-10-01`,
+                end: `2030-12-31`
+            };
         default:
             throw new Error('Invalid reportingPeriod');
     }
@@ -78,7 +83,7 @@ function get1A1OutreachData(reportingPeriod, reportYear) {
         FROM
         (
             SELECT 
-                COUNT(DISTINCT COALESCE(TRIM(P.HHId), '') || '_' || COALESCE(TRIM(P.NameAndSurname), '') || '_' || COALESCE(TRIM(S.ReportingPeriod), '')|| '_' || COALESCE(TRIM(S.Subactivity), '')) AS Count_1A1_All_Participants,
+                COUNT(DISTINCT COALESCE(TRIM(P.HHId), '') || '_' || COALESCE(TRIM(P.NameAndSurname), '') ) AS Count_1A1_All_Participants,
                 COUNT(DISTINCT P.HHId) AS Count_1A1_Unique_HH_ID
             FROM tb_Form_1A1_Participant P
             JOIN tb_Form_1A1_Submission S ON P.SubmissionId = S.Id
@@ -87,7 +92,7 @@ function get1A1OutreachData(reportingPeriod, reportYear) {
         CROSS JOIN
         (
             SELECT 
-                COUNT(DISTINCT COALESCE(TRIM(P.HHId), '') || '_' || COALESCE(TRIM(P.NameAndSurname), '') || '_' || COALESCE(TRIM(S.ReportingPeriod), '') || '_' || COALESCE(TRIM(S.SpecializedTopic), '')) AS Count_cb_for_villagers_All_Participants,
+                COUNT(DISTINCT COALESCE(TRIM(P.HHId), '') || '_' || COALESCE(TRIM(P.NameAndSurname), '')  ) AS Count_cb_for_villagers_All_Participants,
                 COUNT(DISTINCT P.HHId) AS Count_cb_for_villagers_Unique_HH_ID
             FROM tb_CB_for_Villagers_Participant P
             JOIN tb_CB_for_Villagers_Submission S ON P.SubmissionId = S.Id
@@ -125,7 +130,7 @@ function get1A4OutreachData(reportingPeriod, reportYear) {
         let query = `
         SELECT 
             --COUNT(DISTINCT P.HHId || '_' || P.NameAndSurname) AS Count_1A4_All_Participants,
-            COUNT(DISTINCT COALESCE(TRIM(P.HHId), '') || '_' || COALESCE(TRIM(P.NameAndSurname), '') || '_' || COALESCE(TRIM(S.Reporting_period), '') || '_' || COALESCE(TRIM(S.Subactivity), '')) AS Count_1A4_All_Participants,
+            COUNT(DISTINCT COALESCE(TRIM(P.HHId), '') || '_' || COALESCE(TRIM(P.NameAndSurname), '')) AS Count_1A4_All_Participants,
             COUNT(DISTINCT P.HHId) AS Count_1A4_Unique_HH_ID
         FROM tb_Form_1A4_Participant P
         JOIN tb_Form_1A4_Submission S ON P.SubmissionId = S.Id
@@ -159,7 +164,7 @@ function get1BAct6OutreachData(reportingPeriod, reportYear) {
         let query = `
         SELECT 
             --COUNT(DISTINCT P.HHId || '_' || P.NameAndSurname) AS Count_1BAct6_All_Participants,
-            COUNT(DISTINCT COALESCE(TRIM(P.HHId), '') || '_' || COALESCE(TRIM(P.NameAndSurname), '') || '_' || COALESCE(TRIM(S.Reporting_period), '') || '_' || COALESCE(TRIM(S.Subactivity), '')) AS Count_1BAct6_All_Participants,
+            COUNT(DISTINCT COALESCE(TRIM(P.HHId), '') || '_' || COALESCE(TRIM(P.NameAndSurname), '')) AS Count_1BAct6_All_Participants,
             COUNT(DISTINCT P.HHId) AS Count_1BAct6_Unique_HH_ID
         FROM tb_Form_1BAct6_Participant P
         JOIN tb_Form_1BAct6_Submission S ON P.SubmissionId = S.Id
@@ -193,7 +198,7 @@ function get1BAct8OutreachData(reportingPeriod, reportYear) {
         let query = `
         SELECT 
             --COUNT(DISTINCT P.HHId || '_' || P.NameAndSurname) AS Count_1BAct8_All_Participants,
-            COUNT(DISTINCT COALESCE(TRIM(P.HHId), '') || '_' || COALESCE(TRIM(P.NameAndSurname), '') || '_' || COALESCE(TRIM(S.Reporting_period), '') || '_' || COALESCE(TRIM(S.Subactivity), '')) AS Count_1BAct8_All_Participants,
+            COUNT(DISTINCT COALESCE(TRIM(P.HHId), '') || '_' || COALESCE(TRIM(P.NameAndSurname), '') ) AS Count_1BAct8_All_Participants,
             COUNT(DISTINCT P.HHId) AS Count_1BAct8_Unique_HH_ID
         FROM tb_Form_1BAct8_Participant P
         JOIN tb_Form_1BAct8_Submission S ON P.SubmissionId = S.Id
@@ -294,7 +299,7 @@ function get2Act3OutreachData(reportingPeriod, reportYear) {
         let query = `
         SELECT 
             --COUNT(DISTINCT P.HHId || '_' || P.NameAndSurname) AS Count_2Act3_All_Participants,
-            COUNT(DISTINCT COALESCE(TRIM(P.HHId), '') || '_' || COALESCE(TRIM(P.NameAndSurname), '') || '_' || COALESCE(TRIM(S.Reporting_period), '') || '_' || COALESCE(TRIM(S.Subactivity), '')) AS Count_2Act3_All_Participants,
+            COUNT(DISTINCT COALESCE(TRIM(P.HHId), '') || '_' || COALESCE(TRIM(P.NameAndSurname), '') ) AS Count_2Act3_All_Participants,
             COUNT(DISTINCT P.HHId) AS Count_2Act3_Unique_HH_ID
         FROM tb_Form_2Act3_Participant P
         JOIN tb_Form_2Act3_Submission S ON P.SubmissionId = S.Id
