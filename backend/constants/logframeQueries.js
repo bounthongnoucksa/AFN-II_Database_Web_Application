@@ -962,6 +962,116 @@ export const indicatorQueryMap = {
             return params;
         }
     },
+    "Outreach_Households_Poor": {
+        query: `
+        -- Count Unique HH-ID across all relevant forms
+      SELECT sum(count) AS count FROM (
+            --1A1
+            --It was requested to combine counts from Form 1A.1 and CB for Villagers for indicator 1A.1, 1A2 and 1A.4 from M&E team
+                SELECT
+                    A.Count_1A1_Unique_HH_ID + B.Count_cb_for_villagers_Unique_HH_ID AS count
+                FROM
+                (
+                    SELECT 
+                        COUNT(DISTINCT P.HHId) AS Count_1A1_Unique_HH_ID
+                    FROM tb_Form_1A1_Participant P
+                    JOIN tb_Form_1A1_Submission S ON P.SubmissionId = S.Id
+                    WHERE date(S.ReportingPeriod) BETWEEN date(?) AND date(?)
+                    AND P.PovertyLevel = 'p'
+                ) A
+                CROSS JOIN
+                (
+                    SELECT 
+                        COUNT(DISTINCT P.HHId) AS Count_cb_for_villagers_Unique_HH_ID
+                    FROM tb_CB_for_Villagers_Participant P
+                    JOIN tb_CB_for_Villagers_Submission S ON P.SubmissionId = S.Id
+                    WHERE S.ActivityCode IN ('1A.1','1A.2','1A.4')
+                    AND date(S.ReportingPeriod) BETWEEN date(?) AND date(?)
+                    AND P.PovertyLevel = 'p'
+                ) B
+                    
+            UNION ALL
+            --1A4
+            SELECT 
+            --COUNT(DISTINCT P.HHId || '_' || P.NameAndSurname) AS Count_1A4_All_Participants
+            COUNT(DISTINCT P.HHId) AS Count_1A4_Unique_HH_ID
+            FROM tb_Form_1A4_Participant P
+            JOIN tb_Form_1A4_Submission S ON P.SubmissionId = S.Id
+            WHERE date(S.Reporting_period) BETWEEN date(?) AND date(?)
+            AND P.Poverty_Level = 'p'
+
+            UNION ALL
+
+            --1BAct6
+            SELECT 
+            --COUNT(DISTINCT P.HHId || '_' || P.NameAndSurname) AS Count_1BAct6_All_Participants
+            COUNT(DISTINCT P.HHId) AS Count_1BAct6_Unique_HH_ID
+            FROM tb_Form_1BAct6_Participant P
+            JOIN tb_Form_1BAct6_Submission S ON P.SubmissionId = S.Id
+            WHERE date(S.Reporting_period) BETWEEN date(?) AND date(?)
+            AND P.Poverty_Level = 'p'
+
+            UNION ALL
+            --1BAct8
+            SELECT 
+            --COUNT(DISTINCT P.HHId || '_' || P.NameAndSurname) AS Count_1BAct8_All_Participants
+            COUNT(DISTINCT P.HHId) AS Count_1BAct8_Unique_HH_ID
+            FROM tb_Form_1BAct8_Participant P
+            JOIN tb_Form_1BAct8_Submission S ON P.SubmissionId = S.Id
+            WHERE S.Subactivity IN ('con_irr', 'recon_irr')
+            AND P.Poverty_Level = 'p'
+            AND date(S.Reporting_Period) BETWEEN date(?) AND date(?)
+
+            UNION ALL
+
+            --2Act1
+            SELECT 
+            COUNT(DISTINCT P.NameOfMSME_Owner) AS Count_2Act1_Unique_MSME_Owner
+            FROM tb_Form_2Act1_Participant P
+            JOIN tb_Form_2Act1_Submission S ON P.SubmissionId = S.Id
+            WHERE date(S.Reporting_Period) BETWEEN date(?) AND date(?)
+
+            UNION ALL
+
+            --2Act2
+            SELECT 
+            COUNT(DISTINCT P.NameAndSurname) AS Count_2Act2_Unique_MSME_Owner
+            FROM tb_Form_2Act2_Participant P
+            JOIN tb_Form_2Act2_Submission S ON P.SubmissionId = S.Id
+            WHERE date(S.Reporting_Period) BETWEEN date(?) AND date(?)
+                
+            UNION ALL
+                
+            --2Act3
+            SELECT 
+            --COUNT(DISTINCT P.HHId || '_' || P.NameAndSurname) AS Count_2Act3_All_Participants
+            COUNT(DISTINCT P.HHId) AS Count_2Act3_Unique_HH_ID
+            FROM tb_Form_2Act3_Participant P
+            JOIN tb_Form_2Act3_Submission S ON P.SubmissionId = S.Id
+            WHERE S.Subactivity IN ('accesstracks')
+            AND P.PovertyLevel = 'p'
+            AND date(S.Reporting_Period) BETWEEN date(?) AND date(?)
+                    
+            UNION ALL	
+            --3Act2
+            SELECT 
+            --COUNT(DISTINCT P.HHId || '_' || P.NameOfAPG) AS Count_3Act2_All_Participants
+            COUNT(DISTINCT P.HHId) AS Count_3Act2_Unique_HH_ID
+            FROM tb_Form_3Act2_Participant P
+            JOIN tb_Form_3Act2_Submission S ON P.Submission_id = S.Id
+            WHERE date(S.Reporting_Period) BETWEEN date(?) AND date(?)
+            ) AS Combined_Counts;
+
+    `,
+        //getParams: ({ startDate, endDate }) => [startDate, endDate],
+        getParams: ({ startDate, endDate }) => {
+            const params = [];
+            for (let i = 0; i < 9; i++) {
+                params.push(startDate, endDate);
+            }
+            return params;
+        }
+    },
     "Outreach_Household_members": {
         query: `
         -- Overall result x Average Household Size (6)

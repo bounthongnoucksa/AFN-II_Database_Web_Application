@@ -61,6 +61,14 @@
     "midTerm": 11200,
     "endTarget": 28000
   },
+  "Outreach_Households_Poor": {
+    "hierarchy": "Outreach",
+    "indicatorGroup": "1 Persons receiving services promoted or supported by the project",
+    "baseline": 0,
+    "indicator": "Number of households - Poor",
+    "midTerm": 0,
+    "endTarget": 0
+  },
   "Outreach_Household_members": {
     "hierarchy": "Outreach",
     "indicatorGroup": "1 Persons receiving services promoted or supported by the project",
