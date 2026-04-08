@@ -2027,7 +2027,11 @@ export const indicatorQueryMap = {
                             FROM tb_CB_for_Villagers_Participant P
                             JOIN tb_CB_for_Villagers_Submission S ON P.SubmissionId = S.Id
                             WHERE P.Gender = 'Male'
-                            AND S.ActivityType = '2_tc'
+                            AND (
+                                    S.ActivityType = '2_tc'
+                                    OR 
+                                    S.SpecializedTopic IN ('tot4','training_6','training_2','demo_17','demo_18')
+                                )
                             AND date(S.ReportingPeriod) BETWEEN date(?) AND date(?)
                             )
                             +
@@ -2050,7 +2054,11 @@ export const indicatorQueryMap = {
                             FROM tb_CB_for_Villagers_Participant P
                             JOIN tb_CB_for_Villagers_Submission S ON P.SubmissionId = S.Id
                             WHERE P.Gender = 'Female'
-                            AND S.ActivityType = '2_tc'
+                            AND (
+                                    S.ActivityType = '2_tc'
+                                    OR 
+                                    S.SpecializedTopic IN ('tot4','training_6','training_2','demo_17','demo_18')
+                                )
                             AND date(S.ReportingPeriod) BETWEEN date(?) AND date(?)
                             )
                             +
@@ -2114,38 +2122,39 @@ export const indicatorQueryMap = {
                                 AND date(S.ReportingPeriod) BETWEEN date(?) AND date(?)
                             ),0)
 
-                            +
+                            --+
 							--Requested to be added by mission Q1-2026 by Martina.
 							-- 100% of Other sub activity specified by mission as below.
-                            (SELECT 
-                                --COUNT(DISTINCT COALESCE(TRIM(P.HHId), '') || '_' || COALESCE(TRIM(P.NameAndSurname), ''))
-                                COUNT(DISTINCT COALESCE(TRIM(P.HHId), '') || '_' || COALESCE(TRIM(P.NameAndSurname), '') ) AS count
-                            FROM tb_CB_for_Villagers_Participant P
-                            JOIN tb_CB_for_Villagers_Submission S ON P.SubmissionId = S.Id
-                            WHERE P.Gender = 'Male'
-                            AND S.SpecializedTopic IN ('tot4','training_6','training_2','demo_17','demo_18')
-                            AND date(S.ReportingPeriod) BETWEEN date(?) AND date(?)
-                            )
+                            --(SELECT 
+                            --    --COUNT(DISTINCT COALESCE(TRIM(P.HHId), '') || '_' || COALESCE(TRIM(P.NameAndSurname), ''))
+                            --    COUNT(DISTINCT COALESCE(TRIM(P.HHId), '') || '_' || COALESCE(TRIM(P.NameAndSurname), '') ) AS count
+                            --FROM tb_CB_for_Villagers_Participant P
+                            --JOIN tb_CB_for_Villagers_Submission S ON P.SubmissionId = S.Id
+                            --WHERE P.Gender = 'Male'
+                            --AND S.SpecializedTopic IN ('tot4','training_6','training_2','demo_17','demo_18')
+                            --AND date(S.ReportingPeriod) BETWEEN date(?) AND date(?)
+                            --)
 							
-							+
+							--+
 							--Requested to be added by mission Q1-2026 by Martina.
 							-- 100% of Other sub activity specified by mission as below.
-							(SELECT 
-                                --COUNT(DISTINCT COALESCE(TRIM(P.HHId), '') || '_' || COALESCE(TRIM(P.NameAndSurname), ''))
-                                COUNT(DISTINCT COALESCE(TRIM(P.HHId), '') || '_' || COALESCE(TRIM(P.NameAndSurname), '') ) AS count
-                            FROM tb_CB_for_Villagers_Participant P
-                            JOIN tb_CB_for_Villagers_Submission S ON P.SubmissionId = S.Id
-                            WHERE P.Gender = 'Female'
-                            AND S.SpecializedTopic IN ('tot4','training_6','training_2','demo_17','demo_18')
-                            AND date(S.ReportingPeriod) BETWEEN date(?) AND date(?)
-                            )
+							--(SELECT 
+                            --    --COUNT(DISTINCT COALESCE(TRIM(P.HHId), '') || '_' || COALESCE(TRIM(P.NameAndSurname), ''))
+                            --    COUNT(DISTINCT COALESCE(TRIM(P.HHId), '') || '_' || COALESCE(TRIM(P.NameAndSurname), '') ) AS count
+                            --FROM tb_CB_for_Villagers_Participant P
+                            --JOIN tb_CB_for_Villagers_Submission S ON P.SubmissionId = S.Id
+                            --WHERE P.Gender = 'Female'
+                            --AND S.SpecializedTopic IN ('tot4','training_6','training_2','demo_17','demo_18')
+                            --AND date(S.ReportingPeriod) BETWEEN date(?) AND date(?)
+                            --)
 					
                         ) AS count					
         `,
         //getParams: ({ startDate, endDate }) => [startDate, endDate],
         getParams: ({ startDate, endDate }) => {
             const params = [];
-            for (let i = 0; i < 10; i++) {
+            //for (let i = 0; i < 10; i++) {
+            for (let i = 0; i < 8; i++) {
                 params.push(startDate, endDate);
             }
             return params;
@@ -2163,7 +2172,12 @@ export const indicatorQueryMap = {
                                 FROM tb_CB_for_Villagers_Participant P
                                 JOIN tb_CB_for_Villagers_Submission S ON P.SubmissionId = S.Id
                                 WHERE P.Gender = ?
-                                AND S.ActivityType = '2_tc'
+                                AND 
+                                    (
+									    S.ActivityType = '2_tc'
+									    OR 
+                                        S.SpecializedTopic IN ('tot4','training_6','training_2','demo_17','demo_18')
+									)
                                 AND date(S.ReportingPeriod) BETWEEN date(?) AND date(?)
                                 )
                                 +
@@ -2201,7 +2215,11 @@ export const indicatorQueryMap = {
                                 FROM tb_CB_for_Villagers_Participant P
                                 JOIN tb_CB_for_Villagers_Submission S ON P.SubmissionId = S.Id
                                 WHERE P.Gender = ?
-                                AND S.ActivityType = '2_tc'
+                                AND (
+									    S.ActivityType = '2_tc'
+									    OR 
+                                        S.SpecializedTopic IN ('tot4','training_6','training_2','demo_17','demo_18')
+									)
                                 AND date(S.ReportingPeriod) BETWEEN date(?) AND date(?)
                                 )
                                 +
@@ -2239,7 +2257,11 @@ export const indicatorQueryMap = {
                         FROM tb_CB_for_Villagers_Participant P
                         JOIN tb_CB_for_Villagers_Submission S ON P.SubmissionId = S.Id
                         WHERE P.Age BETWEEN ? AND ?
-                        AND S.ActivityType = '2_tc'
+                        AND (
+									    S.ActivityType = '2_tc'
+									    OR 
+                                        S.SpecializedTopic IN ('tot4','training_6','training_2','demo_17','demo_18')
+									)
                         AND date(S.ReportingPeriod) BETWEEN date(?) AND date(?)
                         )
                         +
@@ -2277,7 +2299,11 @@ export const indicatorQueryMap = {
                         FROM tb_CB_for_Villagers_Participant P
                         JOIN tb_CB_for_Villagers_Submission S ON P.SubmissionId = S.Id
                         WHERE P.Ethnicity NOT IN (??)
-                        AND S.ActivityType = '2_tc'
+                        AND (
+									    S.ActivityType = '2_tc'
+									    OR 
+                                        S.SpecializedTopic IN ('tot4','training_6','training_2','demo_17','demo_18')
+									)
                         AND date(S.ReportingPeriod) BETWEEN date(?) AND date(?)
                         )
                         +
@@ -2467,7 +2493,11 @@ export const indicatorQueryMap = {
                             FROM tb_CB_for_Villagers_Participant P
                             JOIN tb_CB_for_Villagers_Submission S ON P.SubmissionId = S.Id
                             WHERE P.Gender = 'Male'
-                            AND S.ActivityType = '2_tc'
+                            AND (
+									    S.ActivityType = '2_tc'
+									    OR 
+                                        S.SpecializedTopic IN ('tot4','training_6','training_2','demo_17','demo_18')
+									)
                             AND date(S.ReportingPeriod) BETWEEN date(?) AND date(?)
                             )
                             +
@@ -2490,7 +2520,11 @@ export const indicatorQueryMap = {
                             FROM tb_CB_for_Villagers_Participant P
                             JOIN tb_CB_for_Villagers_Submission S ON P.SubmissionId = S.Id
                             WHERE P.Gender = 'Female'
-                            AND S.ActivityType = '2_tc'
+                            AND (
+									    S.ActivityType = '2_tc'
+									    OR 
+                                        S.SpecializedTopic IN ('tot4','training_6','training_2','demo_17','demo_18')
+									)
                             AND date(S.ReportingPeriod) BETWEEN date(?) AND date(?)
                             )
                             +
